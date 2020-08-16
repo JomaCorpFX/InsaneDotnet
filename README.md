@@ -1,10 +1,9 @@
 # InsaneDotnet
-Biblioteca Insane para .NET. Tipo .NET Standard 2.1. Compatible con las plataformas especificadas en el github de .NET Foundation [.NET Standard Versions](https://github.com/dotnet/standard/blob/master/docs/versions.md) 
+Insane library of type .NET standard 2.1. Compatible with platforms especified on .NET Foundation's github [.NET Standard Versions](https://github.com/dotnet/standard/blob/master/docs/versions.md) 
 
-## Sistemas operativos compatibles
-* Windows x86 y Windows x64.
+Certain functionality like Cryptography has equivalent in:
 
-No compatible con Linux x86 o x64. Planeado a futuro incluirlo.
+* [InsaneJava](https://github.com/Satancito/InsaneJava)
 
-### Licencias adicionales
+### Additional licenses
 * Icons made by [Freepik](https://www.freepik.com) from [www.Flaticon.com](https://www.flaticon.com)
