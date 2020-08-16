@@ -1,4 +1,4 @@
-# Insane
+# InsaneDotnet
 Biblioteca Insane para .NET. Tipo .NET Standard 2.1. Compatible con las plataformas especificadas en el github de .NET Foundation [.NET Standard Versions](https://github.com/dotnet/standard/blob/master/docs/versions.md) 
 
 ## Sistemas operativos compatibles
