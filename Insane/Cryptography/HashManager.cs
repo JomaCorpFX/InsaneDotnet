@@ -252,7 +252,6 @@ namespace Insane.Cryptography
                     throw new Exception("Invalid Algorithm");
             }
         }
-
   
         public static string ToHexHmac(String data, String key, HashAlgorithm algorithm, Boolean insertLineBreaks = default(Boolean), Boolean getUrlSafe = default(Boolean))
         {
