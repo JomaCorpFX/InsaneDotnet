@@ -27,58 +27,58 @@ namespace Insane.Cryptography
             }
         }
 
-        public static byte[] EncryptRaw(byte[] PlainBytes, byte[] Key)
+        public static byte[] EncryptRaw(byte[] data, byte[] key)
         {
             AesManaged AesAlgorithm = new AesManaged()
             {
-                Key = GenerateValidKey(Key)
+                Key = GenerateValidKey(key)
             };
             AesAlgorithm.GenerateIV();
-            var Encrypted = AesAlgorithm.CreateEncryptor().TransformFinalBlock(PlainBytes, 0, PlainBytes.Length);
+            var Encrypted = AesAlgorithm.CreateEncryptor().TransformFinalBlock(data, 0, data.Length);
             byte[] ret = new byte[Encrypted.Length + MAX_IV_LENGTH];
             Array.Copy(Encrypted, ret, Encrypted.Length);
             Array.Copy(AesAlgorithm.IV, 0, ret, ret.Length - MAX_IV_LENGTH, MAX_IV_LENGTH);
             return ret;
         }
 
-        public static byte[] DecryptRaw(byte[] CipherBytes, byte[] Key)
+        public static byte[] DecryptRaw(byte[] data, byte[] key)
         {
             AesManaged AesAlgorithm = new AesManaged()
             {
-                Key = GenerateValidKey(Key)
+                Key = GenerateValidKey(key)
             };
             byte[] IV = new byte[MAX_IV_LENGTH];
-            Array.Copy(CipherBytes, CipherBytes.Length - MAX_IV_LENGTH, IV, 0, MAX_IV_LENGTH);
+            Array.Copy(data, data.Length - MAX_IV_LENGTH, IV, 0, MAX_IV_LENGTH);
             AesAlgorithm.IV = IV;
-            byte[] RealBytes = new byte[CipherBytes.Length - MAX_IV_LENGTH];
-            Array.Copy(CipherBytes, RealBytes, CipherBytes.Length - MAX_IV_LENGTH);
+            byte[] RealBytes = new byte[data.Length - MAX_IV_LENGTH];
+            Array.Copy(data, RealBytes, data.Length - MAX_IV_LENGTH);
             return AesAlgorithm.CreateDecryptor().TransformFinalBlock(RealBytes, 0, RealBytes.Length); ;
         }
 
-        public static String EncryptToHex(String Plaintext, String Key)
+        public static String EncryptToHex(String data, String key)
         {
-            int Length = Encoding.UTF8.GetByteCount(Key);
-            byte[] PlainBytes = Encoding.UTF8.GetBytes(Plaintext);
-            return HashManager.ToHex((EncryptRaw(PlainBytes, Encoding.UTF8.GetBytes(Key))));
+            int Length = Encoding.UTF8.GetByteCount(key);
+            byte[] PlainBytes = Encoding.UTF8.GetBytes(data);
+            return HashManager.ToHex((EncryptRaw(PlainBytes, Encoding.UTF8.GetBytes(key))));
         }
 
-        public static String DecryptFromHex(String CipherText, String Key)
+        public static String DecryptFromHex(String data, String key)
         {
-            byte[] CiPherBytes = HashManager.HexToByteArray(CipherText);
-            byte[] Encrypted = DecryptRaw(CiPherBytes, Encoding.UTF8.GetBytes(Key));
+            byte[] CiPherBytes = HashManager.HexToByteArray(data);
+            byte[] Encrypted = DecryptRaw(CiPherBytes, Encoding.UTF8.GetBytes(key));
             return Encoding.UTF8.GetString(Encrypted, 0, Encrypted.Length);
         }
 
-        public static String EncryptToBase64(String Plaintext, String Key, Boolean GetUrlSafe = default(Boolean))
+        public static String EncryptToBase64(String data, String key, Boolean GetUrlSafe = default(Boolean))
         {
-            byte[] PlainBytes = Encoding.UTF8.GetBytes(Plaintext);
-            return HashManager.ToBase64(EncryptRaw(PlainBytes, Encoding.UTF8.GetBytes(Key)), false, GetUrlSafe);
+            byte[] PlainBytes = Encoding.UTF8.GetBytes(data);
+            return HashManager.ToBase64(EncryptRaw(PlainBytes, Encoding.UTF8.GetBytes(key)), false, GetUrlSafe);
         }
 
-        public static String DecryptFromBase64(String CipherText, String Key)
+        public static String DecryptFromBase64(String data, String key)
         {
-            byte[] CiPherBytes = HashManager.Base64ToByteArray(CipherText);
-            byte[] Encrypted = DecryptRaw(CiPherBytes, Encoding.UTF8.GetBytes(Key));
+            byte[] CiPherBytes = HashManager.Base64ToByteArray(data);
+            byte[] Encrypted = DecryptRaw(CiPherBytes, Encoding.UTF8.GetBytes(key));
             return Encoding.UTF8.GetString(Encrypted, 0, Encrypted.Length);
         }
 
