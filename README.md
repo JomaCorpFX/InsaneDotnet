@@ -5,5 +5,7 @@ Certain functionality like Cryptography has equivalent in:
 
 * [InsaneJava](https://github.com/Satancito/InsaneJava)
 
+<hr />
+
 ### Additional licenses
 * Icons made by [Freepik](https://www.freepik.com) from [www.Flaticon.com](https://www.flaticon.com)
