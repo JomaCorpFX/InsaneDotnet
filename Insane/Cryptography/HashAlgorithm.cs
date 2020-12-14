@@ -9,10 +9,10 @@ namespace Insane.Cryptography
 {
     public enum HashAlgorithm
     {
-        MD5,
-        SHA1, 
-        SHA256,
-        SHA384,
-        SHA512
+        Md5,
+        Sha1, 
+        Sha256,
+        Sha384,
+        Sha512
     }
 }

@@ -6,14 +6,14 @@ namespace Insane.Cryptography
 {
     public class AesManager
     {
-        private const int MAX_IV_LENGTH = 16;
-        private const int MAX_KEY_LENGTH = 32;
+        private const int MaxIvLength = 16;
+        private const int MaxKeyLength = 32;
 
         private static byte[] GenerateValidKey(byte[] keyBytes)
         {
-            byte[] ret = new byte[MAX_KEY_LENGTH];
-            byte[] hash = HashManager.ToRawHash(keyBytes, HashAlgorithm.SHA256);
-            Array.Copy(hash, ret, MAX_KEY_LENGTH);
+            byte[] ret = new byte[MaxKeyLength];
+            byte[] hash = HashManager.ToRawHash(keyBytes, HashAlgorithm.Sha512);
+            Array.Copy(hash, ret, MaxKeyLength);
             return ret;
         }
 
@@ -35,9 +35,9 @@ namespace Insane.Cryptography
             };
             AesAlgorithm.GenerateIV();
             var Encrypted = AesAlgorithm.CreateEncryptor().TransformFinalBlock(data, 0, data.Length);
-            byte[] ret = new byte[Encrypted.Length + MAX_IV_LENGTH];
+            byte[] ret = new byte[Encrypted.Length + MaxIvLength];
             Array.Copy(Encrypted, ret, Encrypted.Length);
-            Array.Copy(AesAlgorithm.IV, 0, ret, ret.Length - MAX_IV_LENGTH, MAX_IV_LENGTH);
+            Array.Copy(AesAlgorithm.IV, 0, ret, ret.Length - MaxIvLength, MaxIvLength);
             return ret;
         }
 
@@ -47,39 +47,32 @@ namespace Insane.Cryptography
             {
                 Key = GenerateValidKey(key)
             };
-            byte[] IV = new byte[MAX_IV_LENGTH];
-            Array.Copy(data, data.Length - MAX_IV_LENGTH, IV, 0, MAX_IV_LENGTH);
+            byte[] IV = new byte[MaxIvLength];
+            Array.Copy(data, data.Length - MaxIvLength, IV, 0, MaxIvLength);
             AesAlgorithm.IV = IV;
-            byte[] RealBytes = new byte[data.Length - MAX_IV_LENGTH];
-            Array.Copy(data, RealBytes, data.Length - MAX_IV_LENGTH);
+            byte[] RealBytes = new byte[data.Length - MaxIvLength];
+            Array.Copy(data, RealBytes, data.Length - MaxIvLength);
             return AesAlgorithm.CreateDecryptor().TransformFinalBlock(RealBytes, 0, RealBytes.Length); ;
         }
 
-        public static String EncryptToHex(String data, String key)
+        public static string EncryptToHex(string data, string key)
         {
-            int Length = Encoding.UTF8.GetByteCount(key);
-            byte[] PlainBytes = Encoding.UTF8.GetBytes(data);
-            return HashManager.ToHex((EncryptRaw(PlainBytes, Encoding.UTF8.GetBytes(key))));
+            return HashManager.ToHex((EncryptRaw( HashManager.ToByteArray(data), HashManager.ToByteArray(key))));
         }
 
-        public static String DecryptFromHex(String data, String key)
+        public static string DecryptFromHex(string data, string key)
         {
-            byte[] CiPherBytes = HashManager.HexToByteArray(data);
-            byte[] Encrypted = DecryptRaw(CiPherBytes, Encoding.UTF8.GetBytes(key));
-            return Encoding.UTF8.GetString(Encrypted, 0, Encrypted.Length);
+            return HashManager.ToString( DecryptRaw(HashManager.FromHex(data), HashManager.ToByteArray(key)));
         }
 
-        public static String EncryptToBase64(String data, String key, Boolean GetUrlSafe = default(Boolean))
+        public static string EncryptToBase64(string data, string key)
         {
-            byte[] PlainBytes = Encoding.UTF8.GetBytes(data);
-            return HashManager.ToBase64(EncryptRaw(PlainBytes, Encoding.UTF8.GetBytes(key)), false, GetUrlSafe);
+            return HashManager.ToBase64(EncryptRaw(HashManager.ToByteArray(data), HashManager.ToByteArray(key)));
         }
 
-        public static String DecryptFromBase64(String data, String key)
+        public static string DecryptFromBase64(string data, string key)
         {
-            byte[] CiPherBytes = HashManager.Base64ToByteArray(data);
-            byte[] Encrypted = DecryptRaw(CiPherBytes, Encoding.UTF8.GetBytes(key));
-            return Encoding.UTF8.GetString(Encrypted, 0, Encrypted.Length);
+            return HashManager.ToString( DecryptRaw(HashManager.FromBase64(data), HashManager.ToByteArray(key)));
         }
 
     }
