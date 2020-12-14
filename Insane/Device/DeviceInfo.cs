@@ -20,7 +20,7 @@ namespace Insane.Device
         private static String GetRealDeviceId()
         {
             
-            return HashManager.ToBase64Hash("DeviceID", HashAlgorithm.SHA256, false);
+            return HashManager.ToBase64Hash("DeviceID", HashAlgorithm.Sha256);
         }
 
         private static String _RealDeviceId = GetRealDeviceId();
@@ -37,7 +37,7 @@ namespace Insane.Device
         {
             get
             {
-                return HashManager.ToBase64Hash(RealDeviceId, HashAlgorithm.SHA256, true);
+                return HashManager.ToBase64Hash(RealDeviceId, HashAlgorithm.Sha256);
             }
         }
 
