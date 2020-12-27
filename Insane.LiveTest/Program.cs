@@ -1,5 +1,7 @@
 ﻿using Insane.Cryptography;
+using Scrypt;
 using System;
+using System.Diagnostics;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -7,7 +9,7 @@ namespace Insane.LiveTest
 {
     class Program
     {
-        public static void RsaManagerTest()
+        public static void RsaManagerTests()
         {
             string data = "HelloWorld!!!";
 
@@ -60,18 +62,36 @@ namespace Insane.LiveTest
             Console.WriteLine("Decrypted: " + RsaManager.DecryptFromBase64(encrypted, keyPair.PrivateKey));
 
         }
-        static void Main(string[] args)
-        {
 
-            Console.WriteLine("Hello World!\n\n");
-            RsaManagerTest();
-            string pattern = @"[0-9]{4}";
-            string input = @"4444";
-            Console.WriteLine(Regex.IsMatch(input, pattern, RegexOptions.Singleline, TimeSpan.FromSeconds(1))? "OK": "BAD");
+        static void HashManagerTests()
+        {
             string str = "A";
             str = HashManager.ToBase64(str, 0, false);
             Console.WriteLine(str);
             Console.WriteLine(HashManager.ToString(HashManager.FromBase64(str)));
+        }
+        static void Main(string[] args)
+        {
+            //RsaManagerTests();
+            //HashManagerTests();
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            string data = "mypassword";
+            ScryptResult hash = HashManager.ToBase64Scrypt(data, 32768,8,1, 16, 4);
+            Console.WriteLine(hash.Hash);
+            Console.WriteLine(HashManager.ToBase64Scrypt(data, HashManager.FromBase64( hash.Salt)).Hash, 32768, 8, 1, 1025);
+            sw.Stop();
+            Console.WriteLine("Elapsed seconds: " + sw.ElapsedMilliseconds/1000.0);
+            Console.WriteLine("Elapsed milliseconds: " + sw.ElapsedMilliseconds);
+            ScryptEncoder encoder = new ScryptEncoder();
+
+            string hashedPassword = encoder.Encode("mypassword");
+
+            
+
+            bool areEquals = encoder.Compare("mypassword", hashedPassword);
+            Console.WriteLine(hashedPassword);
+            HashManagerTests();
             Console.ReadLine();
         }
     }
