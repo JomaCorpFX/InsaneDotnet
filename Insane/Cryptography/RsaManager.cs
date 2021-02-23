@@ -1,6 +1,4 @@
-﻿using DevDefined.OAuth.KeyInterop;
-using MonoRailsOAuth.Core.KeyInterop;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -25,56 +23,42 @@ namespace Insane.Cryptography
         private const string PemPublicAndPrivateKeyPattern = "(-----BEGIN PUBLIC KEY-----(\\n|\\r|\\r\\n)([0-9a-zA-Z\\+\\/=]{64}(\\n|\\r|\\r\\n))*([0-9a-zA-Z\\+\\/=]{1,63}(\\n|\\r|\\r\\n))?-----END PUBLIC KEY-----)|(-----BEGIN PRIVATE KEY-----(\\n|\\r|\\r\\n)([0-9a-zA-Z\\+\\/=]{64}(\\n|\\r|\\r\\n))*([0-9a-zA-Z\\+\\/=]{1,63}(\\n|\\r|\\r\\n))?-----END PRIVATE KEY-----)"; //https://regex101.com/r/mGnr7I/1  (-----BEGIN PUBLIC KEY-----(\n|\r|\r\n)([0-9a-zA-Z\+\/=]{64}(\n|\r|\r\n))*([0-9a-zA-Z\+\/=]{1,63}(\n|\r|\r\n))?-----END PUBLIC KEY-----)|(-----BEGIN PRIVATE KEY-----(\n|\r|\r\n)([0-9a-zA-Z\+\/=]{64}(\n|\r|\r\n))*([0-9a-zA-Z\+\/=]{1,63}(\n|\r|\r\n))?-----END PRIVATE KEY-----)
         private const string JsonPublicAndPrivateKeyPattern = "(\\s*\\{(?:\\s*\"Modulus\"\\s*:\\s*\"[a-zA-Z\\d\\+\\/\\\\]+={0,2}\"\\s*(?(3)(?(4)(?(5)(?(6)(?(7)(?(8)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\\s*\"Exponent\"\\s*:\\s*\"[a-zA-Z\\d\\+\\/\\\\]+={0,2}\"\\s*(?(2)(?(4)(?(5)(?(6)(?(7)(?(8)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\\s*\"P\"\\s*:\\s*\"[a-zA-Z\\d\\+\\/\\\\]+={0,2}\"\\s*(?(2)(?(3)(?(5)(?(6)(?(7)(?(8)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\\s*\"Q\"\\s*:\\s*\"[a-zA-Z\\d\\+\\/\\\\]+={0,2}\"\\s*(?(2)(?(3)(?(4)(?(6)(?(7)(?(8)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\\s*\"DP\"\\s*:\\s*\"[a-zA-Z\\d\\+\\/\\\\]+={0,2}\"\\s*(?(2)(?(3)(?(4)(?(5)(?(7)(?(8)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\\s*\"DQ\"\\s*:\\s*\"[a-zA-Z\\d\\+\\/\\\\]+={0,2}\"\\s*(?(2)(?(3)(?(4)(?(5)(?(6)(?(8)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\\s*\"InverseQ\"\\s*:\\s*\"[a-zA-Z\\d\\+\\/\\\\]+={0,2}\"\\s*(?(2)(?(3)(?(4)(?(5)(?(6)(?(7)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\\s*\"D\"\\s*:\\s*\"[a-zA-Z\\d\\+\\/\\\\]+={0,2}\"\\s*(?(2)(?(3)(?(4)(?(5)(?(6)(?(7)(?(8)|,)|,)|,)|,)|,)|,)|,)()){8}\\s*\\}\\s*\\2\\3\\4\\5\\6\\7\\8\\9)|(\\s*\\{(?:\\s*\"Modulus\"\\s*:\\s*\"[a-zA-Z\\d\\+\\/\\\\]+={0,2}\"\\s*(?(12)|,)()|\\s*\"Exponent\"\\s*:\\s*\"[a-zA-Z\\d\\+\\/\\\\]+={0,2}\"\\s*(?(11)|,)()){2}\\s*\\}\\s*\\11\\12)"; //https://regex101.com/r/FNRFqV/2  (\s*\{(?:\s*"Modulus"\s*:\s*"[a-zA-Z\d\+\/\\]+={0,2}"\s*(?(3)(?(4)(?(5)(?(6)(?(7)(?(8)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\s*"Exponent"\s*:\s*"[a-zA-Z\d\+\/\\]+={0,2}"\s*(?(2)(?(4)(?(5)(?(6)(?(7)(?(8)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\s*"P"\s*:\s*"[a-zA-Z\d\+\/\\]+={0,2}"\s*(?(2)(?(3)(?(5)(?(6)(?(7)(?(8)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\s*"Q"\s*:\s*"[a-zA-Z\d\+\/\\]+={0,2}"\s*(?(2)(?(3)(?(4)(?(6)(?(7)(?(8)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\s*"DP"\s*:\s*"[a-zA-Z\d\+\/\\]+={0,2}"\s*(?(2)(?(3)(?(4)(?(5)(?(7)(?(8)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\s*"DQ"\s*:\s*"[a-zA-Z\d\+\/\\]+={0,2}"\s*(?(2)(?(3)(?(4)(?(5)(?(6)(?(8)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\s*"InverseQ"\s*:\s*"[a-zA-Z\d\+\/\\]+={0,2}"\s*(?(2)(?(3)(?(4)(?(5)(?(6)(?(7)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\s*"D"\s*:\s*"[a-zA-Z\d\+\/\\]+={0,2}"\s*(?(2)(?(3)(?(4)(?(5)(?(6)(?(7)(?(8)|,)|,)|,)|,)|,)|,)|,)()){8}\s*\}\s*\2\3\4\5\6\7\8\9)|(\s*\{(?:\s*"Modulus"\s*:\s*"[a-zA-Z\d\+\/\\]+={0,2}"\s*(?(12)|,)()|\s*"Exponent"\s*:\s*"[a-zA-Z\d\+\/\\]+={0,2}"\s*(?(11)|,)()){2}\s*\}\s*\11\12)
         private const string XmlPublicAndPrivateKeyPattern = "(\\s*<\\s*RSAKeyValue\\s*>\\s*(?:\\s*<\\s*Modulus\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*Modulus\\s*>()|\\s*<\\s*Exponent\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*Exponent\\s*>()|\\s*<\\s*P\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*P\\s*>()|\\s*<\\s*Q\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*Q\\s*>()|\\s*<\\s*DP\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*DP\\s*>()|\\s*<\\s*DQ\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*DQ\\s*>()|\\s*<\\s*InverseQ\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*InverseQ\\s*>()|\\s*<\\s*D\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*D\\s*>()){8}\\s*<\\/\\s*RSAKeyValue\\s*>\\s*\\2\\3\\4\\5\\6\\7\\8\\9)|(\\s*<\\s*RSAKeyValue\\s*>\\s*(?:\\s*<\\s*Modulus\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*Modulus\\s*>()|\\s*<\\s*Exponent\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*Exponent\\s*>()){2}\\s*<\\/\\s*RSAKeyValue\\s*>\\s*\\11\\12)"; //https://regex101.com/r/fQV2VN/4  (\s*<\s*RSAKeyValue\s*>\s*(?:\s*<\s*Modulus\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*Modulus\s*>()|\s*<\s*Exponent\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*Exponent\s*>()|\s*<\s*P\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*P\s*>()|\s*<\s*Q\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*Q\s*>()|\s*<\s*DP\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*DP\s*>()|\s*<\s*DQ\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*DQ\s*>()|\s*<\s*InverseQ\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*InverseQ\s*>()|\s*<\s*D\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*D\s*>()){8}\s*<\/\s*RSAKeyValue\s*>\s*\2\3\4\5\6\7\8\9)|(\s*<\s*RSAKeyValue\s*>\s*(?:\s*<\s*Modulus\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*Modulus\s*>()|\s*<\s*Exponent\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*Exponent\s*>()){2}\s*<\/\s*RSAKeyValue\s*>\s*\11\12)
-        public static string SignBase64(string data, HashAlgorithm hashAlgorithm, string privateKey, Boolean keyAsXml, Boolean getUrlSafe = default(Boolean))
+        public static string SignBase64(string data, HashAlgorithm hashAlgorithm, string privateKey)
         {
-            return HashManager.ToBase64(SignRaw(HashManager.ToByteArray(data), hashAlgorithm, privateKey, keyAsXml));
+            return HashManager.ToBase64(SignRaw(HashManager.ToByteArray(data), hashAlgorithm, privateKey));
         }
 
-        public static Boolean VerifyBase64Signature(string data, HashAlgorithm hashAlgorithm, string signature, string publicKey, Boolean keyAsXml)
+        public static Boolean VerifyBase64Signature(string data, HashAlgorithm hashAlgorithm, string signature, string publicKey)
         {
-            return VerifyRaw(HashManager.ToByteArray(data), hashAlgorithm, HashManager.FromBase64(signature), publicKey, keyAsXml);
+            return VerifyRaw(HashManager.ToByteArray(data), hashAlgorithm, HashManager.FromBase64(signature), publicKey);
         }
 
-        public static string SignHex(string data, HashAlgorithm hashAlgorithm, string privateKey, Boolean keyAsXml, Boolean getUrlSafe = default(Boolean))
+        public static string SignHex(string data, HashAlgorithm hashAlgorithm, string privateKey)
         {
-            return HashManager.ToHex(SignRaw(HashManager.ToByteArray(data), hashAlgorithm, privateKey, keyAsXml));
+            return HashManager.ToHex(SignRaw(HashManager.ToByteArray(data), hashAlgorithm, privateKey));
         }
 
-        public static Boolean VerifyHexSignature(string data, HashAlgorithm hashAlgorithm, string signature, string publicKey, Boolean keyAsXml = default(Boolean))
+        public static Boolean VerifyHexSignature(string data, HashAlgorithm hashAlgorithm, string signature, string publicKey)
         {
-            return VerifyRaw(HashManager.ToByteArray(data), hashAlgorithm, HashManager.FromHex(signature), publicKey, keyAsXml);
+            return VerifyRaw(HashManager.ToByteArray(data), hashAlgorithm, HashManager.FromHex(signature), publicKey);
         }
 
-        public static byte[] SignRaw(byte[] data, HashAlgorithm hashAlgorithm, string privateKey, Boolean keyAsXml = default(Boolean))
+        public static byte[] SignRaw(byte[] data, HashAlgorithm hashAlgorithm, string privateKey)
         {
             hashAlgorithm = hashAlgorithm.Equals(HashAlgorithm.Md5) ? HashAlgorithm.Sha1 : hashAlgorithm;
             using (RSACryptoServiceProvider csp = new RSACryptoServiceProvider())
             {
-                if (keyAsXml)
-                {
-                    csp.FromXmlString(privateKey);
-                }
-                else
-                {
-                    csp.ImportParameters(new AsnKeyParser(HashManager.FromBase64(privateKey)).ParseRSAPrivateKey());
-                }
+                ParsePrivateKey(csp, privateKey);
                 return csp.SignData(data, hashAlgorithm.ToString());
             }
         }
 
-        public static Boolean VerifyRaw(byte[] data, HashAlgorithm hashAlgorithm, byte[] signature, string publicKey, Boolean keyAsXml = default(Boolean))
+        public static Boolean VerifyRaw(byte[] data, HashAlgorithm hashAlgorithm, byte[] signature, string publicKey)
         {
             hashAlgorithm = hashAlgorithm.Equals(HashAlgorithm.Md5) ? HashAlgorithm.Sha1 : hashAlgorithm;
             using (RSACryptoServiceProvider csp = new RSACryptoServiceProvider())
             {
-                if (keyAsXml)
-                {
-                    csp.FromXmlString(publicKey);
-                }
-                else
-                {
-                    csp.ImportParameters(new AsnKeyParser(HashManager.FromBase64(publicKey)).ParseRSAPublicKey());
-                }
+                ParsePublicKey(csp, publicKey);
                 return csp.VerifyData(data, hashAlgorithm.ToString(), signature);
             }
         }
@@ -94,19 +78,19 @@ namespace Insane.Cryptography
                         RSAParameters parameters = Csp.ExportParameters(true);
                         var pubKey = new
                         {
-                            Modulus = HashManager.ToBase64(parameters.Modulus),
-                            Exponent = HashManager.ToBase64(parameters.Exponent),
+                            Modulus = HashManager.ToBase64(parameters.Modulus!),
+                            Exponent = HashManager.ToBase64(parameters.Exponent!),
                         };
                         var privKey = new
                         {
-                            Modulus = HashManager.ToBase64(parameters.Modulus),
-                            Exponent = HashManager.ToBase64(parameters.Exponent),
-                            P = HashManager.ToBase64(parameters.P),
-                            Q = HashManager.ToBase64(parameters.Q),
-                            DP = HashManager.ToBase64(parameters.DP),
-                            DQ = HashManager.ToBase64(parameters.DQ),
-                            InverseQ = HashManager.ToBase64(parameters.InverseQ),
-                            D = HashManager.ToBase64(parameters.D)
+                            Modulus = HashManager.ToBase64(parameters.Modulus!),
+                            Exponent = HashManager.ToBase64(parameters.Exponent!),
+                            P = HashManager.ToBase64(parameters.P!),
+                            Q = HashManager.ToBase64(parameters.Q!),
+                            DP = HashManager.ToBase64(parameters.DP!),
+                            DQ = HashManager.ToBase64(parameters.DQ!),
+                            InverseQ = HashManager.ToBase64(parameters.InverseQ!),
+                            D = HashManager.ToBase64(parameters.D!)
                         };
                         var options = new JsonSerializerOptions
                         {
@@ -136,14 +120,6 @@ namespace Insane.Cryptography
         public static string EncryptToBase64(string data, string publicKey)
         {
             return HashManager.ToBase64(EncryptRaw(HashManager.ToByteArray(data), publicKey));
-        }
-
-        public static Task<String> EncryptToBase64Async(string data, string publicKey, Boolean keyAsXml = default(Boolean), Boolean getUrlSafe = default(Boolean))
-        {
-            return Task.Run(() =>
-            {
-                return EncryptToBase64(data, publicKey);
-            });
         }
 
         public static string EncryptToHex(string plainText, string publicKey)
@@ -214,7 +190,7 @@ namespace Insane.Cryptography
                         break;
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 throw new Exception("Unable to parse public key.");
             }
@@ -263,19 +239,19 @@ namespace Insane.Cryptography
             {
                 ParsePublicKey(csp, publicKey);
                 return csp.Encrypt(data, false);
+            }
         }
-    }
 
-    public static byte[] DecryptRaw(byte[] data, string privateKey)
-    {
-        using (RSACryptoServiceProvider csp = new RSACryptoServiceProvider())
+        public static byte[] DecryptRaw(byte[] data, string privateKey)
         {
+            using (RSACryptoServiceProvider csp = new RSACryptoServiceProvider())
+            {
                 ParsePrivateKey(csp, privateKey);
                 return csp.Decrypt(data, false);
+            }
         }
-    }
 
-}
+    }
 }
 
 
