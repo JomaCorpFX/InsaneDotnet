@@ -1,5 +1,5 @@
 ﻿using Insane.Cryptography;
-using Scrypt;
+
 using System;
 using System.Diagnostics;
 using System.Text.Json;
@@ -76,21 +76,11 @@ namespace Insane.LiveTest
             //HashManagerTests();
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            string data = "mypassword";
-            ScryptResult hash = HashManager.ToBase64Scrypt(data, 32768,8,1, 16, 4);
-            Console.WriteLine(hash.Hash);
-            Console.WriteLine(HashManager.ToBase64Scrypt(data, HashManager.FromBase64( hash.Salt)).Hash, 32768, 8, 1, 1025);
-            sw.Stop();
-            Console.WriteLine("Elapsed seconds: " + sw.ElapsedMilliseconds/1000.0);
-            Console.WriteLine("Elapsed milliseconds: " + sw.ElapsedMilliseconds);
-            ScryptEncoder encoder = new ScryptEncoder();
+            string data = "QA";
+            Console.WriteLine(HashManager.ToString(HashManager.FromBase64(data)));
+            data = "QEA";
+            Console.WriteLine(HashManager.ToString(HashManager.FromBase64(data)));
 
-            string hashedPassword = encoder.Encode("mypassword");
-
-            
-
-            bool areEquals = encoder.Compare("mypassword", hashedPassword);
-            Console.WriteLine(hashedPassword);
             HashManagerTests();
             Console.ReadLine();
         }

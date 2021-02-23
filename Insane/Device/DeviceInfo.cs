@@ -105,27 +105,27 @@ namespace Insane.Device
             }
         }
 
-        public static String ApplicationName
+        public static string ApplicationName
         {
             get
             {
-                return Assembly.GetEntryAssembly().GetName().Name;
+                return Assembly.GetEntryAssembly()?.GetName().Name ?? string.Empty;
             }
         }
 
-        public static String ApplicationVersion
+        public static string ApplicationVersion
         {
             get
             {
-                return Assembly.GetEntryAssembly().GetCustomAttributes<AssemblyFileVersionAttribute>().FirstOrDefault()?.Version.ToString()?? String.Empty;
+                return Assembly.GetEntryAssembly()?.GetCustomAttributes<AssemblyFileVersionAttribute>().FirstOrDefault()?.Version.ToString()?? string.Empty;
             }
         }
 
-        public static String ApplicationDescription
+        public static string ApplicationDescription
         {
             get
             {
-                return Assembly.GetEntryAssembly().GetCustomAttributes<AssemblyDescriptionAttribute>().FirstOrDefault()?.Description ?? String.Empty;
+                return Assembly.GetEntryAssembly()?.GetCustomAttributes<AssemblyDescriptionAttribute>().FirstOrDefault()?.Description ?? string.Empty;
             }
         }
 

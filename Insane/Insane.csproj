@@ -1,18 +1,58 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
+    <TargetFramework>net5.0</TargetFramework>
+    <PackageId>InsaneIO.Insane</PackageId>
+    <Title>InsaneIO.Insane</Title>
+    <Company>InsaneIO</Company>
+    <Description>Insane for .NET 5</Description>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Copyright>©Joma Espinoza Bone - Satancito. All rights reserved.</Copyright>
+    <Authors>Joma Espinoza Bone</Authors>
+    <PackageIcon>Icon.png</PackageIcon>
+    <PackageTags>Insane InsaneIO InsaneDotnet</PackageTags>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+
+    <RepositoryUrl>https://github.com/Satancito/InsaneDotnet</RepositoryUrl>
+
+    <RepositoryType>git</RepositoryType>
+
+    <PackageReleaseNotes>.NET 5 compatible.</PackageReleaseNotes>
+
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Konscious.Security.Cryptography.Argon2" Version="1.2.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="System.Text.Json" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CryptSharp.SCrypt\CryptSharp.SCrypt.csproj" />
+    <ProjectReference Include="..\CryptSharp.SCrypt\CryptSharp.SCrypt.csproj">
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <IncludeAssets>CryptSharp.SCrypt</IncludeAssets>
+    </ProjectReference>
+  </ItemGroup>
+
+  <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
+    <ItemGroup>
+      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+    </ItemGroup>
+  </Target>
+
+  <ItemGroup>
+    <None Include="..\Icon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -18,8 +18,8 @@ namespace Insane.Cryptography
             
         }
 
-        public String PublicKey { get; set; } = null!;
-        public String PrivateKey { get; set; } = null!;
+        public string PublicKey { get; set; } = null!;
+        public string PrivateKey { get; set; } = null!;
 
         public static RsaKeyPair Deserialize(string json)
         {

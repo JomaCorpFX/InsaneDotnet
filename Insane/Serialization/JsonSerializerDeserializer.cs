@@ -22,10 +22,10 @@ namespace Insane.Serialization
             {
                 AllowIntegerValues = true
             });
-            return JsonConvert.DeserializeObject<T>(json, settings);
+            return JsonConvert.DeserializeObject<T>(json, settings)!;
         }
 
-        public static string Serialize(Object instance)
+        public static string Serialize(object instance)
         {
             return Serialize(instance, false, false);
         }
