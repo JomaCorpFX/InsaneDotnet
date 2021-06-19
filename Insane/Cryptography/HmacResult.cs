@@ -25,7 +25,7 @@ namespace Insane.Cryptography
         public static HmacResult Deserialize(string json)
         {
             HmacResult? obj = JsonSerializer.Deserialize<HmacResult>(json);
-            return obj == null ? throw new DeserializeException(typeof(HmacResult)) : obj;
+            return obj == null ? throw new DeserializeException(typeof(HmacResult), json) : obj;
         }
 
         public string Serialize()

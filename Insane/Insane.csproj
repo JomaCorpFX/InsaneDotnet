@@ -11,7 +11,7 @@
     <Copyright>©Joma Espinoza Bone - Satancito. All rights reserved.</Copyright>
     <Authors>Joma Espinoza Bone</Authors>
     <PackageIcon>Icon.png</PackageIcon>
-    <PackageTags>Insane InsaneIO InsaneDotnet</PackageTags>
+    <PackageTags>Insane InsaneIO InsaneDotnet libInsane</PackageTags>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
@@ -24,11 +24,20 @@
     <PackageReleaseNotes>.NET 5 compatible.</PackageReleaseNotes>
 
     <Version>1.0.1</Version>
+    <UserSecretsId>d287d953-551a-4086-880a-55dc9e031556</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Konscious.Security.Cryptography.Argon2" Version="1.2.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.6" />
+    <PackageReference Include="Oracle.EntityFrameworkCore" Version="5.21.1" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.0" NoWarn="NU5104" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,12 +46,6 @@
       <IncludeAssets>CryptSharp.SCrypt</IncludeAssets>
     </ProjectReference>
   </ItemGroup>
-
-  <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
-    <ItemGroup>
-      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
-    </ItemGroup>
-  </Target>
 
   <ItemGroup>
     <None Include="..\Icon.png">
@@ -54,5 +57,15 @@
       <PackagePath></PackagePath>
     </None>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="PsScripts\" />
+  </ItemGroup>
+
+  <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
+    <ItemGroup>
+      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+    </ItemGroup>
+  </Target>
 
 </Project>
