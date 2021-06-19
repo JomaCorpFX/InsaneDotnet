@@ -30,7 +30,7 @@ namespace Insane.Cryptography
         public static Argon2Result Deserialize(string json)
         {
             Argon2Result? obj = JsonSerializer.Deserialize<Argon2Result>(json);
-            return obj == null ? throw new DeserializeException(typeof(Argon2Result)) : obj;
+            return obj == null ? throw new DeserializeException(typeof(Argon2Result), json) : obj;
         }
 
         public string Serialize()

@@ -1,0 +1,14 @@
+{
+  "Files": [
+    "X-PowerShellCoreFxs-EditProjectSecrets.ps1",
+    "X-PowerShellCoreFxs-PublishProjectPackage.ps1",
+    "X-PowerShellCoreFxs-PushProjectToRemote.ps1",
+    "X-PowerShellCoreFxs-SetProjectSecrets.ps1"
+  ],
+  "CoreFiles": [
+    "X-PowershellCoreFxs-Update.ps1",
+    "Z-CoreFxs.ps1",
+    "Z-Config.json"
+  ],
+  "Version": "1.0.73"
+}

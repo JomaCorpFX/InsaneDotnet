@@ -29,7 +29,7 @@ namespace Insane.Cryptography
         public static ScryptResult Deserialize(string json)
         {
             ScryptResult? obj = JsonSerializer.Deserialize<ScryptResult>(json);
-            return obj == null ? throw new DeserializeException(typeof(ScryptResult)) : obj;
+            return obj == null ? throw new DeserializeException(typeof(ScryptResult), json) : obj;
         }
 
         public string Serialize()

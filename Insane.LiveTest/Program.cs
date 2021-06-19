@@ -2,6 +2,8 @@
 
 using System;
 using System.Diagnostics;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -9,6 +11,7 @@ namespace Insane.LiveTest
 {
     class Program
     {
+
         public static void RsaManagerTests()
         {
             string data = "HelloWorld!!!";
@@ -22,7 +25,7 @@ namespace Insane.LiveTest
             Console.WriteLine("Decrypted: " + RsaManager.DecryptFromBase64(encrypted, keyPair.PrivateKey));
 
             Console.WriteLine("█ XML");
-            keyPair = RsaManager.CreateKeyPair(4096, RsaKeyEncoding.Xml,false);
+            keyPair = RsaManager.CreateKeyPair(4096, RsaKeyEncoding.Xml, false);
             Console.WriteLine("Public:\n" + keyPair.PublicKey);
             Console.WriteLine("Private:\n" + keyPair.PrivateKey);
             encrypted = RsaManager.EncryptToBase64(data, keyPair.PublicKey);
@@ -70,18 +73,43 @@ namespace Insane.LiveTest
             Console.WriteLine(str);
             Console.WriteLine(HashManager.ToString(HashManager.FromBase64(str)));
         }
+
+
+        public record JwtToken(string Token, string Jti, DateTimeOffset ExpirationTime)
+        {
+            public string x { get; set; } = "";
+
+        }
+
+      
+
         static void Main(string[] args)
         {
-            //RsaManagerTests();
-            //HashManagerTests();
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            string data = "QA";
-            Console.WriteLine(HashManager.ToString(HashManager.FromBase64(data)));
-            data = "QEA";
-            Console.WriteLine(HashManager.ToString(HashManager.FromBase64(data)));
 
-            HashManagerTests();
+            var jwtToken = new JwtToken("Token", "Jti", DateTimeOffset.Now);
+            jwtToken.x = "Joma";
+            var jwtToken2 = jwtToken;
+            jwtToken.x = "JomaCorp";
+
+            Console.WriteLine(jwtToken == jwtToken2);
+            Console.WriteLine(jwtToken.Equals(jwtToken2));
+            Console.WriteLine(jwtToken.GetHashCode());
+            Console.WriteLine(jwtToken2.GetHashCode());
+            jwtToken2.x = "X";
+            Console.WriteLine(jwtToken);
+            Console.WriteLine(jwtToken2);
+
+            var jw3 = jwtToken2 with { Token = "MyToken XXX" };
+            var jw4 = jw3 with { };
+            jw3.x = "Antonio";
+            Console.WriteLine(jw3);
+            Console.WriteLine(jw4);
+
+            var (Token, Jti, ExpirationTime) = jwtToken2;
+
+            sw.Stop();
             Console.ReadLine();
         }
     }
