@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+  
   <PropertyGroup>
     <Nullable>enable</Nullable>
     <TargetFramework>net5.0</TargetFramework>
@@ -24,9 +24,16 @@
     <PackageReleaseNotes>.NET 5 compatible.</PackageReleaseNotes>
 
     <Version>1.0.1</Version>
-    <UserSecretsId>d287d953-551a-4086-880a-55dc9e031556</UserSecretsId>
-  </PropertyGroup>
 
+    
+    <UserSecretsId>dcead069-ffae-4de4-be81-720ec8ff2ac7</UserSecretsId>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <None Remove="AspNet\Identity\Model1\Scripts\AddMigration.ps1" />
+  </ItemGroup>
+
+  
   <ItemGroup>
     <PackageReference Include="Konscious.Security.Cryptography.Argon2" Version="1.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.7" />
@@ -59,7 +66,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="PsScripts\" />
+    <Folder Include="AspNet\Identity\Model1\Scripts\" />
   </ItemGroup>
 
   <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">

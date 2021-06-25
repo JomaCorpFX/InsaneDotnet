@@ -15,6 +15,6 @@ $StartupProject = "../Insane.Exe"
 $Project = "../Insane"
 $contextPrefix = "Identity"
  
-Add-EfCore-Migration -Name $Name -Provider $Provider -Project $Project -StartupProject $StartupProject -Context $contextPrefix
+Add-EfCoreMigration -Name $Name -Provider $Provider -Project $Project -StartupProject $StartupProject -Context $contextPrefix
 Test-LastExitCode
-New-EfCore-MigrationScript -Name $Name -Provider $Provider -Project $Project -StartupProject $StartupProject -Context $contextPrefix
+New-EfCoreMigrationScript -Name $Name -Provider $Provider -Project $Project -StartupProject $StartupProject -Context $contextPrefix

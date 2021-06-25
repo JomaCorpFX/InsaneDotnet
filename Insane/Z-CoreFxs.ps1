@@ -431,8 +431,7 @@ function Stop-WhenIsDbProviderName {
     )
     switch ($Value) {
         { $_ -in [DbProviderSet]::new().GetValidValues() } {
-            Write-Error "Value cannot be a db Provider"
-            exit
+            throw "Value cannot be a db Provider"
         }
         default {
             return;
@@ -440,23 +439,24 @@ function Stop-WhenIsDbProviderName {
     }
 }
 
-function Install-EfCore-Tools {
+function Install-EfCoreTools {
     param (
         
     )
-    Write-Host "█ Try Install Entity Framework Core Tools" -ForegroundColor Magenta
+    Write-Host "██ Try Install Entity Framework Core Tools" -ForegroundColor Blue
     if (Get-Command dotnet-ef -ErrorAction Ignore) {
         "Updating..."
         dotnet tool update --global dotnet-ef
-        dotnet-ef --version
     }
     else {
         "Installing..."
         dotnet tool install --global dotnet-ef
-        dotnet-ef --version
+        
     }
+    dotnet-ef --version
 }
-function Add-EfCore-Migration {
+
+function Add-EfCoreMigration {
     param (
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -479,7 +479,7 @@ function Add-EfCore-Migration {
         [System.String]
         $Context = ""
     )
-    Install-EfCore-Tools
+    Install-EfCoreTools
     Stop-WhenIsDbProviderName -Value $Name
 
     $projectFile = "$(Get-Item -Path "$Project/*.csproj" | Split-Path -Leaf)"
@@ -494,10 +494,10 @@ function Add-EfCore-Migration {
         }
 
         ($ALL_PROVIDER) {
-            Add-EfCore-Migration -Name $Name -Provider $SQLSERVER_PROVIDER -Project $project -StartupProject $startupProject -Context $Context
-            Add-EfCore-Migration -Name $Name -Provider $POSTGRESQL_PROVIDER -Project $project -StartupProject $startupProject -Context $Context
-            Add-EfCore-Migration -Name $Name -Provider $MYSQL_PROVIDER -Project $project -StartupProject $startupProject -Context $Context
-            Add-EfCore-Migration -Name $Name -Provider $ORACLE_PROVIDER -Project $project -StartupProject $startupProject -Context $Context
+            Add-EfCoreMigration -Name $Name -Provider $SQLSERVER_PROVIDER -Project $project -StartupProject $startupProject -Context $Context
+            Add-EfCoreMigration -Name $Name -Provider $POSTGRESQL_PROVIDER -Project $project -StartupProject $startupProject -Context $Context
+            Add-EfCoreMigration -Name $Name -Provider $MYSQL_PROVIDER -Project $project -StartupProject $startupProject -Context $Context
+            Add-EfCoreMigration -Name $Name -Provider $ORACLE_PROVIDER -Project $project -StartupProject $startupProject -Context $Context
             return
         } 
 
@@ -511,7 +511,7 @@ function Add-EfCore-Migration {
     dotnet-ef migrations add "Migration_$($context)_$Name" --startup-project "$StartupProject" --project "$Project" --context "$context" --output-dir "$outputDir" --verbose
 }
 
-function Remove-EfCore-Migration {
+function Remove-EfCoreMigration {
     param ( 
         [Parameter(Mandatory = $false, Position = 0)]
         [ValidateSet([DbProviderSet], IgnoreCase = $false, ErrorMessage = "Value `"{0}`" is invalid. Try one of: `"{1}`"")]
@@ -533,8 +533,7 @@ function Remove-EfCore-Migration {
         [switch]
         $Force
     )
-    Install-EfCore-Tools
-    Stop-WhenIsDbProviderName -Value $Name
+    Install-EfCoreTools
 
     $projectFile = "$(Get-Item -Path "$Project/*.csproj" | Split-Path -Leaf)"
     $startupProjectFile = "$(Get-Item -Path "$StartupProject/*.csproj" | Split-Path -Leaf)" 
@@ -547,10 +546,10 @@ function Remove-EfCore-Migration {
         }
 
         ($ALL_PROVIDER) {
-            Remove-EfCore-Migration -Provider $SQLSERVER_PROVIDER -Project $Project -StartupProject $StartupProject -Context $context
-            Remove-EfCore-Migration -Provider $POSTGRESQL_PROVIDER -Project $Project -StartupProject $StartupProject -Context $Context
-            Remove-EfCore-Migration -Provider $MYSQL_PROVIDER -Project $Project -StartupProject $StartupProject -Context $Context
-            Remove-EfCore-Migration -Provider $ORACLE_PROVIDER -Project $Project -StartupProject $StartupProject -Context $Context
+            Remove-EfCoreMigration -Provider $SQLSERVER_PROVIDER -Project $Project -StartupProject $StartupProject -Context $context
+            Remove-EfCoreMigration -Provider $POSTGRESQL_PROVIDER -Project $Project -StartupProject $StartupProject -Context $Context
+            Remove-EfCoreMigration -Provider $MYSQL_PROVIDER -Project $Project -StartupProject $StartupProject -Context $Context
+            Remove-EfCoreMigration -Provider $ORACLE_PROVIDER -Project $Project -StartupProject $StartupProject -Context $Context
             return
         } 
 
@@ -560,17 +559,12 @@ function Remove-EfCore-Migration {
         }
     }
     Write-Host "█ Remove Migration - $context" -ForegroundColor Magenta
-    if ($Force.IsPresent) {
         #Con el parámetro --force Elimina la migración desde código y desde la base de datos.
-        dotnet ef migrations remove --startup-project "$startupProject" --project "$project" --context "$context" --verbose --force
-    }
-    else {
-        dotnet ef migrations remove --startup-project "$startupProject" --project "$project" --context "$context" --verbose
-    }
+        dotnet ef migrations remove --startup-project "$startupProject" --project "$project" --context "$context" --verbose "$($Force.IsPresent ? "--force" : ([string]::Empty))"
     
 }
 
-function Remove-EfCore-Database {
+function Remove-EfCoreDatabase {
     param (
         [System.String]
         [ValidateSet([DbProviderSet], IgnoreCase = $false, ErrorMessage = "Value `"{0}`" is invalid. Try one of: `"{1}`"")]
@@ -586,8 +580,7 @@ function Remove-EfCore-Database {
         [System.String]
         $Context = ""
     )
-    Install-EfCore-Tools
-    Stop-WhenIsDbProviderName -Value $Name
+    Install-EfCoreTools
 
     $projectFile = "$(Get-Item -Path "$Project/*.csproj" | Split-Path -Leaf)"
     $startupProjectFile = "$(Get-Item -Path "$StartupProject/*.csproj" | Split-Path -Leaf)" 
@@ -600,10 +593,10 @@ function Remove-EfCore-Database {
         }
 
         ($ALL_PROVIDER) {
-            Remove-EfCore-Database -Provider $SQLSERVER_PROVIDER -Project $project -StartupProject $startupProject -Context $Context
-            Remove-EfCore-Database -Provider $POSTGRESQL_PROVIDER -Project $project -StartupProject $startupProject -Context $Context
-            Remove-EfCore-Database -Provider $MYSQL_PROVIDER -Project $project -StartupProject $startupProject -Context $Context
-            Remove-EfCore-Database -Provider $ORACLE_PROVIDER -Project $project -StartupProject $startupProject -Context $Context
+            Remove-EfCoreDatabase -Provider $SQLSERVER_PROVIDER -Project $project -StartupProject $startupProject -Context $Context
+            Remove-EfCoreDatabase -Provider $POSTGRESQL_PROVIDER -Project $project -StartupProject $startupProject -Context $Context
+            Remove-EfCoreDatabase -Provider $MYSQL_PROVIDER -Project $project -StartupProject $startupProject -Context $Context
+            Remove-EfCoreDatabase -Provider $ORACLE_PROVIDER -Project $project -StartupProject $startupProject -Context $Context
             return;
         } 
 
@@ -617,23 +610,24 @@ function Remove-EfCore-Database {
     dotnet-ef database drop --startup-project "$startupProject" --context "$context" --project "$project" --force --verbose
 }
 
-function Update-EfCore-Database {
+function Update-EfCoreDatabase {
     param (
         [System.String]
         [ValidateSet([DbProviderSet], IgnoreCase = $false, ErrorMessage = "Value `"{0}`" is invalid. Try one of: `"{1}`"")]
         $Provider = "All",
+        
         [Parameter(Mandatory = $true)]
         [System.String]
         $Project,
+        
         [Parameter(Mandatory = $true)]
         [System.String]
         $StartupProject,
-        [Parameter(Mandatory = $false)]
+
         [System.String]
         $Context = ""
     )
-    Install-EfCore-Tools
-    Stop-WhenIsDbProviderName -Value $Name
+    Install-EfCoreTools
 
     $projectFile = "$(Get-Item -Path "$Project/*.csproj" | Split-Path -Leaf)"
     $startupProjectFile = "$(Get-Item -Path "$StartupProject/*.csproj" | Split-Path -Leaf)" 
@@ -646,10 +640,10 @@ function Update-EfCore-Database {
         }
 
         ($ALL_PROVIDER) {
-            Update-EfCore-Database -Provider $SQLSERVER_PROVIDER -Project $Project -StartupProject $StartupProject -Context $Context
-            Update-EfCore-Database -Provider $POSTGRESQL_PROVIDER -Project $Project -StartupProject $StartupProject -Context $Context
-            Update-EfCore-Database -Provider $MYSQL_PROVIDER -Project $Project -StartupProject $StartupProject -Context $Context
-            Update-EfCore-Database -Provider $ORACLE_PROVIDER -Project $Project -StartupProject $StartupProject -Context $Context
+            Update-EfCoreDatabase -Provider $SQLSERVER_PROVIDER -Project $Project -StartupProject $StartupProject -Context $Context
+            Update-EfCoreDatabase -Provider $POSTGRESQL_PROVIDER -Project $Project -StartupProject $StartupProject -Context $Context
+            Update-EfCoreDatabase -Provider $MYSQL_PROVIDER -Project $Project -StartupProject $StartupProject -Context $Context
+            Update-EfCoreDatabase -Provider $ORACLE_PROVIDER -Project $Project -StartupProject $StartupProject -Context $Context
             return
         }
 
@@ -662,7 +656,7 @@ function Update-EfCore-Database {
     dotnet-ef database update --startup-project "$StartupProject" --context "$context" --project "$Project" --verbose
 }
 
-function New-EfCore-MigrationScript {
+function New-EfCoreMigrationScript {
     param (
         [System.String]
         $Name = [String]::Empty,
@@ -685,7 +679,7 @@ function New-EfCore-MigrationScript {
         [switch]
         $Idempotent
     )
-    Install-EfCore-Tools
+    Install-EfCoreTools
     Stop-WhenIsDbProviderName -Value $Name
 
     $projectFile = "$(Get-Item -Path "$Project/*.csproj" | Split-Path -Leaf)"
@@ -700,10 +694,10 @@ function New-EfCore-MigrationScript {
         }
 
         ($ALL_PROVIDER) {
-            New-EfCore-MigrationScript -Provider $SQLSERVER_PROVIDER -Project $project -StartupProject $startupProject -Context $Context -Idempotent:$Idempotent
-            New-EfCore-MigrationScript -Provider $POSTGRESQL_PROVIDER -Project $project -StartupProject $startupProject -Context $Context -Idempotent:$Idempotent
-            New-EfCore-MigrationScript -Provider $MYSQL_PROVIDER -Project $project -StartupProject $startupProject -Context $Context -Idempotent:$Idempotent
-            New-EfCore-MigrationScript -Provider $ORACLE_PROVIDER -Project $project -StartupProject $startupProject -Context $Context -Idempotent:$Idempotent
+            New-EfCoreMigrationScript -Provider $SQLSERVER_PROVIDER -Project $project -StartupProject $startupProject -Context $Context -Idempotent:$Idempotent
+            New-EfCoreMigrationScript -Provider $POSTGRESQL_PROVIDER -Project $project -StartupProject $startupProject -Context $Context -Idempotent:$Idempotent
+            New-EfCoreMigrationScript -Provider $MYSQL_PROVIDER -Project $project -StartupProject $startupProject -Context $Context -Idempotent:$Idempotent
+            New-EfCoreMigrationScript -Provider $ORACLE_PROVIDER -Project $project -StartupProject $startupProject -Context $Context -Idempotent:$Idempotent
             return
         }
 
@@ -998,9 +992,33 @@ function Set-PersistentEnvironmentVariable {
 function Get-JsonObject {
     param (
         [String]
-        $Path
+        [ValidateNotNullOrEmpty]
+        [parameter(Mandatory = $true)]
+        $Filename
     )
-    return (Get-Content -Path $Path | ConvertFrom-Json)
+
+    if(Test-Path $Filename -PathType Leaf)
+    {
+        return (Get-Content -Path $Filename | ConvertFrom-Json)
+    }
+    
+    return ConvertFrom-Json $Filename
+}
+
+function Set-JsonObject {
+    param (
+        [object]
+        [parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty]
+        $Value,
+
+        [String]
+        [ValidateNotNullOrEmpty]
+        [parameter(Mandatory = $true)]
+        $Filename
+    )
+    
+    return ( ConvertTo-Json $Value | Set-Content $Filename)
 }
 
 function Get-ItemTree() {
@@ -1097,6 +1115,105 @@ function Set-GitRepository {
         Pop-Location
     }
     
+}
+
+function Set-ProjectSecrets {
+    param (
+        [string]
+        [Parameter()]
+        $Project = "*.csproj"
+    )
+    
+    $projectItem = Get-Item -Path $Project
+    $projectFilename = $projectItem.FullName
+    Write-PrettyKeyValue "██ Setting up secrets for project" "`"$projectFilename`"" -LabelForegroudColor Blue
+    
+    $REFERENCE = "Microsoft.Extensions.Configuration.UserSecrets"
+    Write-InfoBlue "█ Adding package reference to project"
+    Write-PrettyKeyValue "Reference" $REFERENCE -LabelForegroudColor Blue
+    dotnet add $projectFilename package $REFERENCE
+    
+    Write-InfoBlue "█ Initializing secrets"
+    dotnet user-secrets init --project $projectFilename
+    [System.Xml.Linq.XDocument] $xml = [System.Xml.Linq.XDocument]::Parse((Get-Content -Path $projectFilename -Raw))
+    $secretsId = $xml.Root.Elements("PropertyGroup").Elements("UserSecretsId").Value;
+    Write-PrettyKeyValue "UserSecretsId" $secretsId -LabelForegroudColor Blue
+    
+    
+    $SecretsFileName = "$(Get-UserHome)/$($projectItem.Name).$secretsId.Secrets.json"
+    if (!(Test-Path -Path $SecretsFileName -PathType Leaf)) {
+        Write-InfoBlue "█ Creating secrets file"
+        Write-PrettyKeyValue "SecretsFilename" "$SecretsFileName" -LabelForegroudColor Blue
+        New-Item -Path $SecretsFileName -Value "{}"
+    }
+
+    Write-InfoBlue "█ Setting up secrets" 
+    Write-PrettyKeyValue "SecretsFilename" "$SecretsFileName" -LabelForegroudColor Blue
+    dotnet user-secrets clear --project $projectFilename
+    Get-Content "$SecretsFileName" | dotnet user-secrets set --project $projectFilename
+    dotnet user-secrets list --project $projectFilename
+}
+
+function Edit-ProjectSecrets {
+    param (
+        [string]
+        [Parameter()]
+        $Project = "*.csproj",
+
+        [string]
+        [Parameter()]
+        $Editor = "code"
+    )
+    
+    $projectItem = Get-Item -Path $Project
+    $projectFilename = $projectItem.FullName
+    Write-PrettyKeyValue "██ Opening secrets for project" "`"$projectFilename`"" -LabelForegroudColor Blue
+    
+    $REFERENCE = "Microsoft.Extensions.Configuration.UserSecrets"
+    Write-InfoBlue "█ Adding package reference to project"
+    Write-PrettyKeyValue "Reference" $REFERENCE -LabelForegroudColor Blue
+    dotnet add $projectFilename package $REFERENCE
+    
+    Write-InfoBlue "█ Initializing secrets"
+    dotnet user-secrets init --project $projectFilename
+    [System.Xml.Linq.XDocument] $xml = [System.Xml.Linq.XDocument]::Parse((Get-Content -Path $projectFilename -Raw))
+    $secretsId = $xml.Root.Elements("PropertyGroup").Elements("UserSecretsId").Value;
+    Write-PrettyKeyValue "UserSecretsId" $secretsId -LabelForegroudColor Blue
+
+    $SecretsFileName = "$(Get-UserHome)/$($projectItem.Name).$secretsId.Secrets.json"
+    if (!(Test-Path -Path $SecretsFileName -PathType Leaf)) {
+        Write-InfoBlue "█ Creating secrets file"
+        Write-PrettyKeyValue "SecretsFilename" "$SecretsFileName" -LabelForegroudColor Blue
+        New-Item -Path $SecretsFileName -Value "{}"
+    }
+
+    & $editor $SecretsFileName 
+}
+
+function Show-ProjectSecrets {
+    param (
+        [string]
+        [Parameter()]
+        $Project = "*.csproj"
+    )
+    
+    $projectItem = Get-Item -Path $Project
+    $projectFilename = $projectItem.FullName
+    Write-PrettyKeyValue "██ Listing secrets for project" "`"$projectFilename`"" -LabelForegroudColor Blue
+    
+    $REFERENCE = "Microsoft.Extensions.Configuration.UserSecrets"
+    Write-InfoBlue "█ Adding package reference to project"
+    Write-PrettyKeyValue "Reference" $REFERENCE -LabelForegroudColor Blue
+    dotnet add $projectFilename package $REFERENCE
+    
+    Write-InfoBlue "█ Initializing secrets"
+    dotnet user-secrets init --project $projectFilename
+    [System.Xml.Linq.XDocument] $xml = [System.Xml.Linq.XDocument]::Parse((Get-Content -Path $projectFilename -Raw))
+    $secretsId = $xml.Root.Elements("PropertyGroup").Elements("UserSecretsId").Value;
+    Write-PrettyKeyValue "UserSecretsId" $secretsId -LabelForegroudColor Blue
+    
+    Write-InfoBlue "█ Secrets"
+    dotnet user-secrets list --project $projectFilename
 }
 
 Set-GlobalConstant -Name "X_TEMP_DIR_NAME" -Value ".X-TEMP"

@@ -97,7 +97,7 @@ namespace Insane.EntityFramework
 
         private static string GetPrincipalName(this EntityTypeBuilder builder, DatabaseFacade database)
         {
-            string schema = string.IsNullOrWhiteSpace(builder.Metadata.GetSchema()) ? string.Empty : $"_{ builder.Metadata.GetSchema()}";
+            string schema = string.IsNullOrWhiteSpace(builder.Metadata.GetSchema()) ? string.Empty : $"{ builder.Metadata.GetSchema()}";
             switch (database)
             {
                 case DatabaseFacade db when db.IsMySql():
