@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace Insane.AspNet.Identity.Model1.Context
 {
-    public class IdentityDbContextBase : DbContextBase
+    public class Identity1DbContextBase : DbContextBase
     {
-        public IdentityDbContextBase(DbContextOptions options) : base(options)
+        public Identity1DbContextBase(DbContextOptions options, string schema) : base(options, schema)
         {
         }
 
@@ -26,12 +26,12 @@ namespace Insane.AspNet.Identity.Model1.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.ApplyConfiguration(new UserConfiguration(Database));
-            modelBuilder.ApplyConfiguration(new RoleConfiguration(Database));
-            modelBuilder.ApplyConfiguration(new OrganizationConfiguration(Database));
-            modelBuilder.ApplyConfiguration(new PlatformConfiguration(Database));
-            modelBuilder.ApplyConfiguration(new PermissionConfiguration(Database));
-            modelBuilder.ApplyConfiguration(new SessionConfiguration(Database));
+            modelBuilder.ApplyConfiguration(new UserConfiguration(Database, Schema));
+            modelBuilder.ApplyConfiguration(new RoleConfiguration(Database, Schema));
+            modelBuilder.ApplyConfiguration(new OrganizationConfiguration(Database, Schema));
+            modelBuilder.ApplyConfiguration(new PlatformConfiguration(Database, Schema));
+            modelBuilder.ApplyConfiguration(new PermissionConfiguration(Database, Schema));
+            modelBuilder.ApplyConfiguration(new SessionConfiguration(Database, Schema));
         }
     }
 }

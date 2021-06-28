@@ -8,13 +8,13 @@ namespace Insane.AspNet.Identity.Model1.Configuration
 {
     public class PermissionConfiguration : EntityTypeConfigurationBase<Permission>
     {
-        public PermissionConfiguration(DatabaseFacade database) : base(database)
+        public PermissionConfiguration(DatabaseFacade database, string schema) : base(database, schema)
         {
         }
 
         public override void Configure(EntityTypeBuilder<Permission> builder)
         {
-            builder.ToTable(Database, IdentityConstants.DefaultSchema);
+            builder.ToTable(Database, Schema);
 
             builder.Property(e => e.Id).SetIdentity(Database, IdentityConstants.IdentityColumnStartValue);
             builder.Property(e => e.UserId);

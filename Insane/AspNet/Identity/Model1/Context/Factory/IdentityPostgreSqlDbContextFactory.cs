@@ -1,7 +1,9 @@
 ﻿using Insane.EntityFramework;
+using Insane.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,25 +13,34 @@ using System.Threading.Tasks;
 
 namespace Insane.AspNet.Identity.Model1.Context.Factory
 {
-    public class IdentityPostgreSqlDbContextFactory : IDesignTimeDbContextFactory<IdentityPostgreSqlDbContext>
+    public class IdentityPostgreSqlDbContextFactory : IDesignTimeDbContextFactory<Identity1PostgreSqlDbContext>
     {
-        public IdentityPostgreSqlDbContext CreateDbContext(string[] args)
+        public Identity1PostgreSqlDbContext CreateDbContext(string[] args)
         {
             IConfiguration configuration = new ConfigurationBuilder().
                    SetBasePath(Directory.GetCurrentDirectory())
-                   .AddUserSecrets<IdentityDbContextBase>()
+                   .AddUserSecrets<Identity1DbContextBase>()
                    .AddJsonFile(IdentityConstants.DefaultConfigurationFile, false, true)
                    .Build();
-            DbContextSettings dbSetting = new DbContextSettings();
-            configuration.Bind(nameof(DbContextSettings), dbSetting);
+            DbContextSettings dbContextSettings = new DbContextSettings();
+            configuration.Bind($"{IdentityConstants.InsaneIdentityConfigurationName}:{nameof(DbContextSettings)}", dbContextSettings);
+            dbContextSettings.Provider = DbProvider.PostgreSql;
 
-            DbContextOptions options = new DbContextOptionsBuilder<IdentityPostgreSqlDbContext>()
-                .UseNpgsql(dbSetting.PostgreSqlConnectionString)
+            DbContextOptionsBuilder<Identity1PostgreSqlDbContext> builder = new DbContextOptionsBuilder<Identity1PostgreSqlDbContext>()
+                .UseNpgsql(dbContextSettings.PostgreSqlConnectionString)
                 .EnableSensitiveDataLogging(true)
-                .EnableDetailedErrors(true)
-                .Options;
+                .EnableDetailedErrors(true);
 
-            return new IdentityPostgreSqlDbContext(options);
+            Action<NpgsqlDbContextOptionsBuilder> providerBuilder = (options) =>
+            {
+                Console.WriteLine("NpgsqlDbContextOptionsBuilder executed.");
+            };
+
+            builder.UseNpgsql(providerBuilder);
+
+            DbContextFlavors flavors = DbContextFlavors.CreateInstance<Identity1DbContextBase>(new Type[] { typeof(Identity1PostgreSqlDbContext) });
+
+            return (Identity1PostgreSqlDbContext)DbContextExtensions.CreateDbContext<Identity1DbContextBase>(dbContextSettings, flavors, builder);
         }
     }
 }

@@ -7,27 +7,6 @@ using System.Threading.Tasks;
 
 namespace Insane.EntityFramework
 {
-    public class SS : DbContextBase, ISqlServerDbContext
-    {
-        public SS(DbContextOptions options) : base(options)
-        {
-        }
-    }
-
-    public class PG : DbContextBase, IPostgreSqlDbContext
-    {
-        public PG(DbContextOptions options) : base(options)
-        {
-        }
-    }
-
-    public class MY : DbContextBase, IMySqlDbContext
-    {
-        public MY(DbContextOptions options) : base(options)
-        {
-        }
-    }
-
     public class DbContextFlavors
     {
 
@@ -49,24 +28,28 @@ namespace Insane.EntityFramework
         }
 
 
-        public static DbContextFlavors CreateInstance<TCoreDbContext>(Type[] flavorTypes)
-            where TCoreDbContext : DbContextBase
+        public static DbContextFlavors CreateInstance<TContextBase>(Type[] flavorTypes)
+            where TContextBase : DbContextBase
         {
             DbContextFlavors flavors = new DbContextFlavors();
-            foreach(var value in flavorTypes)
+            foreach (var value in flavorTypes)
             {
-                switch(value)
+                if (!value.IsSubclassOf(typeof(TContextBase)))
                 {
-                    case Type type when type.IsAssignableFrom(typeof(ISqlServerDbContext)):
+                    throw new NotImplementedException($"Type {value.Name} is not a subclass of \"{(typeof(TContextBase)).Name}\".");
+                }
+                switch (value)
+                {
+                    case Type type when type.GetInterfaces().Contains(typeof(ISqlServerDbContext)):
                         flavors.SqlServer = value;
                         break;
-                    case Type type when type.IsAssignableFrom(typeof(IPostgreSqlDbContext)):
+                    case Type type when type.GetInterfaces().Contains(typeof(IPostgreSqlDbContext)):
                         flavors.PostgreSql = value;
                         break;
-                    case Type type when type.IsAssignableFrom(typeof(IMySqlDbContext)):
+                    case Type type when type.GetInterfaces().Contains(typeof(IMySqlDbContext)):
                         flavors.MySql = value;
                         break;
-                    case Type type when type.IsAssignableFrom(typeof(IOracleDbContext)):
+                    case Type type when type.GetInterfaces().Contains(typeof(IOracleDbContext)):
                         flavors.Oracle = value;
                         break;
                     default:
@@ -75,7 +58,7 @@ namespace Insane.EntityFramework
             }
             return flavors;
         }
-        
+
         private DbContextFlavors()
         {
 
