@@ -9,15 +9,16 @@ namespace Insane.EntityFramework
 {
     public abstract class DbContextBase : DbContext
     {
+        public readonly string Schema = null!;
 
         private DbContextBase()
         {
             
         }
 
-        public DbContextBase(DbContextOptions options) : base(options)
+        public DbContextBase(DbContextOptions options, string schema) : base(options)
         {
-
+            Schema = schema;
         }
 
        

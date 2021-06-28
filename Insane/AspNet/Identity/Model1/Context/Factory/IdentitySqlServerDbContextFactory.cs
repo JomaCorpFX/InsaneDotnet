@@ -1,6 +1,8 @@
 ﻿using Insane.EntityFramework;
+using Insane.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -11,25 +13,33 @@ using System.Threading.Tasks;
 
 namespace Insane.AspNet.Identity.Model1.Context.Factory
 {
-    class IdentitySqlServerDbContextFactory : IDesignTimeDbContextFactory<IdentitySqlServerDbContext>
+    class IdentitySqlServerDbContextFactory : IDesignTimeDbContextFactory<Identity1SqlServerDbContext>
     {
-        public IdentitySqlServerDbContext CreateDbContext(string[] args)
+        public Identity1SqlServerDbContext CreateDbContext(string[] args)
         {
             IConfiguration configuration = new ConfigurationBuilder().
                    SetBasePath(Directory.GetCurrentDirectory())
-                   .AddUserSecrets<IdentityDbContextBase>()
+                   .AddUserSecrets<Identity1DbContextBase>()
                    .AddJsonFile(IdentityConstants.DefaultConfigurationFile, false, true)
                    .Build();
-            DbContextSettings dbSetting = new DbContextSettings();
-            configuration.Bind(nameof(DbContextSettings), dbSetting);
+            DbContextSettings dbContextSettings = new DbContextSettings();
+            configuration.Bind($"{IdentityConstants.InsaneIdentityConfigurationName}:{nameof(DbContextSettings)}", dbContextSettings);
+            dbContextSettings.Provider = DbProvider.SqlServer;
 
-            DbContextOptions<IdentitySqlServerDbContext> options = new DbContextOptionsBuilder<IdentitySqlServerDbContext>()
-                .UseSqlServer(dbSetting.SqlServerConnectionString)
+            DbContextOptionsBuilder<Identity1SqlServerDbContext> builder = new DbContextOptionsBuilder<Identity1SqlServerDbContext>()
+                .UseSqlServer(dbContextSettings.SqlServerConnectionString)
                 .EnableSensitiveDataLogging(true)
-                .EnableDetailedErrors(true)
-                .Options;
+                .EnableDetailedErrors(true);
 
-            return new IdentitySqlServerDbContext(options);
+            Action<SqlServerDbContextOptionsBuilder> providerBuilder = (options) =>
+            {
+                Console.WriteLine("SqlServerDbContextOptionsBuilder executed.");
+            };
+            builder.UseSqlServer(providerBuilder);
+
+            DbContextFlavors flavors = DbContextFlavors.CreateInstance<Identity1DbContextBase>(new Type[] { typeof(Identity1SqlServerDbContext) });
+
+            return (Identity1SqlServerDbContext)DbContextExtensions.CreateDbContext<Identity1DbContextBase>(dbContextSettings, flavors, builder);
         }
     }
 }

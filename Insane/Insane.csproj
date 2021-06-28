@@ -30,7 +30,9 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <None Remove="AspNet\Identity\Model1\Scripts\AddMigration.ps1" />
+    <Compile Remove="AspNet\Identity\Model1\Scripts\**" />
+    <EmbeddedResource Remove="AspNet\Identity\Model1\Scripts\**" />
+    <None Remove="AspNet\Identity\Model1\Scripts\**" />
   </ItemGroup>
 
   
@@ -63,10 +65,6 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="AspNet\Identity\Model1\Scripts\" />
   </ItemGroup>
 
   <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">

@@ -1,7 +1,15 @@
-﻿param(
+param(
     [ValidateSet("SqlServer", "PostgreSql", "MySql", "Oracle", "All")]
     [System.String]
-    $Provider = "All"
+    $Provider = "All",
+
+    [Parameter(Mandatory=$true)]
+    [ValidateSet("Identity1")]
+    [System.String]
+    $Context,
+
+    [switch]
+    $Force
 )
     
 Import-Module -Name "$(Get-Item "./Z-CoreFxs*.ps1")" -Force -NoClobber
@@ -11,4 +19,4 @@ $StartupProject = "../Insane.Exe"
 $Project = "../Insane"
 $contextPrefix = "Identity"
  
-Update-EfCoreDatabase -Provider $Provider -Project $Project -StartupProject $StartupProject -Context $contextPrefix
+Remove-EfCoreMigration -Provider $Provider -Project $Project -StartupProject $StartupProject -Context $Context -Force:$Force

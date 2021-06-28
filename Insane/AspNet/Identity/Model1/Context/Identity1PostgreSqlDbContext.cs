@@ -9,12 +9,10 @@ using System.Threading.Tasks;
 
 namespace Insane.AspNet.Identity.Model1.Context
 {
-    public class IdentityPostgreSqlDbContext : IdentityDbContextBase, IPostgreSqlDbContext
+    public class Identity1PostgreSqlDbContext : Identity1DbContextBase, IPostgreSqlDbContext
     {
-        public IdentityPostgreSqlDbContext(DbContextOptions options) : base(options)
+        public Identity1PostgreSqlDbContext(DbContextOptions options) : base(options, IdentityConstants.DefaultSchema)
         {
         }
-
-
     }
 }
