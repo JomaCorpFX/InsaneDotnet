@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using Oracle.EntityFrameworkCore.Infrastructure;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using Insane.Cryptography;
+using Insane.EntityFramework.MySql.Metadata.Internal;
 
 namespace Insane.EntityFramework
 {
@@ -178,13 +179,15 @@ namespace Insane.EntityFramework
             return builder.HasIndex(indexExpression).HasDatabaseName(name).IsUnique();
         }
 
-        public static KeyBuilder HasPrimaryKeyIndex<TEntity>(this EntityTypeBuilder<TEntity> builder, DatabaseFacade database, Expression<Func<TEntity, object>> keyExpression) where TEntity : class
+        public static KeyBuilder HasPrimaryKeyIndex<TEntity>(this EntityTypeBuilder<TEntity> builder, DatabaseFacade database, Expression<Func<TEntity, object>> keyExpression)
+            where TEntity : class
         {
             string name = builder.GetConstraintName(database, PrimaryKeyConstraintPrefix, keyExpression);
             return builder.HasKey(keyExpression).HasName(name);
         }
 
-        public static PropertyBuilder<long> SetIdentity(this PropertyBuilder<long> builder, DatabaseFacade database, int startsAt = 1, int incrementsBy = 1)
+        public static PropertyBuilder<long> SetIdentity<TEntity>(this PropertyBuilder<long> builder, EntityTypeBuilder<TEntity> entityBuilder, DatabaseFacade database, int startsAt = 1, int incrementsBy = 1)
+           where TEntity : class
         {
             switch (database)
             {
@@ -195,6 +198,7 @@ namespace Insane.EntityFramework
                     NpgsqlPropertyBuilderExtensions.HasIdentityOptions(builder, startsAt, incrementsBy);
                     break;
                 case DatabaseFacade db when db.IsMySql():
+                    entityBuilder.HasAnnotation(CustomMySqlAnnotationProvider.AutoincrementAnnotation, 10_000L);
                     //MySqlPropertyBuilderExtensions;
                     break;
                 case DatabaseFacade db when db.IsOracle():

@@ -11,7 +11,7 @@ namespace Insane.AspNet.Identity.Model1.Context
 {
     public class Identity1PostgreSqlDbContext : Identity1DbContextBase, IPostgreSqlDbContext
     {
-        public Identity1PostgreSqlDbContext(DbContextOptions options) : base(options, IdentityConstants.DefaultSchema)
+        public Identity1PostgreSqlDbContext(DbContextOptions options) : base(options)
         {
         }
     }

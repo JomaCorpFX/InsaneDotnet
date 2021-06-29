@@ -76,6 +76,9 @@ namespace Insane.Migrations.MySql.Identity1MySqlDbContext_
                         .HasDatabaseName("U_Identity.Organization_Name_24069");
 
                     b.ToTable("Identity.Organization");
+
+                    b
+                        .HasAnnotation("Insane:AutoIncrement", 10000L);
                 });
 
             modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Permission", b =>
@@ -122,6 +125,9 @@ namespace Insane.Migrations.MySql.Identity1MySqlDbContext_
                         .HasDatabaseName("U_Identity.Permission_UserId_RoleId_OrganizationId_81337");
 
                     b.ToTable("Identity.Permission");
+
+                    b
+                        .HasAnnotation("Insane:AutoIncrement", 10000L);
                 });
 
             modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Platform", b =>
@@ -176,6 +182,9 @@ namespace Insane.Migrations.MySql.Identity1MySqlDbContext_
                         .HasDatabaseName("U_Identity.Platform_SecretKey_fee4d");
 
                     b.ToTable("Identity.Platform");
+
+                    b
+                        .HasAnnotation("Insane:AutoIncrement", 10000L);
                 });
 
             modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Role", b =>
@@ -210,6 +219,9 @@ namespace Insane.Migrations.MySql.Identity1MySqlDbContext_
                         .HasDatabaseName("U_Identity.Role_Name_47a7c");
 
                     b.ToTable("Identity.Role");
+
+                    b
+                        .HasAnnotation("Insane:AutoIncrement", 10000L);
                 });
 
             modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Session", b =>
@@ -309,6 +321,9 @@ namespace Insane.Migrations.MySql.Identity1MySqlDbContext_
                         .HasDatabaseName("U_Identity.Session_TokenHash_48896");
 
                     b.ToTable("Identity.Session");
+
+                    b
+                        .HasAnnotation("Insane:AutoIncrement", 10000L);
                 });
 
             modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.User", b =>
@@ -413,6 +428,9 @@ namespace Insane.Migrations.MySql.Identity1MySqlDbContext_
                         .HasDatabaseName("U_Identity.User_Username_123f3");
 
                     b.ToTable("Identity.User");
+
+                    b
+                        .HasAnnotation("Insane:AutoIncrement", 10000L);
                 });
 
             modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Permission", b =>
