@@ -13,20 +13,20 @@ using System.Threading.Tasks;
 
 namespace Insane.AspNet.Identity.Model1.Context.Factory
 {
-    public class IdentityPostgreSqlDbContextFactory : IDesignTimeDbContextFactory<Identity1PostgreSqlDbContext>
+    public class IdentityPostgreSqlDbContextFactory : IDesignTimeDbContextFactory<IdentityPostgreSqlDbContext>
     {
-        public Identity1PostgreSqlDbContext CreateDbContext(string[] args)
+        public IdentityPostgreSqlDbContext CreateDbContext(string[] args)
         {
             IConfiguration configuration = new ConfigurationBuilder().
                    SetBasePath(Directory.GetCurrentDirectory())
-                   .AddUserSecrets<Identity1DbContextBase>()
+                   .AddUserSecrets<IdentityDbContextBase>()
                    .AddJsonFile(IdentityConstants.DefaultConfigurationFile, false, true)
                    .Build();
             DbContextSettings dbContextSettings = new DbContextSettings();
             configuration.Bind($"{IdentityConstants.InsaneIdentityConfigurationName}:{nameof(DbContextSettings)}", dbContextSettings);
             dbContextSettings.Provider = DbProvider.PostgreSql;
 
-            DbContextOptionsBuilder<Identity1PostgreSqlDbContext> builder = new DbContextOptionsBuilder<Identity1PostgreSqlDbContext>()
+            DbContextOptionsBuilder<IdentityPostgreSqlDbContext> builder = new DbContextOptionsBuilder<IdentityPostgreSqlDbContext>()
                 .UseNpgsql(dbContextSettings.PostgreSqlConnectionString)
                 .EnableSensitiveDataLogging(true)
                 .EnableDetailedErrors(true);
@@ -38,9 +38,9 @@ namespace Insane.AspNet.Identity.Model1.Context.Factory
 
             builder.UseNpgsql(providerBuilder);
 
-            DbContextFlavors flavors = DbContextFlavors.CreateInstance<Identity1DbContextBase>(new Type[] { typeof(Identity1PostgreSqlDbContext) });
+            DbContextFlavors flavors = DbContextFlavors.CreateInstance<IdentityDbContextBase>(new Type[] { typeof(IdentityPostgreSqlDbContext) });
 
-            return (Identity1PostgreSqlDbContext)DbContextExtensions.CreateDbContext<Identity1DbContextBase>(dbContextSettings, flavors, builder);
+            return (IdentityPostgreSqlDbContext)DbContextExtensions.CreateDbContext<IdentityDbContextBase>(dbContextSettings, flavors, builder);
         }
     }
 }

@@ -6,11 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace Insane.AspNet.Identity.Model1.Context
 {
-    public class Identity1MySqlDbContext : Identity1DbContextBase, IMySqlDbContext
+    public class IdentityPostgreSqlDbContext : IdentityDbContextBase, IPostgreSqlDbContext
     {
-        public Identity1MySqlDbContext(DbContextOptions options) : base(options)
+        public IdentityPostgreSqlDbContext(DbContextOptions options) : base(options)
         {
         }
     }

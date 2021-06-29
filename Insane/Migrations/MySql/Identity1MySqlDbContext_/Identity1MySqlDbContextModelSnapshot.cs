@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Insane.Migrations.MySql.Identity1MySqlDbContext_
 {
-    [DbContext(typeof(Identity1MySqlDbContext))]
+    [DbContext(typeof(IdentityMySqlDbContext))]
     partial class Identity1MySqlDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

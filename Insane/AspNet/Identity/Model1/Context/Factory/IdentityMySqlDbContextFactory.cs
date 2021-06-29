@@ -17,21 +17,21 @@ using System.Threading.Tasks;
 
 namespace Insane.AspNet.Identity.Model1.Context.Factory
 {
-    public class IdentityMySqlDbContextFactory : IDesignTimeDbContextFactory<Identity1MySqlDbContext>
+    public class IdentityMySqlDbContextFactory : IDesignTimeDbContextFactory<IdentityMySqlDbContext>
     {
         
-        public Identity1MySqlDbContext CreateDbContext(string[] args)
+        public IdentityMySqlDbContext CreateDbContext(string[] args)
         {
             IConfiguration configuration = new ConfigurationBuilder().
                    SetBasePath(Directory.GetCurrentDirectory())
-                   .AddUserSecrets<Identity1DbContextBase>()
+                   .AddUserSecrets<IdentityDbContextBase>()
                    .AddJsonFile(IdentityConstants.DefaultConfigurationFile, false, true)
                    .Build();
             DbContextSettings dbContextSettings = new DbContextSettings();
             configuration.Bind($"{IdentityConstants.InsaneIdentityConfigurationName}:{nameof(DbContextSettings)}", dbContextSettings);
             dbContextSettings.Provider = DbProvider.MySql;
 
-            DbContextOptionsBuilder<Identity1MySqlDbContext> builder = new DbContextOptionsBuilder<Identity1MySqlDbContext>()
+            DbContextOptionsBuilder<IdentityMySqlDbContext> builder = new DbContextOptionsBuilder<IdentityMySqlDbContext>()
                 .EnableSensitiveDataLogging(true)
                 .EnableDetailedErrors(true);
 
@@ -49,10 +49,10 @@ namespace Insane.AspNet.Identity.Model1.Context.Factory
 
             builder.UseMySql(ServerVersion.AutoDetect(dbContextSettings.MySqlConnectionString), providerBuilder);
 
-            DbContextFlavors flavors = DbContextFlavors.CreateInstance<Identity1DbContextBase>(new Type[] { typeof(Identity1MySqlDbContext) });
+            DbContextFlavors flavors = DbContextFlavors.CreateInstance<IdentityDbContextBase>(new Type[] { typeof(IdentityMySqlDbContext) });
 
 
-            return (Identity1MySqlDbContext)DbContextExtensions.CreateDbContext<Identity1DbContextBase>(dbContextSettings, flavors, builder);
+            return (IdentityMySqlDbContext)DbContextExtensions.CreateDbContext<IdentityDbContextBase>(dbContextSettings, flavors, builder);
         }
     }
 }

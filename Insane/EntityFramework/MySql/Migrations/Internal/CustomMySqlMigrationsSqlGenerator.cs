@@ -12,7 +12,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Insane.EntityFramework.MySql.Migrations
+namespace Insane.EntityFramework.MySql.Migrations.Internal
 {
     public class CustomMySqlMigrationsSqlGenerator : MySqlMigrationsSqlGenerator
     {

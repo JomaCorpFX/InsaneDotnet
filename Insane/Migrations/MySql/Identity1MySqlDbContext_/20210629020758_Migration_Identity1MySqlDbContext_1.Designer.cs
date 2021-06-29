@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Insane.Migrations.MySql.Identity1MySqlDbContext_
 {
-    [DbContext(typeof(Identity1MySqlDbContext))]
+    [DbContext(typeof(IdentityMySqlDbContext))]
     [Migration("20210629020758_Migration_Identity1MySqlDbContext_1")]
     partial class Migration_Identity1MySqlDbContext_1
     {
