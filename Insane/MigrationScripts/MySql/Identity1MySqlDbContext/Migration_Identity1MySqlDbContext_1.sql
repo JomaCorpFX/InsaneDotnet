@@ -22,7 +22,7 @@ CREATE TABLE `Identity.Organization` (
     `ActiveUntil` datetime(6) NOT NULL,
     `CreatedAt` datetime(6) NOT NULL,
     CONSTRAINT `P_Identity.Organization_Id_57941` PRIMARY KEY (`Id`)
-) CHARACTER SET utf8mb4;
+) CHARACTER SET utf8mb4 AUTO_INCREMENT 10000;
 
 CREATE TABLE `Identity.Platform` (
     `Id` bigint NOT NULL AUTO_INCREMENT,
@@ -35,7 +35,7 @@ CREATE TABLE `Identity.Platform` (
     `ActiveUntil` datetime(6) NOT NULL,
     `CreatedAt` datetime(6) NOT NULL,
     CONSTRAINT `P_Identity.Platform_Id_536ad` PRIMARY KEY (`Id`)
-) CHARACTER SET utf8mb4;
+) CHARACTER SET utf8mb4 AUTO_INCREMENT 10000;
 
 CREATE TABLE `Identity.Role` (
     `Id` bigint NOT NULL AUTO_INCREMENT,
@@ -45,7 +45,7 @@ CREATE TABLE `Identity.Role` (
     `Enabled` tinyint(1) NOT NULL,
     `ActiveUntil` datetime(6) NOT NULL,
     CONSTRAINT `P_Identity.Role_Id_8e181` PRIMARY KEY (`Id`)
-) CHARACTER SET utf8mb4;
+) CHARACTER SET utf8mb4 AUTO_INCREMENT 10000;
 
 CREATE TABLE `Identity.User` (
     `Id` bigint NOT NULL AUTO_INCREMENT,
@@ -69,7 +69,7 @@ CREATE TABLE `Identity.User` (
     `LoginFailCount` int NOT NULL,
     `LockoutUntil` datetime(6) NOT NULL,
     CONSTRAINT `P_Identity.User_Id_1c7f0` PRIMARY KEY (`Id`)
-) CHARACTER SET utf8mb4;
+) CHARACTER SET utf8mb4 AUTO_INCREMENT 10000;
 
 CREATE TABLE `Identity.Permission` (
     `Id` bigint NOT NULL AUTO_INCREMENT,
@@ -84,7 +84,7 @@ CREATE TABLE `Identity.Permission` (
     CONSTRAINT `F_Identity.Permission_OrganizationId_451b5` FOREIGN KEY (`OrganizationId`) REFERENCES `Identity.Organization` (`Id`) ON DELETE RESTRICT,
     CONSTRAINT `F_Identity.Permission_RoleId_c6b0c` FOREIGN KEY (`RoleId`) REFERENCES `Identity.Role` (`Id`) ON DELETE RESTRICT,
     CONSTRAINT `F_Identity.Permission_UserId_e506e` FOREIGN KEY (`UserId`) REFERENCES `Identity.User` (`Id`) ON DELETE RESTRICT
-) CHARACTER SET utf8mb4;
+) CHARACTER SET utf8mb4 AUTO_INCREMENT 10000;
 
 CREATE TABLE `Identity.Session` (
     `Id` bigint NOT NULL AUTO_INCREMENT,
@@ -107,7 +107,7 @@ CREATE TABLE `Identity.Session` (
     CONSTRAINT `P_Identity.Session_Id_056f1` PRIMARY KEY (`Id`),
     CONSTRAINT `F_Identity.Session_PermissionId_61c86` FOREIGN KEY (`PermissionId`) REFERENCES `Identity.Permission` (`Id`) ON DELETE RESTRICT,
     CONSTRAINT `F_Identity.Session_PlatformId_2b879` FOREIGN KEY (`PlatformId`) REFERENCES `Identity.Platform` (`Id`) ON DELETE RESTRICT
-) CHARACTER SET utf8mb4;
+) CHARACTER SET utf8mb4 AUTO_INCREMENT 10000;
 
 CREATE UNIQUE INDEX `U_Identity.Organization_Name_24069` ON `Identity.Organization` (`Name`);
 
@@ -146,7 +146,7 @@ CREATE UNIQUE INDEX `U_Identity.User_UniqueId_7de64` ON `Identity.User` (`Unique
 CREATE UNIQUE INDEX `U_Identity.User_Username_123f3` ON `Identity.User` (`Username`);
 
 INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
-VALUES ('20210628003620_Migration_Identity1MySqlDbContext_1', '5.0.7');
+VALUES ('20210629020758_Migration_Identity1MySqlDbContext_1', '5.0.7');
 
 COMMIT;
 

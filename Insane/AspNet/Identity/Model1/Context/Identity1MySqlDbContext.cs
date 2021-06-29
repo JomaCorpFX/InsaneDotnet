@@ -10,7 +10,7 @@ namespace Insane.AspNet.Identity.Model1.Context
 {
     public class Identity1MySqlDbContext : Identity1DbContextBase, IMySqlDbContext
     {
-        public Identity1MySqlDbContext(DbContextOptions options) : base(options, IdentityConstants.DefaultSchema)
+        public Identity1MySqlDbContext(DbContextOptions options) : base(options)
         {
         }
     }

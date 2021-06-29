@@ -28,12 +28,7 @@
     
     <UserSecretsId>dcead069-ffae-4de4-be81-720ec8ff2ac7</UserSecretsId>
   </PropertyGroup>
-  
-  <ItemGroup>
-    <Compile Remove="AspNet\Identity\Model1\Scripts\**" />
-    <EmbeddedResource Remove="AspNet\Identity\Model1\Scripts\**" />
-    <None Remove="AspNet\Identity\Model1\Scripts\**" />
-  </ItemGroup>
+ 
 
   
   <ItemGroup>

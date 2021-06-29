@@ -16,7 +16,7 @@ namespace Insane.AspNet.Identity.Model1.Configuration
         {
             builder.ToTable(Database, Schema);
 
-            builder.Property(e => e.Id).SetIdentity(Database, IdentityConstants.IdentityColumnStartValue);
+            builder.Property(e => e.Id).SetIdentity(builder, Database, IdentityConstants.IdentityColumnStartValue);
             builder.Property(e => e.UserId);
             builder.Property(e => e.RoleId);
             builder.Property(e => e.OrganizationId);

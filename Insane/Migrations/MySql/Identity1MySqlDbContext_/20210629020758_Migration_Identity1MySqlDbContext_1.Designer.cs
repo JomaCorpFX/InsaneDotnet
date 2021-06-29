@@ -5,436 +5,434 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Oracle.EntityFrameworkCore.Metadata;
 
-namespace Insane.Migrations.Oracle.Identity1OracleDbContext_
+namespace Insane.Migrations.MySql.Identity1MySqlDbContext_
 {
-    [DbContext(typeof(Identity1OracleDbContext))]
-    [Migration("20210628021601_Migration_Identity1OracleDbContext_1")]
-    partial class Migration_Identity1OracleDbContext_1
+    [DbContext(typeof(Identity1MySqlDbContext))]
+    [Migration("20210629020758_Migration_Identity1MySqlDbContext_1")]
+    partial class Migration_Identity1MySqlDbContext_1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.7")
-                .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("Relational:MaxIdentifierLength", 64)
+                .HasAnnotation("ProductVersion", "5.0.7");
 
             modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Organization", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(19)")
-                        .HasAnnotation("Oracle:IdentityIncrement", 1)
-                        .HasAnnotation("Oracle:IdentitySeed", 10000)
-                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("Active")
-                        .HasColumnType("NUMBER(1)");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTimeOffset>("ActiveUntil")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("AddressLine1")
                         .IsRequired()
                         .HasMaxLength(128)
                         .IsUnicode(true)
-                        .HasColumnType("NVARCHAR2(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("AddresssLine2")
                         .IsRequired()
                         .HasMaxLength(128)
                         .IsUnicode(true)
-                        .HasColumnType("NVARCHAR2(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("NVARCHAR2(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<bool>("Enabled")
-                        .HasColumnType("NUMBER(1)");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("LogoUri")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("NVARCHAR2(256)");
+                        .HasColumnType("varchar(256)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
                         .IsUnicode(true)
-                        .HasColumnType("NVARCHAR2(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasMaxLength(16)
-                        .HasColumnType("NVARCHAR2(16)");
+                        .HasColumnType("varchar(16)");
 
                     b.HasKey("Id")
-                        .HasName("P_Identity_Organization_Id_58009");
+                        .HasName("P_Identity.Organization_Id_57941");
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity_Organization_Name_9b40f");
+                        .HasDatabaseName("U_Identity.Organization_Name_24069");
 
-                    b.ToTable("Organization", "Identity");
+                    b.ToTable("Identity.Organization");
+
+                    b
+                        .HasAnnotation("Insane:AutoIncrement", 10000L);
                 });
 
             modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Permission", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(19)")
-                        .HasAnnotation("Oracle:IdentityIncrement", 1)
-                        .HasAnnotation("Oracle:IdentitySeed", 10000)
-                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("Active")
-                        .HasColumnType("NUMBER(1)");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTimeOffset>("ActiveUntil")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<bool>("Enabled")
-                        .HasColumnType("NUMBER(1)");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<long>("OrganizationId")
-                        .HasColumnType("NUMBER(19)");
+                        .HasColumnType("bigint");
 
                     b.Property<long>("RoleId")
-                        .HasColumnType("NUMBER(19)");
+                        .HasColumnType("bigint");
 
                     b.Property<long>("UserId")
-                        .HasColumnType("NUMBER(19)");
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id")
-                        .HasName("P_Identity_Permission_Id_a73aa");
+                        .HasName("P_Identity.Permission_Id_b4baa");
 
                     b.HasIndex("OrganizationId")
-                        .HasDatabaseName("I_Identity_Permission_OrganizationId_29aa7");
+                        .HasDatabaseName("I_Identity.Permission_OrganizationId_60c77");
 
                     b.HasIndex("RoleId")
-                        .HasDatabaseName("I_Identity_Permission_RoleId_19e55");
+                        .HasDatabaseName("I_Identity.Permission_RoleId_ef15b");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("I_Identity_Permission_UserId_777e2");
+                        .HasDatabaseName("I_Identity.Permission_UserId_8dda4");
 
                     b.HasIndex("UserId", "RoleId", "OrganizationId")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity_Permission_UserId_RoleId_OrganizationId_79cd0");
+                        .HasDatabaseName("U_Identity.Permission_UserId_RoleId_OrganizationId_81337");
 
-                    b.ToTable("Permission", "Identity");
+                    b.ToTable("Identity.Permission");
+
+                    b
+                        .HasAnnotation("Insane:AutoIncrement", 10000L);
                 });
 
             modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Platform", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(19)")
-                        .HasAnnotation("Oracle:IdentityIncrement", 1)
-                        .HasAnnotation("Oracle:IdentitySeed", 10000)
-                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("Active")
-                        .HasColumnType("NUMBER(1)");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTimeOffset>("ActiveUntil")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(512)
                         .IsUnicode(true)
-                        .HasColumnType("NVARCHAR2(512)");
+                        .HasColumnType("varchar(512)");
 
                     b.Property<bool>("Enabled")
-                        .HasColumnType("NUMBER(1)");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("LogoUri")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("NVARCHAR2(256)");
+                        .HasColumnType("varchar(256)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
                         .IsUnicode(true)
-                        .HasColumnType("NVARCHAR2(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("SecretKey")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("NVARCHAR2(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.HasKey("Id")
-                        .HasName("P_Identity_Platform_Id_dffd7");
+                        .HasName("P_Identity.Platform_Id_536ad");
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity_Platform_Name_5a64e");
+                        .HasDatabaseName("U_Identity.Platform_Name_ce1d4");
 
                     b.HasIndex("SecretKey")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity_Platform_SecretKey_0823c");
+                        .HasDatabaseName("U_Identity.Platform_SecretKey_fee4d");
 
-                    b.ToTable("Platform", "Identity");
+                    b.ToTable("Identity.Platform");
+
+                    b
+                        .HasAnnotation("Insane:AutoIncrement", 10000L);
                 });
 
             modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Role", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(19)")
-                        .HasAnnotation("Oracle:IdentityIncrement", 1)
-                        .HasAnnotation("Oracle:IdentitySeed", 10000)
-                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("Active")
-                        .HasColumnType("NUMBER(1)");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTimeOffset>("ActiveUntil")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<bool>("Enabled")
-                        .HasColumnType("NUMBER(1)");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
                         .IsUnicode(true)
-                        .HasColumnType("NVARCHAR2(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.HasKey("Id")
-                        .HasName("P_Identity_Role_Id_0808f");
+                        .HasName("P_Identity.Role_Id_8e181");
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity_Role_Name_d6d1e");
+                        .HasDatabaseName("U_Identity.Role_Name_47a7c");
 
-                    b.ToTable("Role", "Identity");
+                    b.ToTable("Identity.Role");
+
+                    b
+                        .HasAnnotation("Insane:AutoIncrement", 10000L);
                 });
 
             modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Session", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(19)")
-                        .HasAnnotation("Oracle:IdentityIncrement", 1)
-                        .HasAnnotation("Oracle:IdentitySeed", 10000)
-                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
 
                     b.Property<string>("ClientFriendlyName")
                         .IsRequired()
                         .HasMaxLength(128)
                         .IsUnicode(true)
-                        .HasColumnType("NVARCHAR2(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("ClientIP")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("NVARCHAR2(64)");
+                        .HasColumnType("varchar(64)");
 
                     b.Property<decimal>("ClientLatitude")
-                        .HasColumnType("DECIMAL(18, 2)");
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<decimal>("ClientLongitude")
-                        .HasColumnType("DECIMAL(18, 2)");
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<string>("ClientOS")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("NVARCHAR2(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<int>("ClientTimezone")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<string>("ClientUserAgent")
                         .IsRequired()
                         .HasMaxLength(512)
-                        .HasColumnType("NVARCHAR2(512)");
+                        .HasColumnType("varchar(512)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<DateTimeOffset>("ExpiresAt")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Jti")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("NVARCHAR2(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("Key")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("NVARCHAR2(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<long>("PermissionId")
-                        .HasColumnType("NUMBER(19)");
+                        .HasColumnType("bigint");
 
                     b.Property<long>("PlatformId")
-                        .HasColumnType("NUMBER(19)");
+                        .HasColumnType("bigint");
 
                     b.Property<string>("RefreshToken")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("NVARCHAR2(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<bool>("Revoked")
-                        .HasColumnType("NUMBER(1)");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("TokenHash")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("NVARCHAR2(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.HasKey("Id")
-                        .HasName("P_Identity_Session_Id_c4735");
+                        .HasName("P_Identity.Session_Id_056f1");
 
                     b.HasIndex("Jti")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity_Session_Jti_2617e");
+                        .HasDatabaseName("U_Identity.Session_Jti_991ea");
 
                     b.HasIndex("Key")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity_Session_Key_8e0f1");
+                        .HasDatabaseName("U_Identity.Session_Key_e3810");
 
                     b.HasIndex("PermissionId")
-                        .HasDatabaseName("I_Identity_Session_PermissionId_bd69d");
+                        .HasDatabaseName("I_Identity.Session_PermissionId_c39fd");
 
                     b.HasIndex("PlatformId")
-                        .HasDatabaseName("I_Identity_Session_PlatformId_3f620");
+                        .HasDatabaseName("I_Identity.Session_PlatformId_9ffe5");
 
                     b.HasIndex("RefreshToken")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity_Session_RefreshToken_16772");
+                        .HasDatabaseName("U_Identity.Session_RefreshToken_6c5e8");
 
                     b.HasIndex("TokenHash")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity_Session_TokenHash_f7bdb");
+                        .HasDatabaseName("U_Identity.Session_TokenHash_48896");
 
-                    b.ToTable("Session", "Identity");
+                    b.ToTable("Identity.Session");
+
+                    b
+                        .HasAnnotation("Insane:AutoIncrement", 10000L);
                 });
 
             modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.User", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(19)")
-                        .HasAnnotation("Oracle:IdentityIncrement", 1)
-                        .HasAnnotation("Oracle:IdentitySeed", 10000)
-                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("Active")
-                        .HasColumnType("NUMBER(1)");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("NVARCHAR2(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("EmailConfirmationCode")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("longtext");
 
                     b.Property<DateTimeOffset>("EmailConfirmationDeadline")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("NUMBER(1)");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("Enabled")
-                        .HasColumnType("NUMBER(1)");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTimeOffset>("LockoutUntil")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("LoginFailCount")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<string>("Mobile")
                         .IsRequired()
                         .HasMaxLength(16)
-                        .HasColumnType("NVARCHAR2(16)");
+                        .HasColumnType("varchar(16)");
 
                     b.Property<string>("MobileConfirmationCode")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("longtext");
 
                     b.Property<DateTimeOffset>("MobileConfirmationDeadline")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<bool>("MobileConfirmed")
-                        .HasColumnType("NUMBER(1)");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("NormalizedEmail")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("NVARCHAR2(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("NormalizedUsername")
                         .IsRequired()
                         .HasMaxLength(128)
                         .IsUnicode(true)
-                        .HasColumnType("NVARCHAR2(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("NVARCHAR2(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("Phone")
                         .HasMaxLength(16)
-                        .HasColumnType("NVARCHAR2(16)");
+                        .HasColumnType("varchar(16)");
 
                     b.Property<string>("UniqueId")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("NVARCHAR2(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(128)
                         .IsUnicode(true)
-                        .HasColumnType("NVARCHAR2(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.HasKey("Id")
-                        .HasName("P_Identity_User_Id_8d3bc");
+                        .HasName("P_Identity.User_Id_1c7f0");
 
                     b.HasIndex("Email")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity_User_Email_aad66");
+                        .HasDatabaseName("U_Identity.User_Email_9daff");
 
                     b.HasIndex("Mobile")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity_User_Mobile_192e6");
+                        .HasDatabaseName("U_Identity.User_Mobile_75662");
 
                     b.HasIndex("UniqueId")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity_User_UniqueId_86495");
+                        .HasDatabaseName("U_Identity.User_UniqueId_7de64");
 
                     b.HasIndex("Username")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity_User_Username_66295");
+                        .HasDatabaseName("U_Identity.User_Username_123f3");
 
-                    b.ToTable("User", "Identity");
+                    b.ToTable("Identity.User");
+
+                    b
+                        .HasAnnotation("Insane:AutoIncrement", 10000L);
                 });
 
             modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Permission", b =>
@@ -442,21 +440,21 @@ namespace Insane.Migrations.Oracle.Identity1OracleDbContext_
                     b.HasOne("Insane.AspNet.Identity.Model1.Entity.Organization", "Organization")
                         .WithMany("Permissions")
                         .HasForeignKey("OrganizationId")
-                        .HasConstraintName("F_Identity_Permission_OrganizationId_abfa1")
+                        .HasConstraintName("F_Identity.Permission_OrganizationId_451b5")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Insane.AspNet.Identity.Model1.Entity.Role", "Role")
                         .WithMany("Permissions")
                         .HasForeignKey("RoleId")
-                        .HasConstraintName("F_Identity_Permission_RoleId_3b3a4")
+                        .HasConstraintName("F_Identity.Permission_RoleId_c6b0c")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Insane.AspNet.Identity.Model1.Entity.User", "User")
                         .WithMany("Permissions")
                         .HasForeignKey("UserId")
-                        .HasConstraintName("F_Identity_Permission_UserId_7b5da")
+                        .HasConstraintName("F_Identity.Permission_UserId_e506e")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -472,14 +470,14 @@ namespace Insane.Migrations.Oracle.Identity1OracleDbContext_
                     b.HasOne("Insane.AspNet.Identity.Model1.Entity.Permission", "Permission")
                         .WithMany("Sessions")
                         .HasForeignKey("PermissionId")
-                        .HasConstraintName("F_Identity_Session_PermissionId_16c18")
+                        .HasConstraintName("F_Identity.Session_PermissionId_61c86")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Insane.AspNet.Identity.Model1.Entity.Platform", "Platform")
                         .WithMany("Sessions")
                         .HasForeignKey("PlatformId")
-                        .HasConstraintName("F_Identity_Session_PlatformId_45747")
+                        .HasConstraintName("F_Identity.Session_PlatformId_2b879")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 

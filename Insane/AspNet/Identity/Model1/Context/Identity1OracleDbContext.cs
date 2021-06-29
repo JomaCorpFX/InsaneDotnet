@@ -10,7 +10,7 @@ namespace Insane.AspNet.Identity.Model1.Context
 {
     public class Identity1OracleDbContext : Identity1DbContextBase, IOracleDbContext
     {
-        public Identity1OracleDbContext(DbContextOptions options) : base(options, IdentityConstants.DefaultSchema)
+        public Identity1OracleDbContext(DbContextOptions options) : base(options)
         {
         }
     }

@@ -38,6 +38,7 @@ namespace Insane.Migrations.MySql.Identity1MySqlDbContext_
                 {
                     table.PrimaryKey("P_Identity.Organization_Id_57941", x => x.Id);
                 })
+                .Annotation("Insane:AutoIncrement", 10000L)
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
@@ -63,6 +64,7 @@ namespace Insane.Migrations.MySql.Identity1MySqlDbContext_
                 {
                     table.PrimaryKey("P_Identity.Platform_Id_536ad", x => x.Id);
                 })
+                .Annotation("Insane:AutoIncrement", 10000L)
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
@@ -82,6 +84,7 @@ namespace Insane.Migrations.MySql.Identity1MySqlDbContext_
                 {
                     table.PrimaryKey("P_Identity.Role_Id_8e181", x => x.Id);
                 })
+                .Annotation("Insane:AutoIncrement", 10000L)
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
@@ -124,6 +127,7 @@ namespace Insane.Migrations.MySql.Identity1MySqlDbContext_
                 {
                     table.PrimaryKey("P_Identity.User_Id_1c7f0", x => x.Id);
                 })
+                .Annotation("Insane:AutoIncrement", 10000L)
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
@@ -162,6 +166,7 @@ namespace Insane.Migrations.MySql.Identity1MySqlDbContext_
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 })
+                .Annotation("Insane:AutoIncrement", 10000L)
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
@@ -211,6 +216,7 @@ namespace Insane.Migrations.MySql.Identity1MySqlDbContext_
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 })
+                .Annotation("Insane:AutoIncrement", 10000L)
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(

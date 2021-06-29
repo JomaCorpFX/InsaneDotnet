@@ -15,7 +15,7 @@ namespace Insane.AspNet.Identity.Model1.Configuration
         public override void Configure(EntityTypeBuilder<User> builder)
         {
             builder.ToTable(Database, Schema);
-            builder.Property(e => e.Id).SetIdentity(Database, IdentityConstants.IdentityColumnStartValue);
+            builder.Property(e => e.Id).SetIdentity(builder, Database, IdentityConstants.IdentityColumnStartValue);
             builder.Property(e => e.Username).IsUnicode().HasMaxLength(IdentityConstants.NameMaxLength);
             builder.Property(e => e.UniqueId).HasMaxLength(IdentityConstants.IdentifierMaxLength);
             builder.Property(e => e.NormalizedUsername).IsUnicode().HasMaxLength(IdentityConstants.NameMaxLength);

@@ -12,7 +12,8 @@ namespace Insane.AspNet.Identity.Model1.Context
 {
     public class Identity1DbContextBase : DbContextBase
     {
-        public Identity1DbContextBase(DbContextOptions options, string schema) : base(options, schema)
+       
+        public Identity1DbContextBase(DbContextOptions options) : base(options)
         {
         }
 
@@ -26,12 +27,12 @@ namespace Insane.AspNet.Identity.Model1.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.ApplyConfiguration(new UserConfiguration(Database, Schema));
-            modelBuilder.ApplyConfiguration(new RoleConfiguration(Database, Schema));
-            modelBuilder.ApplyConfiguration(new OrganizationConfiguration(Database, Schema));
-            modelBuilder.ApplyConfiguration(new PlatformConfiguration(Database, Schema));
-            modelBuilder.ApplyConfiguration(new PermissionConfiguration(Database, Schema));
-            modelBuilder.ApplyConfiguration(new SessionConfiguration(Database, Schema));
+            modelBuilder.ApplyConfiguration(new UserConfiguration(Database, IdentityConstants.DefaultSchema));
+            modelBuilder.ApplyConfiguration(new RoleConfiguration(Database, IdentityConstants.DefaultSchema));
+            modelBuilder.ApplyConfiguration(new OrganizationConfiguration(Database, IdentityConstants.DefaultSchema));
+            modelBuilder.ApplyConfiguration(new PlatformConfiguration(Database, IdentityConstants.DefaultSchema));
+            modelBuilder.ApplyConfiguration(new PermissionConfiguration(Database, IdentityConstants.DefaultSchema));
+            modelBuilder.ApplyConfiguration(new SessionConfiguration(Database, IdentityConstants.DefaultSchema));
         }
     }
 }

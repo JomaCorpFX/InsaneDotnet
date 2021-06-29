@@ -10,7 +10,7 @@ namespace Insane.AspNet.Identity.Model1.Context
 {
     public class Identity1SqlServerDbContext : Identity1DbContextBase, ISqlServerDbContext
     {
-        public Identity1SqlServerDbContext(DbContextOptions options) : base(options, IdentityConstants.DefaultSchema)
+        public Identity1SqlServerDbContext(DbContextOptions options) : base(options)
         {
         }
     }
