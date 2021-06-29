@@ -13,20 +13,20 @@ using System.Threading.Tasks;
 
 namespace Insane.AspNet.Identity.Model1.Context.Factory
 {
-    class IdentitySqlServerDbContextFactory : IDesignTimeDbContextFactory<Identity1SqlServerDbContext>
+    class IdentitySqlServerDbContextFactory : IDesignTimeDbContextFactory<IdentitySqlServerDbContext>
     {
-        public Identity1SqlServerDbContext CreateDbContext(string[] args)
+        public IdentitySqlServerDbContext CreateDbContext(string[] args)
         {
             IConfiguration configuration = new ConfigurationBuilder().
                    SetBasePath(Directory.GetCurrentDirectory())
-                   .AddUserSecrets<Identity1DbContextBase>()
+                   .AddUserSecrets<IdentityDbContextBase>()
                    .AddJsonFile(IdentityConstants.DefaultConfigurationFile, false, true)
                    .Build();
             DbContextSettings dbContextSettings = new DbContextSettings();
             configuration.Bind($"{IdentityConstants.InsaneIdentityConfigurationName}:{nameof(DbContextSettings)}", dbContextSettings);
             dbContextSettings.Provider = DbProvider.SqlServer;
 
-            DbContextOptionsBuilder<Identity1SqlServerDbContext> builder = new DbContextOptionsBuilder<Identity1SqlServerDbContext>()
+            DbContextOptionsBuilder<IdentitySqlServerDbContext> builder = new DbContextOptionsBuilder<IdentitySqlServerDbContext>()
                 .UseSqlServer(dbContextSettings.SqlServerConnectionString)
                 .EnableSensitiveDataLogging(true)
                 .EnableDetailedErrors(true);
@@ -37,9 +37,9 @@ namespace Insane.AspNet.Identity.Model1.Context.Factory
             };
             builder.UseSqlServer(providerBuilder);
 
-            DbContextFlavors flavors = DbContextFlavors.CreateInstance<Identity1DbContextBase>(new Type[] { typeof(Identity1SqlServerDbContext) });
+            DbContextFlavors flavors = DbContextFlavors.CreateInstance<IdentityDbContextBase>(new Type[] { typeof(IdentitySqlServerDbContext) });
 
-            return (Identity1SqlServerDbContext)DbContextExtensions.CreateDbContext<Identity1DbContextBase>(dbContextSettings, flavors, builder);
+            return (IdentitySqlServerDbContext)DbContextExtensions.CreateDbContext<IdentityDbContextBase>(dbContextSettings, flavors, builder);
         }
     }
 }

@@ -13,20 +13,20 @@ using System.Threading.Tasks;
 
 namespace Insane.AspNet.Identity.Model1.Context.Factory
 {
-    public class IdentityOracleDbContextFactory : IDesignTimeDbContextFactory<Identity1OracleDbContext>
+    public class IdentityOracleDbContextFactory : IDesignTimeDbContextFactory<IdentityOracleDbContext>
     {
-        public Identity1OracleDbContext CreateDbContext(string[] args)
+        public IdentityOracleDbContext CreateDbContext(string[] args)
         {
             IConfiguration configuration = new ConfigurationBuilder().
                    SetBasePath(Directory.GetCurrentDirectory())
-                   .AddUserSecrets<Identity1DbContextBase>()
+                   .AddUserSecrets<IdentityDbContextBase>()
                    .AddJsonFile(IdentityConstants.DefaultConfigurationFile, false, true)
                    .Build();
             DbContextSettings dbContextSettings = new DbContextSettings();
             configuration.Bind($"{IdentityConstants.InsaneIdentityConfigurationName}:{nameof(DbContextSettings)}", dbContextSettings);
             dbContextSettings.Provider = DbProvider.Oracle;
 
-            DbContextOptionsBuilder<Identity1OracleDbContext> builder = new DbContextOptionsBuilder<Identity1OracleDbContext>()
+            DbContextOptionsBuilder<IdentityOracleDbContext> builder = new DbContextOptionsBuilder<IdentityOracleDbContext>()
                 .UseOracle(dbContextSettings.OracleConnectionString)
                 .EnableSensitiveDataLogging(true)
                 .EnableDetailedErrors(true);
@@ -40,9 +40,9 @@ namespace Insane.AspNet.Identity.Model1.Context.Factory
 
 
 
-            DbContextFlavors flavors = DbContextFlavors.CreateInstance<Identity1DbContextBase>(new Type[] { typeof(Identity1OracleDbContext) });
+            DbContextFlavors flavors = DbContextFlavors.CreateInstance<IdentityDbContextBase>(new Type[] { typeof(IdentityOracleDbContext) });
 
-            return (Identity1OracleDbContext)DbContextExtensions.CreateDbContext<Identity1DbContextBase>(dbContextSettings, flavors, builder);
+            return (IdentityOracleDbContext)DbContextExtensions.CreateDbContext<IdentityDbContextBase>(dbContextSettings, flavors, builder);
         }
     }
 }

@@ -10,10 +10,10 @@ using System.Threading.Tasks;
 
 namespace Insane.AspNet.Identity.Model1.Context
 {
-    public class Identity1DbContextBase : DbContextBase
+    public class IdentityDbContextBase : DbContextBase
     {
        
-        public Identity1DbContextBase(DbContextOptions options) : base(options)
+        public IdentityDbContextBase(DbContextOptions options) : base(options)
         {
         }
 

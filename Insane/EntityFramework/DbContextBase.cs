@@ -1,5 +1,5 @@
 ﻿using Insane.EntityFramework.MySql.Metadata.Internal;
-using Insane.EntityFramework.MySql.Migrations;
+using Insane.EntityFramework.MySql.Migrations.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -27,17 +27,9 @@ namespace Insane.EntityFramework
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //base.OnConfiguring(optionsBuilder);
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("Provider name: " + optionsBuilder.Options.ContextType);
-            Console.ResetColor();
-
-
+            base.OnConfiguring(optionsBuilder);
             if (optionsBuilder.Options.ContextType.GetInterfaces().Contains(typeof(IMySqlDbContext)))
             {
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("UseInternalServiceProvider : " + optionsBuilder.Options.ContextType);
-                Console.ResetColor();
                 ServiceProvider serviceProvider = new ServiceCollection()
                 .AddEntityFrameworkMySql()
                 .AddSingleton<IRelationalAnnotationProvider, CustomMySqlAnnotationProvider>()

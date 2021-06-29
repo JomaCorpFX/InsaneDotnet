@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Insane.AspNet.Identity.Model1.Context
 {
-    public class Identity1SqlServerDbContext : Identity1DbContextBase, ISqlServerDbContext
+    public class IdentityOracleDbContext : IdentityDbContextBase, IOracleDbContext
     {
-        public Identity1SqlServerDbContext(DbContextOptions options) : base(options)
+        public IdentityOracleDbContext(DbContextOptions options) : base(options)
         {
         }
     }
