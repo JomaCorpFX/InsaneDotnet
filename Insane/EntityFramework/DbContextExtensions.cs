@@ -198,8 +198,7 @@ namespace Insane.EntityFramework
                     NpgsqlPropertyBuilderExtensions.HasIdentityOptions(builder, startsAt, incrementsBy);
                     break;
                 case DatabaseFacade db when db.IsMySql():
-                    entityBuilder.HasAnnotation(CustomMySqlAnnotationProvider.AutoincrementAnnotation, 10_000L);
-                    //MySqlPropertyBuilderExtensions;
+                    entityBuilder.HasAnnotation(CustomMySqlAnnotationProvider.AutoincrementAnnotation, startsAt);
                     break;
                 case DatabaseFacade db when db.IsOracle():
                     OraclePropertyBuilderExtensions.UseIdentityColumn(builder, startsAt, incrementsBy);
@@ -210,6 +209,7 @@ namespace Insane.EntityFramework
             builder.ValueGeneratedOnAdd();
             return builder;
         }
+
 
         //private static Type ConfigureProvider(IHostEnvironment environment, DbContextOptionsBuilder builder, DbContextSettings settings, DbContextFlavors flavors)
         //{
