@@ -146,7 +146,7 @@ CREATE UNIQUE INDEX `U_Identity.User_UniqueId_7de64` ON `Identity.User` (`Unique
 CREATE UNIQUE INDEX `U_Identity.User_Username_123f3` ON `Identity.User` (`Username`);
 
 INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
-VALUES ('20210629020758_Migration_Identity1MySqlDbContext_1', '5.0.7');
+VALUES ('20210701094347_Migration_IdentityMySqlDbContext_1', '5.0.7');
 
 COMMIT;
 

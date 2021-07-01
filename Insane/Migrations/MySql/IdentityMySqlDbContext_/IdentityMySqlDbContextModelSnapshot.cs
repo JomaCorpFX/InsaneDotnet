@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Insane.Migrations.MySql.Identity1MySqlDbContext_
+namespace Insane.Migrations.MySql.IdentityMySqlDbContext_
 {
     [DbContext(typeof(IdentityMySqlDbContext))]
-    partial class Identity1MySqlDbContextModelSnapshot : ModelSnapshot
+    partial class IdentityMySqlDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -78,7 +78,7 @@ namespace Insane.Migrations.MySql.Identity1MySqlDbContext_
                     b.ToTable("Identity.Organization");
 
                     b
-                        .HasAnnotation("Insane:AutoIncrement", 10000L);
+                        .HasAnnotation("Insane:AutoIncrement", 10000);
                 });
 
             modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Permission", b =>
@@ -127,7 +127,7 @@ namespace Insane.Migrations.MySql.Identity1MySqlDbContext_
                     b.ToTable("Identity.Permission");
 
                     b
-                        .HasAnnotation("Insane:AutoIncrement", 10000L);
+                        .HasAnnotation("Insane:AutoIncrement", 10000);
                 });
 
             modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Platform", b =>
@@ -184,7 +184,7 @@ namespace Insane.Migrations.MySql.Identity1MySqlDbContext_
                     b.ToTable("Identity.Platform");
 
                     b
-                        .HasAnnotation("Insane:AutoIncrement", 10000L);
+                        .HasAnnotation("Insane:AutoIncrement", 10000);
                 });
 
             modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Role", b =>
@@ -221,7 +221,7 @@ namespace Insane.Migrations.MySql.Identity1MySqlDbContext_
                     b.ToTable("Identity.Role");
 
                     b
-                        .HasAnnotation("Insane:AutoIncrement", 10000L);
+                        .HasAnnotation("Insane:AutoIncrement", 10000);
                 });
 
             modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Session", b =>
@@ -323,7 +323,7 @@ namespace Insane.Migrations.MySql.Identity1MySqlDbContext_
                     b.ToTable("Identity.Session");
 
                     b
-                        .HasAnnotation("Insane:AutoIncrement", 10000L);
+                        .HasAnnotation("Insane:AutoIncrement", 10000);
                 });
 
             modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.User", b =>
@@ -430,7 +430,7 @@ namespace Insane.Migrations.MySql.Identity1MySqlDbContext_
                     b.ToTable("Identity.User");
 
                     b
-                        .HasAnnotation("Insane:AutoIncrement", 10000L);
+                        .HasAnnotation("Insane:AutoIncrement", 10000);
                 });
 
             modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Permission", b =>

@@ -2,29 +2,23 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure.Internal;
 using Pomelo.EntityFrameworkCore.MySql.Metadata.Internal;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Insane.EntityFramework.MySql.Metadata.Internal
 {
-    
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "EF1001:Internal EF Core API usage.", Justification = "<Pending>")]
     public class CustomMySqlAnnotationProvider : MySqlAnnotationProvider
     {
         public const string AutoincrementAnnotation = "Insane:AutoIncrement";
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "EF1001:Internal EF Core API usage.", Justification = "<Pending>")]
         public CustomMySqlAnnotationProvider(
             RelationalAnnotationProviderDependencies dependencies,
             IMySqlOptions options)
             : base(dependencies, options)
         {
         }
-
 
         public override IEnumerable<IAnnotation> For(ITable table)
         {
@@ -39,7 +33,6 @@ namespace Insane.EntityFramework.MySql.Metadata.Internal
 
             return annotations;
         }
-
 
     }
 }
