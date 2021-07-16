@@ -1,5 +1,6 @@
 ﻿using Insane.EntityFramework;
 using Insane.Enums;
+using Insane.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -28,7 +29,7 @@ namespace Insane.AspNet.Identity.Model1.Context.Factory
                    .AddJsonFile(IdentityConstants.DefaultConfigurationFile, false, true)
                    .Build();
             DbContextSettings dbContextSettings = new DbContextSettings();
-            configuration.Bind($"{IdentityConstants.InsaneIdentityConfigurationName}:{nameof(DbContextSettings)}", dbContextSettings);
+            configuration.Bind($"{IdentityConstants.InsaneIdentityDbSettingsConfigurationName}", dbContextSettings);
             dbContextSettings.Provider = DbProvider.MySql;
 
             DbContextOptionsBuilder<IdentityMySqlDbContext> builder = new DbContextOptionsBuilder<IdentityMySqlDbContext>()
@@ -49,10 +50,10 @@ namespace Insane.AspNet.Identity.Model1.Context.Factory
 
             builder.UseMySql(ServerVersion.AutoDetect(dbContextSettings.MySqlConnectionString), providerBuilder);
 
-            DbContextFlavors flavors = DbContextFlavors.CreateInstance<IdentityDbContextBase>(new Type[] { typeof(IdentityMySqlDbContext) });
+            DbContextFlavors<IdentityDbContextBase> flavors = DbContextFlavors<IdentityDbContextBase>.CreateInstance(new Type[] { typeof(IdentityMySqlDbContext) });
 
 
-            return (IdentityMySqlDbContext)DbContextExtensions.CreateDbContext<IdentityDbContextBase>(dbContextSettings, flavors, builder);
+            return (IdentityMySqlDbContext)EntityFrameworkExtensions.CreateDbContext<IdentityDbContextBase>(dbContextSettings, flavors, builder);
         }
     }
 }

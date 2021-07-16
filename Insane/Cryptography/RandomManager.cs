@@ -10,7 +10,7 @@ namespace Insane.Cryptography
     /// <summary>
     /// 
     /// </summary>
-    public class RandomManager
+    public static class RandomManager
     {
         /// <summary>
         /// 

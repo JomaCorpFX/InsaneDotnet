@@ -477,9 +477,15 @@ function Add-EfCoreMigration {
 
         [Parameter(Mandatory = $false)]
         [System.String]
-        $Context = ""
+        $Context = "",
+
+        [switch]
+        $InstallEfCoreTools
     )
-    Install-EfCoreTools
+    if($InstallEfCoreTools.IsPresent)
+    {
+        Install-EfCoreTools
+    }
     Stop-WhenIsDbProviderName -Value $Name
 
     $projectFile = "$(Get-Item -Path "$Project/*.csproj" | Split-Path -Leaf)"
@@ -531,9 +537,15 @@ function Remove-EfCoreMigration {
         $Context = "",
 
         [switch]
-        $Force
+        $Force,
+
+        [switch]
+        $InstallEfCoreTools
     )
-    Install-EfCoreTools
+    if($InstallEfCoreTools.IsPresent)
+    {
+        Install-EfCoreTools
+    }
 
     $projectFile = "$(Get-Item -Path "$Project/*.csproj" | Split-Path -Leaf)"
     $startupProjectFile = "$(Get-Item -Path "$StartupProject/*.csproj" | Split-Path -Leaf)" 
@@ -578,9 +590,15 @@ function Remove-EfCoreDatabase {
 
         [Parameter(Mandatory = $false)]
         [System.String]
-        $Context = ""
+        $Context = "",
+
+        [switch]
+        $InstallEfCoreTools
     )
-    Install-EfCoreTools
+    if($InstallEfCoreTools.IsPresent)
+    {
+        Install-EfCoreTools
+    }
 
     $projectFile = "$(Get-Item -Path "$Project/*.csproj" | Split-Path -Leaf)"
     $startupProjectFile = "$(Get-Item -Path "$StartupProject/*.csproj" | Split-Path -Leaf)" 
@@ -625,9 +643,15 @@ function Update-EfCoreDatabase {
         $StartupProject,
 
         [System.String]
-        $Context = ""
+        $Context = "",
+
+        [switch]
+        $InstallEfCoreTools
     )
-    Install-EfCoreTools
+    if($InstallEfCoreTools.IsPresent)
+    {
+        Install-EfCoreTools
+    }
 
     $projectFile = "$(Get-Item -Path "$Project/*.csproj" | Split-Path -Leaf)"
     $startupProjectFile = "$(Get-Item -Path "$StartupProject/*.csproj" | Split-Path -Leaf)" 
@@ -677,9 +701,16 @@ function New-EfCoreMigrationScript {
         $Context = [string]::Empty,
 
         [switch]
-        $Idempotent
+        $Idempotent,
+
+        [switch]
+        $InstallEfCoreTools
     )
-    Install-EfCoreTools
+
+    if($InstallEfCoreTools.IsPresent)
+    {
+        Install-EfCoreTools
+    }
     Stop-WhenIsDbProviderName -Value $Name
 
     $projectFile = "$(Get-Item -Path "$Project/*.csproj" | Split-Path -Leaf)"
@@ -691,13 +722,14 @@ function New-EfCoreMigrationScript {
         {$_ -in @($SQLSERVER_PROVIDER, $POSTGRESQL_PROVIDER, $MYSQL_PROVIDER, $ORACLE_PROVIDER)} { 
             $Context = "$($Context)$($Provider)DbContext"
             $outputFile = "$Project/MigrationScripts/$Provider/$Context/Migration_$($context)_$([string]::IsNullOrWhiteSpace($Name) ? "$([DateTime]::Now.ToString("yyyyMMddHHmmssfff"))" : $Name).sql"
+            break
         }
 
         ($ALL_PROVIDER) {
-            New-EfCoreMigrationScript -Provider $SQLSERVER_PROVIDER -Project $project -StartupProject $startupProject -Context $Context -Idempotent:$Idempotent
-            New-EfCoreMigrationScript -Provider $POSTGRESQL_PROVIDER -Project $project -StartupProject $startupProject -Context $Context -Idempotent:$Idempotent
-            New-EfCoreMigrationScript -Provider $MYSQL_PROVIDER -Project $project -StartupProject $startupProject -Context $Context -Idempotent:$Idempotent
-            New-EfCoreMigrationScript -Provider $ORACLE_PROVIDER -Project $project -StartupProject $startupProject -Context $Context -Idempotent:$Idempotent
+            New-EfCoreMigrationScript -Name $Name -Provider $SQLSERVER_PROVIDER -Project $project -StartupProject $startupProject -Context $Context -Idempotent:$Idempotent
+            New-EfCoreMigrationScript -Name $Name -Provider $POSTGRESQL_PROVIDER -Project $project -StartupProject $startupProject -Context $Context -Idempotent:$Idempotent
+            New-EfCoreMigrationScript -Name $Name -Provider $MYSQL_PROVIDER -Project $project -StartupProject $startupProject -Context $Context -Idempotent:$Idempotent
+            New-EfCoreMigrationScript -Name $Name -Provider $ORACLE_PROVIDER -Project $project -StartupProject $startupProject -Context $Context -Idempotent:$Idempotent
             return
         }
 

@@ -1,4 +1,5 @@
 ﻿using Insane.Exceptions;
+using Insane.Extensions;
 using Insane.Serialization;
 using System;
 using System.Collections.Generic;
@@ -7,16 +8,19 @@ using System.Text.Json;
 
 namespace Insane.Cryptography
 {
-    public class ScryptResult
+    public class ScryptResult:HashResultBase
     {
-        public string Hash { get; set; } = null!;
-        public string Salt { get; set; } = null!;
-        public uint Iterations { get; set; } = 32768;
-        public uint BlockSize { get; set; } = 8;
-        public uint Parallelism { get; set; } = 1;
-        public uint DerivedKeyLength { get; set; } = 64;
+        public string Hash { get; init; } = null!;
+        public string Salt { get; init; } = null!;
+        public uint Iterations { get; init; } = 32768;
+        public uint BlockSize { get; init; } = 8;
+        public uint Parallelism { get; init; } = 1;
+        public uint DerivedKeyLength { get; init; } = 64;
 
-        public ScryptResult(string hash, string salt, uint iterations, uint blockSize, uint parallelism, uint derivedKeyLength)
+        public byte[] RawSalt { get { return Salt.FromBase64(); } }
+        public byte[] RawHash { get { return Hash.FromBase64(); } }
+
+        public ScryptResult(string hash, string salt, uint iterations, uint blockSize, uint parallelism, uint derivedKeyLength, IEncoder encoder):base(encoder)
         {
             Hash = hash;
             Salt = salt;
@@ -26,19 +30,20 @@ namespace Insane.Cryptography
             DerivedKeyLength = derivedKeyLength;
         }
 
-        public static ScryptResult Deserialize(string json)
+        public static ScryptResult? Deserialize(string json, IEncoder encoder)
         {
             ScryptResult? obj = JsonSerializer.Deserialize<ScryptResult>(json);
-            return obj == null ? throw new DeserializeException(typeof(ScryptResult), json) : obj;
+            if (obj is not null)
+            {
+                obj.Encoder = encoder;
+            }
+            return obj;
         }
 
         public string Serialize()
         {
-            return JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = false });
+            return JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = false, IgnoreReadOnlyProperties = true });
         }
-
-        public byte[] RawSalt { get { return HashManager.FromBase64(Salt); } }
-        public byte[] RawHash { get { return HashManager.FromBase64(Hash); } }
 
     }
 }

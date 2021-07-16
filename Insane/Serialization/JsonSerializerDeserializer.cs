@@ -30,7 +30,7 @@ namespace Insane.Serialization
             return Serialize(instance, false, false);
         }
 
-        public static String Serialize(Object instance, Boolean isoFormatDate, Boolean enumAsString)
+        public static string Serialize(object instance, bool isoFormatDate, Boolean enumAsString)
         {
             JsonSerializerSettings settings = new JsonSerializerSettings();
             settings.Converters.Add(new JsonByteArrayConverter());

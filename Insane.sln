@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Insane.LiveTest", "Insane.L
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CryptSharp.SCrypt", "CryptSharp.SCrypt\CryptSharp.SCrypt.csproj", "{5EBD8686-09C1-4809-8C70-25D99FB5DF73}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Insane.Exe", "Insane.Exe\Insane.Exe.csproj", "{C90837F4-4442-4A17-8B7B-8F0A403CEF0A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Insane.Exe", "Insane.Exe\Insane.Exe.csproj", "{C90837F4-4442-4A17-8B7B-8F0A403CEF0A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Insane.WebApiTest", "Insane.WebApiTest\Insane.WebApiTest.csproj", "{584F2940-8066-45EE-8AD4-1774A8A74C84}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{C90837F4-4442-4A17-8B7B-8F0A403CEF0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C90837F4-4442-4A17-8B7B-8F0A403CEF0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C90837F4-4442-4A17-8B7B-8F0A403CEF0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{584F2940-8066-45EE-8AD4-1774A8A74C84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{584F2940-8066-45EE-8AD4-1774A8A74C84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{584F2940-8066-45EE-8AD4-1774A8A74C84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{584F2940-8066-45EE-8AD4-1774A8A74C84}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

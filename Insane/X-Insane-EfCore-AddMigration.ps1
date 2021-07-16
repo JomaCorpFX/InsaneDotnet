@@ -20,7 +20,9 @@ $ErrorActionPreference = "Stop"
     
 $StartupProject = "../Insane.Exe"
 $Project = "../Insane"
- 
+
+Install-EfCoreTools
+Test-LastExitCode
 Add-EfCoreMigration -Name $Name -Provider $Provider -Project $Project -StartupProject $StartupProject -Context $Context
 Test-LastExitCode
-New-EfCoreMigrationScript -Name $Name -Provider $Provider -Project $Project -StartupProject $StartupProject -Context $Context
+New-EfCoreMigrationScript -Name $Name -Provider $Provider -Project $Project -StartupProject $StartupProject -Context $Context -Idempotent

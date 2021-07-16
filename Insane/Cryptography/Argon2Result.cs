@@ -1,4 +1,5 @@
 ﻿using Insane.Exceptions;
+using Insane.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -6,17 +7,18 @@ using System.Text.Json;
 
 namespace Insane.Cryptography
 {
-    public class Argon2Result
+    public class Argon2Result: HashResultBase
     {
-        public string Hash { get; set; } = null!;
-        public string Salt { get; set; } = null!;
-        public Argon2Variant Variant { get; set; }
-        public uint Iterations { get; set; }
-        public uint MemorySizeKiB { get; set; } 
-        public uint Parallelism { get; set; }
-        public uint DerivedKeyLength { get; set; }
+        public string Hash { get; init; } = null!;
+        public string Salt { get; init; } = null!;
+        public Argon2Variant Variant { get; init; }
+        public uint Iterations { get; init; }
+        public uint MemorySizeKiB { get; init; } 
+        public uint Parallelism { get; init; }
+        public uint DerivedKeyLength { get; init; }
 
-        public Argon2Result(string hash, string salt, Argon2Variant variant, uint iterations, uint memorySizeKiB, uint parallelism, uint derivedKeyLength)
+
+        public Argon2Result(string hash, string salt, Argon2Variant variant, uint iterations, uint memorySizeKiB, uint parallelism, uint derivedKeyLength, IEncoder encoder):base(encoder)
         {
             Hash = hash;
             Salt = salt;
@@ -26,19 +28,23 @@ namespace Insane.Cryptography
             Parallelism = parallelism;
             DerivedKeyLength = derivedKeyLength;
         }
+        public byte[] RawSalt { get { return Salt.FromBase64(); } }
+        public byte[] RawHash { get { return Hash.FromBase64(); } }
 
-        public static Argon2Result Deserialize(string json)
+        public static Argon2Result? Deserialize(string json, IEncoder encoder)
         {
             Argon2Result? obj = JsonSerializer.Deserialize<Argon2Result>(json);
-            return obj == null ? throw new DeserializeException(typeof(Argon2Result), json) : obj;
+            if (obj is not null)
+            {
+                obj.Encoder = encoder;
+            }
+            return obj;
         }
 
         public string Serialize()
         {
-            return JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = false });
+            return JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = false, IgnoreReadOnlyProperties = true });
         }
 
-        public byte[] RawSalt { get { return HashManager.FromBase64(Salt); } }
-        public byte[] RawHash { get { return HashManager.FromBase64(Hash); } }
     }
 }

@@ -14,6 +14,12 @@ namespace Insane.EntityFramework
             Schema = schema;
         }
 
+        public EntityTypeConfigurationBase(DatabaseFacade database)
+        {
+            Database = database;
+            Schema = null!;
+        }
+
         public abstract void Configure(EntityTypeBuilder<TEntity> builder);
     }
 }

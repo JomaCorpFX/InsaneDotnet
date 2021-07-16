@@ -11,26 +11,29 @@ namespace Insane.Cryptography
 {
     public class RsaKeyPair
     {
+        public string PublicKey { get; init; } = null!;
+        public string PrivateKey { get; init; } = null!;
+
+        private RsaKeyPair()
+        {
+        }
+
         public RsaKeyPair(string publicKey, string privateKey)
         {
             PublicKey = publicKey;
             PrivateKey = privateKey;
-            
         }
 
-        public string PublicKey { get; set; } = null!;
-        public string PrivateKey { get; set; } = null!;
 
-        public static RsaKeyPair Deserialize(string json)
+        public static RsaKeyPair? Deserialize(string json)
         {
-            RsaKeyPair? obj = JsonSerializer.Deserialize<RsaKeyPair>(json);
-            return obj == null? throw new DeserializeException(typeof(RsaKeyPair)) : obj;
+            return JsonSerializer.Deserialize<RsaKeyPair>(json);
         }
 
         public string Serialize()
         {
-            return JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = false});
+            return JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = false, IgnoreReadOnlyProperties = true });
         }
-       
+
     }
 }

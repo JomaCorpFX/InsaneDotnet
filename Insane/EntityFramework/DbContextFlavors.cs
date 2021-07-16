@@ -7,16 +7,17 @@ using System.Threading.Tasks;
 
 namespace Insane.EntityFramework
 {
-    public class DbContextFlavors
+    public class DbContextFlavors<TContextBase>
+        where TContextBase: CoreDbContextBase
     {
 
-        public static DbContextFlavors CreateInstance<TSqlServerDbContext, TPosgreSqlDbContext, TMySqlDbContext, TOracleDbContext>()
-        where TSqlServerDbContext : DbContextBase, ISqlServerDbContext
-        where TPosgreSqlDbContext : DbContextBase, IPostgreSqlDbContext
-        where TMySqlDbContext : DbContextBase, IMySqlDbContext
-        where TOracleDbContext : DbContextBase, IOracleDbContext
+        public static DbContextFlavors<TContextBase> CreateInstance<TSqlServerDbContext, TPosgreSqlDbContext, TMySqlDbContext, TOracleDbContext>()
+        where TSqlServerDbContext : TContextBase, ISqlServerDbContext
+        where TPosgreSqlDbContext : TContextBase, IPostgreSqlDbContext
+        where TMySqlDbContext : TContextBase, IMySqlDbContext
+        where TOracleDbContext : TContextBase, IOracleDbContext
         {
-            DbContextFlavors flavors = new DbContextFlavors()
+            DbContextFlavors<TContextBase> flavors = new DbContextFlavors<TContextBase>()
             {
                 SqlServer = typeof(TSqlServerDbContext),
                 PostgreSql = typeof(TPosgreSqlDbContext),
@@ -28,10 +29,9 @@ namespace Insane.EntityFramework
         }
 
 
-        public static DbContextFlavors CreateInstance<TContextBase>(Type[] flavorTypes)
-            where TContextBase : DbContextBase
+        public static DbContextFlavors<TContextBase> CreateInstance(Type[] flavorTypes)
         {
-            DbContextFlavors flavors = new DbContextFlavors();
+            DbContextFlavors<TContextBase> flavors = new DbContextFlavors<TContextBase>();
             foreach (var value in flavorTypes)
             {
                 if (!value.IsSubclassOf(typeof(TContextBase)))
