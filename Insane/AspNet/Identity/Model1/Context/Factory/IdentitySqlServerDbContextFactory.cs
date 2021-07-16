@@ -1,5 +1,6 @@
 ﻿using Insane.EntityFramework;
 using Insane.Enums;
+using Insane.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -23,7 +24,7 @@ namespace Insane.AspNet.Identity.Model1.Context.Factory
                    .AddJsonFile(IdentityConstants.DefaultConfigurationFile, false, true)
                    .Build();
             DbContextSettings dbContextSettings = new DbContextSettings();
-            configuration.Bind($"{IdentityConstants.InsaneIdentityConfigurationName}:{nameof(DbContextSettings)}", dbContextSettings);
+            configuration.Bind($"{IdentityConstants.InsaneIdentityDbSettingsConfigurationName}", dbContextSettings);
             dbContextSettings.Provider = DbProvider.SqlServer;
 
             DbContextOptionsBuilder<IdentitySqlServerDbContext> builder = new DbContextOptionsBuilder<IdentitySqlServerDbContext>()
@@ -35,11 +36,12 @@ namespace Insane.AspNet.Identity.Model1.Context.Factory
             {
                 Console.WriteLine("SqlServerDbContextOptionsBuilder executed.");
             };
+
             builder.UseSqlServer(providerBuilder);
 
-            DbContextFlavors flavors = DbContextFlavors.CreateInstance<IdentityDbContextBase>(new Type[] { typeof(IdentitySqlServerDbContext) });
+            DbContextFlavors<IdentityDbContextBase> flavors = DbContextFlavors<IdentityDbContextBase>.CreateInstance(new Type[] { typeof(IdentitySqlServerDbContext) });
 
-            return (IdentitySqlServerDbContext)DbContextExtensions.CreateDbContext<IdentityDbContextBase>(dbContextSettings, flavors, builder);
+            return (IdentitySqlServerDbContext)EntityFrameworkExtensions.CreateDbContext<IdentityDbContextBase>(dbContextSettings, flavors, builder);
         }
     }
 }

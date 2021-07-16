@@ -5,29 +5,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Insane.AspNet.Identity.Model1.Context
 {
-    public class IdentityDbContextBase : DbContextBase
+    public class IdentityDbContextBase : CoreDbContextBase
     {
-       
+
         public IdentityDbContextBase(DbContextOptions options) : base(options)
         {
         }
 
-        public DbSet<Organization> Organizations { get; set; } = null!;
-        public DbSet<Permission> Permissions { get; set; } = null!;
-        public DbSet<Platform> Platforms { get; set; } = null!;
-        public DbSet<Role> Roles { get; set; } = null!;
-        public DbSet<Session> Sessions { get; set; } = null!;
-        public DbSet<User> Users { get; set; } = null!;
+        public DbSet<IdentityOrganization> Organizations { get; set; } = null!;
+        public DbSet<IdentityPermission> Permissions { get; set; } = null!;
+        public DbSet<IdentityPlatform> Platforms { get; set; } = null!;
+        public DbSet<IdentityRole> Roles { get; set; } = null!;
+        public DbSet<IdentitySession> Sessions { get; set; } = null!;
+        public DbSet<IdentityUser> Users { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.ApplyConfiguration(new UserConfiguration(Database, IdentityConstants.DefaultSchema));
-            modelBuilder.ApplyConfiguration(new RoleConfiguration(Database, IdentityConstants.DefaultSchema));
-            modelBuilder.ApplyConfiguration(new OrganizationConfiguration(Database, IdentityConstants.DefaultSchema));
-            modelBuilder.ApplyConfiguration(new PlatformConfiguration(Database, IdentityConstants.DefaultSchema));
-            modelBuilder.ApplyConfiguration(new PermissionConfiguration(Database, IdentityConstants.DefaultSchema));
-            modelBuilder.ApplyConfiguration(new SessionConfiguration(Database, IdentityConstants.DefaultSchema));
+            modelBuilder.ApplyConfiguration(new IdentityUserConfiguration(Database));
+            modelBuilder.ApplyConfiguration(new IdentityRoleConfiguration(Database));
+            modelBuilder.ApplyConfiguration(new IdentityOrganizationConfiguration(Database));
+            modelBuilder.ApplyConfiguration(new IdentityPlatformConfiguration(Database));
+            modelBuilder.ApplyConfiguration(new IdentityPermissionConfiguration(Database));
+            modelBuilder.ApplyConfiguration(new IdentitySessionConfiguration(Database));
         }
     }
 }

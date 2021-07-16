@@ -14,10 +14,11 @@ namespace Insane.Migrations.MySql.IdentityMySqlDbContext_
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("Insane")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64)
                 .HasAnnotation("ProductVersion", "5.0.7");
 
-            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Organization", b =>
+            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.IdentityOrganization", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -69,19 +70,19 @@ namespace Insane.Migrations.MySql.IdentityMySqlDbContext_
                         .HasColumnType("varchar(16)");
 
                     b.HasKey("Id")
-                        .HasName("P_Identity.Organization_Id_57941");
+                        .HasName("P_IdentityOrganization_Id_dbb7e");
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity.Organization_Name_24069");
+                        .HasDatabaseName("U_IdentityOrganization_Name_f13bc");
 
-                    b.ToTable("Identity.Organization");
+                    b.ToTable("IdentityOrganization", "Insane");
 
                     b
                         .HasAnnotation("Insane:AutoIncrement", 10000);
                 });
 
-            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Permission", b =>
+            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.IdentityPermission", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -109,28 +110,28 @@ namespace Insane.Migrations.MySql.IdentityMySqlDbContext_
                         .HasColumnType("bigint");
 
                     b.HasKey("Id")
-                        .HasName("P_Identity.Permission_Id_b4baa");
+                        .HasName("P_IdentityPermission_Id_aa4e4");
 
                     b.HasIndex("OrganizationId")
-                        .HasDatabaseName("I_Identity.Permission_OrganizationId_60c77");
+                        .HasDatabaseName("I_IdentityPermission_OrganizationId_ef38a");
 
                     b.HasIndex("RoleId")
-                        .HasDatabaseName("I_Identity.Permission_RoleId_ef15b");
+                        .HasDatabaseName("I_IdentityPermission_RoleId_c1b82");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("I_Identity.Permission_UserId_8dda4");
+                        .HasDatabaseName("I_IdentityPermission_UserId_a10ab");
 
                     b.HasIndex("UserId", "RoleId", "OrganizationId")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity.Permission_UserId_RoleId_OrganizationId_81337");
+                        .HasDatabaseName("U_IdentityPermission_UserId_RoleId_OrganizationId_800d6");
 
-                    b.ToTable("Identity.Permission");
+                    b.ToTable("IdentityPermission", "Insane");
 
                     b
                         .HasAnnotation("Insane:AutoIncrement", 10000);
                 });
 
-            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Platform", b =>
+            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.IdentityPlatform", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -171,23 +172,23 @@ namespace Insane.Migrations.MySql.IdentityMySqlDbContext_
                         .HasColumnType("varchar(128)");
 
                     b.HasKey("Id")
-                        .HasName("P_Identity.Platform_Id_536ad");
+                        .HasName("P_IdentityPlatform_Id_a8230");
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity.Platform_Name_ce1d4");
+                        .HasDatabaseName("U_IdentityPlatform_Name_423b5");
 
                     b.HasIndex("SecretKey")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity.Platform_SecretKey_fee4d");
+                        .HasDatabaseName("U_IdentityPlatform_SecretKey_e10ba");
 
-                    b.ToTable("Identity.Platform");
+                    b.ToTable("IdentityPlatform", "Insane");
 
                     b
                         .HasAnnotation("Insane:AutoIncrement", 10000);
                 });
 
-            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Role", b =>
+            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.IdentityRole", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -212,19 +213,19 @@ namespace Insane.Migrations.MySql.IdentityMySqlDbContext_
                         .HasColumnType("varchar(128)");
 
                     b.HasKey("Id")
-                        .HasName("P_Identity.Role_Id_8e181");
+                        .HasName("P_IdentityRole_Id_5f896");
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity.Role_Name_47a7c");
+                        .HasDatabaseName("U_IdentityRole_Name_36689");
 
-                    b.ToTable("Identity.Role");
+                    b.ToTable("IdentityRole", "Z");
 
                     b
                         .HasAnnotation("Insane:AutoIncrement", 10000);
                 });
 
-            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Session", b =>
+            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.IdentitySession", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -296,37 +297,37 @@ namespace Insane.Migrations.MySql.IdentityMySqlDbContext_
                         .HasColumnType("varchar(128)");
 
                     b.HasKey("Id")
-                        .HasName("P_Identity.Session_Id_056f1");
+                        .HasName("P_IdentitySession_Id_ecb1d");
 
                     b.HasIndex("Jti")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity.Session_Jti_991ea");
+                        .HasDatabaseName("U_IdentitySession_Jti_b9210");
 
                     b.HasIndex("Key")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity.Session_Key_e3810");
+                        .HasDatabaseName("U_IdentitySession_Key_45f50");
 
                     b.HasIndex("PermissionId")
-                        .HasDatabaseName("I_Identity.Session_PermissionId_c39fd");
+                        .HasDatabaseName("I_IdentitySession_PermissionId_eb569");
 
                     b.HasIndex("PlatformId")
-                        .HasDatabaseName("I_Identity.Session_PlatformId_9ffe5");
+                        .HasDatabaseName("I_IdentitySession_PlatformId_0a8ea");
 
                     b.HasIndex("RefreshToken")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity.Session_RefreshToken_6c5e8");
+                        .HasDatabaseName("U_IdentitySession_RefreshToken_bc11c");
 
                     b.HasIndex("TokenHash")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity.Session_TokenHash_48896");
+                        .HasDatabaseName("U_IdentitySession_TokenHash_15499");
 
-                    b.ToTable("Identity.Session");
+                    b.ToTable("IdentitySession", "Insane");
 
                     b
                         .HasAnnotation("Insane:AutoIncrement", 10000);
                 });
 
-            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.User", b =>
+            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.IdentityUser", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -409,50 +410,50 @@ namespace Insane.Migrations.MySql.IdentityMySqlDbContext_
                         .HasColumnType("varchar(128)");
 
                     b.HasKey("Id")
-                        .HasName("P_Identity.User_Id_1c7f0");
+                        .HasName("P_IdentityUser_Id_d06a2");
 
                     b.HasIndex("Email")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity.User_Email_9daff");
+                        .HasDatabaseName("U_IdentityUser_Email_a5252");
 
                     b.HasIndex("Mobile")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity.User_Mobile_75662");
+                        .HasDatabaseName("U_IdentityUser_Mobile_b52fb");
 
                     b.HasIndex("UniqueId")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity.User_UniqueId_7de64");
+                        .HasDatabaseName("U_IdentityUser_UniqueId_e083b");
 
                     b.HasIndex("Username")
                         .IsUnique()
-                        .HasDatabaseName("U_Identity.User_Username_123f3");
+                        .HasDatabaseName("U_IdentityUser_Username_85643");
 
-                    b.ToTable("Identity.User");
+                    b.ToTable("IdentityUser", "SUPER");
 
                     b
                         .HasAnnotation("Insane:AutoIncrement", 10000);
                 });
 
-            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Permission", b =>
+            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.IdentityPermission", b =>
                 {
-                    b.HasOne("Insane.AspNet.Identity.Model1.Entity.Organization", "Organization")
+                    b.HasOne("Insane.AspNet.Identity.Model1.Entity.IdentityOrganization", "Organization")
                         .WithMany("Permissions")
                         .HasForeignKey("OrganizationId")
-                        .HasConstraintName("F_Identity.Permission_OrganizationId_451b5")
+                        .HasConstraintName("F_IdentityPermission_OrganizationId_98097")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Insane.AspNet.Identity.Model1.Entity.Role", "Role")
+                    b.HasOne("Insane.AspNet.Identity.Model1.Entity.IdentityRole", "Role")
                         .WithMany("Permissions")
                         .HasForeignKey("RoleId")
-                        .HasConstraintName("F_Identity.Permission_RoleId_c6b0c")
+                        .HasConstraintName("F_IdentityPermission_RoleId_63ea2")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Insane.AspNet.Identity.Model1.Entity.User", "User")
+                    b.HasOne("Insane.AspNet.Identity.Model1.Entity.IdentityUser", "User")
                         .WithMany("Permissions")
                         .HasForeignKey("UserId")
-                        .HasConstraintName("F_Identity.Permission_UserId_e506e")
+                        .HasConstraintName("F_IdentityPermission_UserId_c3dfe")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -463,19 +464,19 @@ namespace Insane.Migrations.MySql.IdentityMySqlDbContext_
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Session", b =>
+            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.IdentitySession", b =>
                 {
-                    b.HasOne("Insane.AspNet.Identity.Model1.Entity.Permission", "Permission")
+                    b.HasOne("Insane.AspNet.Identity.Model1.Entity.IdentityPermission", "Permission")
                         .WithMany("Sessions")
                         .HasForeignKey("PermissionId")
-                        .HasConstraintName("F_Identity.Session_PermissionId_61c86")
+                        .HasConstraintName("F_IdentitySession_PermissionId_68abc")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Insane.AspNet.Identity.Model1.Entity.Platform", "Platform")
+                    b.HasOne("Insane.AspNet.Identity.Model1.Entity.IdentityPlatform", "Platform")
                         .WithMany("Sessions")
                         .HasForeignKey("PlatformId")
-                        .HasConstraintName("F_Identity.Session_PlatformId_2b879")
+                        .HasConstraintName("F_IdentitySession_PlatformId_83f1d")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -484,27 +485,27 @@ namespace Insane.Migrations.MySql.IdentityMySqlDbContext_
                     b.Navigation("Platform");
                 });
 
-            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Organization", b =>
+            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.IdentityOrganization", b =>
                 {
                     b.Navigation("Permissions");
                 });
 
-            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Permission", b =>
+            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.IdentityPermission", b =>
                 {
                     b.Navigation("Sessions");
                 });
 
-            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Platform", b =>
+            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.IdentityPlatform", b =>
                 {
                     b.Navigation("Sessions");
                 });
 
-            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.Role", b =>
+            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.IdentityRole", b =>
                 {
                     b.Navigation("Permissions");
                 });
 
-            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.User", b =>
+            modelBuilder.Entity("Insane.AspNet.Identity.Model1.Entity.IdentityUser", b =>
                 {
                     b.Navigation("Permissions");
                 });

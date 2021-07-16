@@ -62,6 +62,12 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="MigrationScripts\" />
+    <Folder Include="MigrationScripts\MySql\IdentityMySqlDbContext\" />
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
   <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
     <ItemGroup>
       <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />

@@ -1,4 +1,5 @@
 ﻿using Insane.Cryptography;
+using Insane.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,21 +12,21 @@ namespace Insane.Device
 {
     public static class DeviceInfo
     {
-        private const String WINDOWS = "Windows";
-        private const String LINUX = "Linux";
-        private const String OSX = "macOS/OSX";
-        private const String UNKNOWN = "Unknown";
+        private const string WINDOWS = "Windows";
+        private const string LINUX = "Linux";
+        private const string OSX = "macOS/OSX";
+        private const string UNKNOWN = "Unknown";
 
 
         private static String GetRealDeviceId()
         {
             
-            return HashManager.ToBase64Hash("DeviceID", HashAlgorithm.Sha256);
+            return "DeviceID".ToHash(Base64Encoder.Instance, HashAlgorithm.Sha256);
         }
 
-        private static String _RealDeviceId = GetRealDeviceId();
+        private static string _RealDeviceId = GetRealDeviceId();
 
-        public static String RealDeviceId
+        public static string RealDeviceId
         {
             get
             {
@@ -33,31 +34,31 @@ namespace Insane.Device
             }
         }
 
-        public static String DeviceId
+        public static string DeviceId
         {
             get
             {
-                return HashManager.ToBase64Hash(RealDeviceId, HashAlgorithm.Sha256);
+                return RealDeviceId.ToHash(Base64Encoder.Instance, HashAlgorithm.Sha256);
             }
         }
 
-        public static String Manufacturer
+        public static string Manufacturer
         {
             get
             {
-                return "Samsung";
+                return nameof(Manufacturer);
             }
         }
 
-        public static String DeviceNameOrModel
+        public static string DeviceNameOrModel
         {
             get
             {
-                return "S8 Edge";
+                return nameof(DeviceNameOrModel);
             }
         }
 
-        public static String OSDescription
+        public static string OSDescription
         {
             get
             {
@@ -65,7 +66,7 @@ namespace Insane.Device
             }
         }
 
-        public static String Platform
+        public static string Platform
         {
             get
             {

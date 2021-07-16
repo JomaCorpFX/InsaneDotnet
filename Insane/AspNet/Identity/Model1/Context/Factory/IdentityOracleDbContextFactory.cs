@@ -1,5 +1,6 @@
 ﻿using Insane.EntityFramework;
 using Insane.Enums;
+using Insane.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
@@ -23,7 +24,7 @@ namespace Insane.AspNet.Identity.Model1.Context.Factory
                    .AddJsonFile(IdentityConstants.DefaultConfigurationFile, false, true)
                    .Build();
             DbContextSettings dbContextSettings = new DbContextSettings();
-            configuration.Bind($"{IdentityConstants.InsaneIdentityConfigurationName}:{nameof(DbContextSettings)}", dbContextSettings);
+            configuration.Bind($"{IdentityConstants.InsaneIdentityDbSettingsConfigurationName}", dbContextSettings);
             dbContextSettings.Provider = DbProvider.Oracle;
 
             DbContextOptionsBuilder<IdentityOracleDbContext> builder = new DbContextOptionsBuilder<IdentityOracleDbContext>()
@@ -40,9 +41,9 @@ namespace Insane.AspNet.Identity.Model1.Context.Factory
 
 
 
-            DbContextFlavors flavors = DbContextFlavors.CreateInstance<IdentityDbContextBase>(new Type[] { typeof(IdentityOracleDbContext) });
+            DbContextFlavors<IdentityDbContextBase> flavors = DbContextFlavors<IdentityDbContextBase>.CreateInstance(new Type[] { typeof(IdentityOracleDbContext) });
 
-            return (IdentityOracleDbContext)DbContextExtensions.CreateDbContext<IdentityDbContextBase>(dbContextSettings, flavors, builder);
+            return (IdentityOracleDbContext)EntityFrameworkExtensions.CreateDbContext<IdentityDbContextBase>(dbContextSettings, flavors, builder);
         }
     }
 }

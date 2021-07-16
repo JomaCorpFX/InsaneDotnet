@@ -4,7 +4,7 @@
     $Provider = "All",
 
     [Parameter(Mandatory=$true)]
-    [ValidateSet("Identity1")]
+    [ValidateSet("Identity")]
     [System.String]
     $Context
 )
@@ -14,6 +14,5 @@ $ErrorActionPreference = "Stop"
     
 $StartupProject = "../Insane.Exe"
 $Project = "../Insane"
-$contextPrefix = "Identity"
  
 Update-EfCoreDatabase -Provider $Provider -Project $Project -StartupProject $StartupProject -Context $Context
