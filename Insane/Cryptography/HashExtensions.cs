@@ -167,7 +167,6 @@ namespace Insane.Extensions
             }
         }
 
-
         public static Argon2Result ToArgon2(this byte[] data, byte[] salt, IEncoder encoder, uint iterations, uint memorySizeKiB, uint parallelism, Argon2Variant variant = Argon2Variant.Argon2id, uint derivedKeyLength = Argon2DerivedKeyLength)
         {
             return new Argon2Result

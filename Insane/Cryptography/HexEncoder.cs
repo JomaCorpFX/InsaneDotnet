@@ -23,6 +23,5 @@ namespace Insane.Cryptography
             return data.ToHex();
         }
 
-
     }
 }

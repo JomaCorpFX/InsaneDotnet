@@ -1,9 +1,9 @@
-﻿using Insane.Extensions;
+﻿using Insane.Cryptography;
+using Insane.Extensions;
 using System;
-using System.Security.Cryptography;
 using System.Text;
 
-namespace Insane.Cryptography
+namespace Insane.Extensions
 {
     public static class AesExtensions
     {
@@ -18,9 +18,16 @@ namespace Insane.Cryptography
             return ret;
         }
 
+        private static void ValidateKey(byte[] key)
+        {
+            if(key == null) throw new ArgumentNullException(nameof(key));
+            if (key.Length < 8) throw new ArgumentException("the key must be at least 8 bytes.");
+        }
+        
         public static byte[] EncryptAes(this byte[] data, byte[] key)
         {
-            AesManaged AesAlgorithm = new AesManaged()
+            ValidateKey(key);
+            System.Security.Cryptography.AesManaged AesAlgorithm = new ()
             {
                 Key = GenerateValidKey(key)
             };
@@ -34,7 +41,8 @@ namespace Insane.Cryptography
 
         public static byte[] DecryptAes(this byte[] data, byte[] key)
         {
-            AesManaged AesAlgorithm = new AesManaged()
+            ValidateKey(key);
+            System.Security.Cryptography.AesManaged AesAlgorithm = new ()
             {
                 Key = GenerateValidKey(key)
             };
