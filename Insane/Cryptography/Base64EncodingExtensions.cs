@@ -63,10 +63,10 @@ namespace Insane.Extensions
 
         public static byte[] FromBase64(this string data)
         {
-            int modulo = data.Length % 4;
             data = data.Replace("%2B", "+").Replace("%2F", "/").Replace("%3D", "=")
-                .Replace("-", "+").Replace("_", "/").Replace("\n", string.Empty).Replace("\r", string.Empty).Replace("\r\n", string.Empty)
-                .PadRight(data.Length + (modulo > 0 ? 4 - modulo : 0), '=');
+                .Replace("-", "+").Replace("_", "/").Replace("\n", string.Empty).Replace("\r", string.Empty).Replace("\r\n", string.Empty);
+            int modulo = data.Length % 4;
+            data = data.PadRight(data.Length + (modulo > 0 ? 4 - modulo : 0), '=');
             return Convert.FromBase64String(data);
         }
 

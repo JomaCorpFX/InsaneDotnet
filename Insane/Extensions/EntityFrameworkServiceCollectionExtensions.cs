@@ -34,7 +34,7 @@ namespace Insane.Extensions
             {
                 case ServiceLifetime.Scoped:
                     services.AddScoped<TCoreDbContext>((serviceProvider) =>
-                    {
+                    { 
                         Type dbContextType = GetDbContextType(builder, configuration, configurationPath, flavors);
                         var exNew = Expression.New(dbContextType.GetConstructor(new Type[] { typeof(DbContextOptions) })!, Expression.Constant(builder.Options));
                         var exConvert = Expression.Convert(exNew, typeof(TCoreDbContext));

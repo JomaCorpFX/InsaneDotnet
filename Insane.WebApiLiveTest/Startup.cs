@@ -36,7 +36,7 @@ namespace Insane.WebApiTest
             Configuration = new ConfigurationBuilder().
                    SetBasePath(Directory.GetCurrentDirectory())
                    .AddJsonFile("appsettings.json", false, true)
-                   .AddUserSecrets<Startup>()
+                   
                    .Build();
 
             DbContextOptionsBuilder builder = new DbContextOptionsBuilder().EnableSensitiveDataLogging().EnableDetailedErrors();
@@ -45,35 +45,35 @@ namespace Insane.WebApiTest
                 IdentityMySqlDbContext,
                 IdentityOracleDbContext>();
             services.AddDbContext<IdentityDbContextBase>(builder, Configuration, nameof(DbContextSettings), flavors, ServiceLifetime.Scoped);
-            services.AddIdentity<IdentityUser, IdentityRole>(op=> {
-                op.Password = new PasswordOptions
-                {
+            //services.AddIdentity<IdentityUser, IdentityRole>(op=> {
+            //    op.Password = new PasswordOptions
+            //    {
                     
-                };
-                op.Lockout = new LockoutOptions
-                {
+            //    };
+            //    op.Lockout = new LockoutOptions
+            //    {
                     
-                };
-                op.SignIn = new SignInOptions
-                {
+            //    };
+            //    op.SignIn = new SignInOptions
+            //    {
                     
-                };
-                op.Stores = new StoreOptions
-                {
+            //    };
+            //    op.Stores = new StoreOptions
+            //    {
                     
-                };
+            //    };
 
-                op.Tokens = new TokenOptions
-                {
+            //    op.Tokens = new TokenOptions
+            //    {
                     
-                };
+            //    };
 
-                op.ClaimsIdentity = new ClaimsIdentityOptions
-                {
-                    EmailClaimType = System.Security.Claims.ClaimTypes.WindowsAccountName
-                };
+            //    op.ClaimsIdentity = new ClaimsIdentityOptions
+            //    {
+            //        EmailClaimType = System.Security.Claims.ClaimTypes.WindowsAccountName
+            //    };
 
-            }).AddEntityFrameworkStores<IdentityDbContext>();
+            //}).AddEntityFrameworkStores<IdentityDbContext>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

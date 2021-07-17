@@ -66,7 +66,6 @@ namespace Insane.LiveTest
             //encrypted = RsaExtensions.EncryptToBase64(data, keyPair.PublicKey);
             //Console.WriteLine("Encrypted: " + encrypted);
             //Console.WriteLine("Decrypted: " + RsaExtensions.DecryptFromBase64(encrypted, keyPair.PrivateKey));
-
         }
 
         static void HashManagerTests()
