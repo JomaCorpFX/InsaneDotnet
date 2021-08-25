@@ -41,7 +41,7 @@ namespace Insane.AspNet.Identity.Model1.Context.Factory
 
             DbContextFlavors<IdentityDbContextBase> flavors = DbContextFlavors<IdentityDbContextBase>.CreateInstance(new Type[] { typeof(IdentityPostgreSqlDbContext) });
 
-            return (IdentityPostgreSqlDbContext)EntityFrameworkExtensions.CreateDbContext<IdentityDbContextBase>(dbContextSettings, flavors, builder);
+            return (IdentityPostgreSqlDbContext)EntityFrameworkExtensions.CreateDbContext(dbContextSettings, flavors, builder);
         }
     }
 }

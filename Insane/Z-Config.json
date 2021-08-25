@@ -17,5 +17,5 @@
     "X-PowerShellCoreFxs-PushProjectToRemote.ps1",
     "X-PowerShellCoreFxs-ManageProjectSecrets.ps1"
   ],
-  "Version": "1.0.128"
+  "Version": "1.0.129"
 }

@@ -6,7 +6,7 @@ namespace Insane.AspNet.Identity.Model1.Entity
 {
     public class IdentityRole
     {
-        public long Id { get; set; }
+        public long Id { get; set; } 
         public string Name { get; set; } = null!;
         public DateTimeOffset CreatedAt { get; set; }
         public bool Active { get; set; }

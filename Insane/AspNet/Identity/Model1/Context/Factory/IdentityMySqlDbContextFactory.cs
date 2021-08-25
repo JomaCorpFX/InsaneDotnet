@@ -20,7 +20,7 @@ namespace Insane.AspNet.Identity.Model1.Context.Factory
 {
     public class IdentityMySqlDbContextFactory : IDesignTimeDbContextFactory<IdentityMySqlDbContext>
     {
-        
+
         public IdentityMySqlDbContext CreateDbContext(string[] args)
         {
             IConfiguration configuration = new ConfigurationBuilder().
@@ -53,7 +53,9 @@ namespace Insane.AspNet.Identity.Model1.Context.Factory
             DbContextFlavors<IdentityDbContextBase> flavors = DbContextFlavors<IdentityDbContextBase>.CreateInstance(new Type[] { typeof(IdentityMySqlDbContext) });
 
 
-            return (IdentityMySqlDbContext)EntityFrameworkExtensions.CreateDbContext<IdentityDbContextBase>(dbContextSettings, flavors, builder);
+            return (IdentityMySqlDbContext)EntityFrameworkExtensions.CreateDbContext(dbContextSettings, flavors, builder);
         }
+
+
     }
 }

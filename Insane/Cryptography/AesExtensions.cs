@@ -7,10 +7,10 @@ namespace Insane.Extensions
 {
     public static class AesExtensions
     {
-        private const int MaxIvLength = 16;
-        private const int MaxKeyLength = 32;
+        public const int MaxIvLength = 16;
+        public const int MaxKeyLength = 32;
 
-        private static byte[] GenerateValidKey(byte[] keyBytes)
+        private static byte[] GenerateNormalizedKey(byte[] keyBytes)
         {
             byte[] ret = new byte[MaxKeyLength];
             byte[] hash = HashExtensions.ToRawHash(keyBytes, HashAlgorithm.Sha512);
@@ -29,7 +29,7 @@ namespace Insane.Extensions
             ValidateKey(key);
             System.Security.Cryptography.AesManaged AesAlgorithm = new ()
             {
-                Key = GenerateValidKey(key)
+                Key = GenerateNormalizedKey(key)
             };
             AesAlgorithm.GenerateIV();
             var Encrypted = AesAlgorithm.CreateEncryptor().TransformFinalBlock(data, 0, data.Length);
@@ -44,7 +44,7 @@ namespace Insane.Extensions
             ValidateKey(key);
             System.Security.Cryptography.AesManaged AesAlgorithm = new ()
             {
-                Key = GenerateValidKey(key)
+                Key = GenerateNormalizedKey(key)
             };
             byte[] IV = new byte[MaxIvLength];
             Array.Copy(data, data.Length - MaxIvLength, IV, 0, MaxIvLength);

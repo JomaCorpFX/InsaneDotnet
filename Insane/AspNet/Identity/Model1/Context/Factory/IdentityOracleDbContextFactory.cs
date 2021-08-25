@@ -43,7 +43,7 @@ namespace Insane.AspNet.Identity.Model1.Context.Factory
 
             DbContextFlavors<IdentityDbContextBase> flavors = DbContextFlavors<IdentityDbContextBase>.CreateInstance(new Type[] { typeof(IdentityOracleDbContext) });
 
-            return (IdentityOracleDbContext)EntityFrameworkExtensions.CreateDbContext<IdentityDbContextBase>(dbContextSettings, flavors, builder);
+            return (IdentityOracleDbContext)EntityFrameworkExtensions.CreateDbContext(dbContextSettings, flavors, builder);
         }
     }
 }

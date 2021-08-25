@@ -6,8 +6,8 @@ namespace Insane.AspNet.Identity.Model1.Entity
 {
     public class IdentitySession
     {
-        public long Id { get; set; }
-        public long PlatformId { get; set; }
+        public long Id { get; set; } 
+        public long PlatformId { get; set; } 
         public long PermissionId { get; set; }
         public string Jti { get; set; } = null!;
         public string TokenHash { get; set; } = null!;

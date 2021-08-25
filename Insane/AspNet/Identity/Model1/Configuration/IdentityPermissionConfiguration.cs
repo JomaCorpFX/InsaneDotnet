@@ -4,6 +4,7 @@ using Insane.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System;
 
 namespace Insane.AspNet.Identity.Model1.Configuration
 {
@@ -21,7 +22,7 @@ namespace Insane.AspNet.Identity.Model1.Configuration
         {
             builder.ToTable(Database, Schema);
 
-            builder.Property(e => e.Id).SetIdentity(Database, builder, IdentityConstants.IdentityColumnStartValue);
+            builder.Property(e => e.Id).ValueGeneratedOnAdd(Database, builder);
             builder.Property(e => e.UserId);
             builder.Property(e => e.RoleId);
             builder.Property(e => e.OrganizationId);

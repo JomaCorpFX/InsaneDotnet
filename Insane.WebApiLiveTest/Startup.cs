@@ -40,11 +40,13 @@ namespace Insane.WebApiTest
                    .Build();
 
             DbContextOptionsBuilder builder = new DbContextOptionsBuilder().EnableSensitiveDataLogging().EnableDetailedErrors();
-            DbContextFlavors<IdentityDbContextBase> flavors = DbContextFlavors<IdentityDbContextBase>.CreateInstance<IdentitySqlServerDbContext,
-                IdentityPostgreSqlDbContext,
-                IdentityMySqlDbContext,
-                IdentityOracleDbContext>();
-            services.AddDbContext<IdentityDbContextBase>(builder, Configuration, nameof(DbContextSettings), flavors, ServiceLifetime.Scoped);
+            DbContextFlavors<IdentityDbContextBase<long>> flavors = DbContextFlavors<IdentityDbContextBase<long>>.CreateInstance<IdentitySqlServerDbContext<long>,
+                IdentityPostgreSqlDbContext<long>,
+                IdentityMySqlDbContext<long>,
+                IdentityOracleDbContext<long>>();
+            //IdentityUser<>
+            
+            services.AddDbContext<IdentityDbContextBase<long>>(builder, Configuration, nameof(DbContextSettings), flavors, ServiceLifetime.Scoped);
             //services.AddIdentity<IdentityUser, IdentityRole>(op=> {
             //    op.Password = new PasswordOptions
             //    {
@@ -82,10 +84,10 @@ namespace Insane.WebApiTest
         }
 
         
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IdentityDbContextBase context)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
 
-            context.Database.Migrate();
+            //context.Database.Migrate();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

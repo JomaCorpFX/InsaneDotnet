@@ -29,6 +29,7 @@
     <UserSecretsId>dcead069-ffae-4de4-be81-720ec8ff2ac7</UserSecretsId>
   </PropertyGroup>
  
+ 
 
   
   <ItemGroup>
@@ -60,12 +61,6 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="MigrationScripts\" />
-    <Folder Include="MigrationScripts\MySql\IdentityMySqlDbContext\" />
-    <Folder Include="Migrations\" />
   </ItemGroup>
 
   <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
