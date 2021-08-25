@@ -12,7 +12,12 @@ namespace Insane.Cryptography
     public class HexEncoder : IEncoder
     {
         public static readonly HexEncoder Instance = new HexEncoder();
+        public bool ToUpper { get; set; }
 
+        public HexEncoder(bool toUpper= false)
+        {
+            ToUpper = toUpper;
+        }
         public byte[] Decode(string data)
         {
             return data.FromHex();
@@ -20,7 +25,7 @@ namespace Insane.Cryptography
 
         public string Encode(byte[] data)
         {
-            return data.ToHex();
+            return  ToUpper? data.ToHex().ToUpper() : data.ToHex();
         }
 
     }

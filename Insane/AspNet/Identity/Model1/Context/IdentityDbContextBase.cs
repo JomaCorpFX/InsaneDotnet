@@ -2,10 +2,12 @@
 using Insane.AspNet.Identity.Model1.Entity;
 using Insane.EntityFramework;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace Insane.AspNet.Identity.Model1.Context
 {
-    public class IdentityDbContextBase : CoreDbContextBase
+
+    public abstract class IdentityDbContextBase: CoreDbContextBase
     {
 
         public IdentityDbContextBase(DbContextOptions options) : base(options)

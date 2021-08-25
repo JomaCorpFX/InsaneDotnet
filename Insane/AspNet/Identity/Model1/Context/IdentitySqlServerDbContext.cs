@@ -13,5 +13,6 @@ namespace Insane.AspNet.Identity.Model1.Context
         public IdentitySqlServerDbContext(DbContextOptions options) : base(options)
         {
         }
+
     }
 }

@@ -23,6 +23,8 @@ namespace Insane.AspNet.Identity
         public const int UriMaxLength = 256;
         public const int IpMaxLength = 64;
         public const int AddressMaxLength = 128;
+        public const int GuidMaxLength = 36;
+
 
     }
 }

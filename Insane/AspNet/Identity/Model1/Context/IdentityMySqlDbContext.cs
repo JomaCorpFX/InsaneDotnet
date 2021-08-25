@@ -13,10 +13,5 @@ namespace Insane.AspNet.Identity.Model1.Context
         public IdentityMySqlDbContext(DbContextOptions options) : base(options)
         {
         }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-        }
     }
 }

@@ -482,19 +482,17 @@ function Add-EfCoreMigration {
         [switch]
         $InstallEfCoreTools
     )
-    if($InstallEfCoreTools.IsPresent)
-    {
+    if ($InstallEfCoreTools.IsPresent) {
         Install-EfCoreTools
     }
     Stop-WhenIsDbProviderName -Value $Name
 
     $projectFile = "$(Get-Item -Path "$Project/*.csproj" | Split-Path -Leaf)"
     $startupProjectFile = "$(Get-Item -Path "$StartupProject/*.csproj" | Split-Path -Leaf)" 
-    dotnet add "$StartupProject/$startupProjectFile" package "Microsoft.EntityFrameworkCore.Design"
-    dotnet add "$StartupProject/$startupProjectFile" reference "$Project/$projectFile"
+
 
     switch ($Provider) {
-        {$_ -in @($SQLSERVER_PROVIDER, $POSTGRESQL_PROVIDER, $MYSQL_PROVIDER, $ORACLE_PROVIDER)} { 
+        { $_ -in @($SQLSERVER_PROVIDER, $POSTGRESQL_PROVIDER, $MYSQL_PROVIDER, $ORACLE_PROVIDER) } { 
             $Context = "$($Context)$($Provider)DbContext"
             $outputDir = "Migrations/$Provider/$($Context)_"
         }
@@ -514,6 +512,8 @@ function Add-EfCoreMigration {
 
     }
     Write-Host "█ Add Migration - $context - $outputDir" -ForegroundColor Magenta
+    dotnet add "$StartupProject/$startupProjectFile" package "Microsoft.EntityFrameworkCore.Design"
+    dotnet add "$StartupProject/$startupProjectFile" reference "$Project/$projectFile"
     dotnet-ef migrations add "Migration_$($context)_$Name" --startup-project "$StartupProject" --project "$Project" --context "$context" --output-dir "$outputDir" --verbose
 }
 
@@ -542,18 +542,15 @@ function Remove-EfCoreMigration {
         [switch]
         $InstallEfCoreTools
     )
-    if($InstallEfCoreTools.IsPresent)
-    {
+    if ($InstallEfCoreTools.IsPresent) {
         Install-EfCoreTools
     }
 
     $projectFile = "$(Get-Item -Path "$Project/*.csproj" | Split-Path -Leaf)"
     $startupProjectFile = "$(Get-Item -Path "$StartupProject/*.csproj" | Split-Path -Leaf)" 
-    dotnet add "$StartupProject/$startupProjectFile" package "Microsoft.EntityFrameworkCore.Design"
-    dotnet add "$StartupProject/$startupProjectFile" reference "$Project/$projectFile"
 
     switch ($Provider) {
-        {$_ -in @($SQLSERVER_PROVIDER, $POSTGRESQL_PROVIDER, $MYSQL_PROVIDER, $ORACLE_PROVIDER)} { 
+        { $_ -in @($SQLSERVER_PROVIDER, $POSTGRESQL_PROVIDER, $MYSQL_PROVIDER, $ORACLE_PROVIDER) } { 
             $Context = "$($Context)$($Provider)DbContext"
         }
 
@@ -571,8 +568,10 @@ function Remove-EfCoreMigration {
         }
     }
     Write-Host "█ Remove Migration - $context" -ForegroundColor Magenta
-        #Con el parámetro --force Elimina la migración desde código y desde la base de datos.
-        dotnet ef migrations remove --startup-project "$startupProject" --project "$project" --context "$context" --verbose "$($Force.IsPresent ? "--force" : ([string]::Empty))"
+    dotnet add "$StartupProject/$startupProjectFile" package "Microsoft.EntityFrameworkCore.Design"
+    dotnet add "$StartupProject/$startupProjectFile" reference "$Project/$projectFile"
+    #Con el parámetro --force Elimina la migración desde código y desde la base de datos.
+    dotnet ef migrations remove --startup-project "$startupProject" --project "$project" --context "$context" --verbose "$($Force.IsPresent ? "--force" : ([string]::Empty))"
     
 }
 
@@ -595,18 +594,15 @@ function Remove-EfCoreDatabase {
         [switch]
         $InstallEfCoreTools
     )
-    if($InstallEfCoreTools.IsPresent)
-    {
+    if ($InstallEfCoreTools.IsPresent) {
         Install-EfCoreTools
     }
 
     $projectFile = "$(Get-Item -Path "$Project/*.csproj" | Split-Path -Leaf)"
     $startupProjectFile = "$(Get-Item -Path "$StartupProject/*.csproj" | Split-Path -Leaf)" 
-    dotnet add "$StartupProject/$startupProjectFile" package "Microsoft.EntityFrameworkCore.Design"
-    dotnet add "$StartupProject/$startupProjectFile" reference "$Project/$projectFile"
 
     switch ($Provider) {
-        {$_ -in @($SQLSERVER_PROVIDER, $POSTGRESQL_PROVIDER, $MYSQL_PROVIDER, $ORACLE_PROVIDER)} { 
+        { $_ -in @($SQLSERVER_PROVIDER, $POSTGRESQL_PROVIDER, $MYSQL_PROVIDER, $ORACLE_PROVIDER) } { 
             $Context = "$($Context)$($Provider)DbContext"
         }
 
@@ -625,6 +621,8 @@ function Remove-EfCoreDatabase {
 
     }
     Write-Host "█ Remove Database - $context" -ForegroundColor Magenta
+    dotnet add "$StartupProject/$startupProjectFile" package "Microsoft.EntityFrameworkCore.Design"
+    dotnet add "$StartupProject/$startupProjectFile" reference "$Project/$projectFile"
     dotnet-ef database drop --startup-project "$startupProject" --context "$context" --project "$project" --force --verbose
 }
 
@@ -648,18 +646,15 @@ function Update-EfCoreDatabase {
         [switch]
         $InstallEfCoreTools
     )
-    if($InstallEfCoreTools.IsPresent)
-    {
+    if ($InstallEfCoreTools.IsPresent) {
         Install-EfCoreTools
     }
 
     $projectFile = "$(Get-Item -Path "$Project/*.csproj" | Split-Path -Leaf)"
     $startupProjectFile = "$(Get-Item -Path "$StartupProject/*.csproj" | Split-Path -Leaf)" 
-    dotnet add "$StartupProject/$startupProjectFile" package "Microsoft.EntityFrameworkCore.Design"
-    dotnet add "$StartupProject/$startupProjectFile" reference "$Project/$projectFile"
 
     switch ($Provider) {
-        {$_ -in @($SQLSERVER_PROVIDER, $POSTGRESQL_PROVIDER, $MYSQL_PROVIDER, $ORACLE_PROVIDER)} { 
+        { $_ -in @($SQLSERVER_PROVIDER, $POSTGRESQL_PROVIDER, $MYSQL_PROVIDER, $ORACLE_PROVIDER) } { 
             $Context = "$($Context)$($Provider)DbContext"
         }
 
@@ -677,6 +672,8 @@ function Update-EfCoreDatabase {
         }
     }
     Write-Host "█ Update database - $context" -ForegroundColor Magenta
+    dotnet add "$StartupProject/$startupProjectFile" package "Microsoft.EntityFrameworkCore.Design"
+    dotnet add "$StartupProject/$startupProjectFile" reference "$Project/$projectFile"
     dotnet-ef database update --startup-project "$StartupProject" --context "$context" --project "$Project" --verbose
 }
 
@@ -707,19 +704,16 @@ function New-EfCoreMigrationScript {
         $InstallEfCoreTools
     )
 
-    if($InstallEfCoreTools.IsPresent)
-    {
+    if ($InstallEfCoreTools.IsPresent) {
         Install-EfCoreTools
     }
     Stop-WhenIsDbProviderName -Value $Name
 
     $projectFile = "$(Get-Item -Path "$Project/*.csproj" | Split-Path -Leaf)"
     $startupProjectFile = "$(Get-Item -Path "$StartupProject/*.csproj" | Split-Path -Leaf)" 
-    dotnet add "$StartupProject/$startupProjectFile" package "Microsoft.EntityFrameworkCore.Design"
-    dotnet add "$StartupProject/$startupProjectFile" reference "$Project/$projectFile"
 
     switch ($Provider) {
-        {$_ -in @($SQLSERVER_PROVIDER, $POSTGRESQL_PROVIDER, $MYSQL_PROVIDER, $ORACLE_PROVIDER)} { 
+        { $_ -in @($SQLSERVER_PROVIDER, $POSTGRESQL_PROVIDER, $MYSQL_PROVIDER, $ORACLE_PROVIDER) } { 
             $Context = "$($Context)$($Provider)DbContext"
             $outputFile = "$Project/MigrationScripts/$Provider/$Context/Migration_$($context)_$([string]::IsNullOrWhiteSpace($Name) ? "$([DateTime]::Now.ToString("yyyyMMddHHmmssfff"))" : $Name).sql"
             break
@@ -740,6 +734,8 @@ function New-EfCoreMigrationScript {
 
     }
     Write-Host "█ Creating Sql Script - $context - $outputFile" -ForegroundColor Magenta
+    dotnet add "$StartupProject/$startupProjectFile" package "Microsoft.EntityFrameworkCore.Design"
+    dotnet add "$StartupProject/$startupProjectFile" reference "$Project/$projectFile"
     dotnet ef migrations script --output "$outputFile" --context "$context" --project "$project" --startup-project "$startupProject" --verbose ($Idempotent.IsPresent? "--idempotent" : [string]::Empty)
 }
 
@@ -1029,8 +1025,7 @@ function Get-JsonObject {
         $Filename
     )
 
-    if(Test-Path $Filename -PathType Leaf)
-    {
+    if (Test-Path $Filename -PathType Leaf) {
         return (Get-Content -Path $Filename | ConvertFrom-Json)
     }
     

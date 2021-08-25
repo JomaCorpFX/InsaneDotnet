@@ -10,7 +10,7 @@
     $Provider,
 
     [Parameter(Mandatory=$true)]
-    [ValidateSet("Identity")]
+    #[ValidateSet("Identity", "IdentityInt","IdentityString")]
     [System.String]
     $Context
 )

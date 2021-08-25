@@ -11,6 +11,10 @@ using Insane.Cryptography;
 using Insane.EntityFramework.MySql.Metadata.Internal;
 using Insane.Extensions;
 using Insane.EntityFramework;
+using Insane.AspNet.Identity;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
+using Insane.EntityFramework.ValueGeneration;
 
 namespace Insane.Extensions
 {
@@ -64,7 +68,7 @@ namespace Insane.Extensions
         public static EntityTypeBuilder<TEntity> ToTable<TEntity>(this EntityTypeBuilder<TEntity> builder, DatabaseFacade database, string name, string schema, Action<TableBuilder<TEntity>> buildAction) where TEntity : class
         {
             buildAction = buildAction is null ? (builder) => { } : buildAction;
-            name = string.IsNullOrWhiteSpace(name) ? typeof(TEntity).Name : name;
+            name = string.IsNullOrWhiteSpace(name) ? typeof(TEntity).GetPrincipalName() : name;
             schema = builder.GetSchema(schema, database);
             builder.ToTable(name, schema, buildAction);
             return builder;
@@ -90,7 +94,7 @@ namespace Insane.Extensions
                 DatabaseFacade db when db.IsOracle() => OracleIdentifierMaxLength,
                 _ => throw new NotImplementedException("Unknown database provider")
             } - IdentifierNameSuffixLength;
-            return $"{(name.Length < (maxLength) ? name : name.Substring(0, maxLength)) }_{ HashExtensions.ToHash(name, HexEncoder.Instance).Substring(0, IdentifierNameSuffixLength) }";
+            return $"{(name.Length < (maxLength) ? name : name.Substring(0, maxLength)) }_{ HashExtensions.ToHash(name, HexEncoder.Instance).Substring(0, IdentifierNameSuffixLength).ToUpper() }";
         }
 
         private static string GetPrincipalName(this EntityTypeBuilder builder, DatabaseFacade database)
@@ -157,6 +161,33 @@ namespace Insane.Extensions
             return builder.HasKey(keyExpression).HasName(name);
         }
 
+        public static PropertyBuilder<TKey> ValueGeneratedOnAdd<TEntity, TKey>(this PropertyBuilder<TKey> builder, DatabaseFacade database, EntityTypeBuilder<TEntity> entityBuilder, IEncoder? encoder = null)
+            where TKey:IEquatable<TKey>
+            where TEntity: class
+        {
+            builder.ValueGeneratedOnAdd().IsRequired();
+            if (typeof(TKey).IsIntType())
+            {
+                (builder as PropertyBuilder<int>)!.SetIdentity(database, entityBuilder, IdentityConstants.IdentityColumnStartValue);
+            }
+
+            if (typeof(TKey).IsLongType())
+            {
+                (builder as PropertyBuilder<long>)!.SetIdentity(database, entityBuilder, IdentityConstants.IdentityColumnStartValue);
+            }
+
+            if (typeof(TKey).IsStringType())
+            {
+                Func<IProperty, IEntityType, ValueGenerator> factory = (property, entityType) =>
+                {
+                    return new EncoderValueGenerator(property, encoder ?? Base64Encoder.Instance);
+                };
+               
+                (builder as PropertyBuilder<string>)!.ValueGeneratedOnAdd().HasValueGenerator(factory);
+            }
+            return builder;
+        }
+                
         public static PropertyBuilder<long> SetIdentity<TEntity>(this PropertyBuilder<long> builder, DatabaseFacade database, EntityTypeBuilder<TEntity> entityBuilder, int startsAt = 1, int incrementsBy = 1)
            where TEntity : class
         {
@@ -175,7 +206,31 @@ namespace Insane.Extensions
                     OraclePropertyBuilderExtensions.UseIdentityColumn(builder, startsAt, incrementsBy);
                     break;
                 default:
-                    throw new NotImplementedException("Unknown database provider");
+                    throw new NotImplementedException(database.ProviderName);
+            }
+            builder.ValueGeneratedOnAdd();
+            return builder;
+        }
+
+        public static PropertyBuilder<int> SetIdentity<TEntity>(this PropertyBuilder<int> builder, DatabaseFacade database, EntityTypeBuilder<TEntity> entityBuilder, int startsAt = 1, int incrementsBy = 1)
+           where TEntity : class
+        {
+            switch (database)
+            {
+                case DatabaseFacade db when db.IsSqlServer():
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(builder, startsAt, incrementsBy);
+                    break;
+                case DatabaseFacade db when db.IsNpgsql():
+                    NpgsqlPropertyBuilderExtensions.HasIdentityOptions(builder, startsAt, incrementsBy);
+                    break;
+                case DatabaseFacade db when db.IsMySql():
+                    entityBuilder.HasAnnotation(CustomMySqlAnnotationProvider.AutoincrementAnnotation, startsAt);
+                    break;
+                case DatabaseFacade db when db.IsOracle():
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(builder, startsAt, incrementsBy);
+                    break;
+                default:
+                    throw new NotImplementedException(database.ProviderName);
             }
             builder.ValueGeneratedOnAdd();
             return builder;

@@ -96,7 +96,7 @@ namespace Insane.Extensions
             }
         }
 
-        private static RsaKeyEncoding GetKeyEncoding(string key)
+        public static RsaKeyEncoding GetKeyEncoding(string key)
         {
             if (Regex.IsMatch(key, JsonPublicAndPrivateKeyPattern, RegexOptions.Multiline, TimeSpan.FromSeconds(2)))
             {
@@ -117,6 +117,7 @@ namespace Insane.Extensions
 
         private static void ParsePublicKey(RSACryptoServiceProvider csp, string publicKey)
         {
+            publicKey = publicKey.Trim();
             if (string.IsNullOrWhiteSpace(publicKey)) throw new ArgumentException("Invalid null or empty private key.");
             try
             {
@@ -149,6 +150,7 @@ namespace Insane.Extensions
 
         private static void ParsePrivateKey(RSACryptoServiceProvider csp, string privateKey)
         {
+            privateKey = privateKey.Trim();
             if (string.IsNullOrWhiteSpace(privateKey)) throw new ArgumentException("Invalid null or empty private key.");
             try
             {
