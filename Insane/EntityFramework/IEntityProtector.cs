@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace Insane.EntityFramework
 {
-    public interface IEntityProtect<TEntity>
+    public interface IEntityProtector<TEntity>
         where TEntity : class
     {
-        public TEntity Protect();
-        public TEntity Unprotect();
+        public TEntity Protect(TEntity entity);
+        public TEntity Unprotect(TEntity entity);
     }
-
+    
     
 }

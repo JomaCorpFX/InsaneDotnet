@@ -281,6 +281,17 @@ namespace Insane.Extensions
             return (TCoreDbContext)Activator.CreateInstance(ConfigureDbProvider(builder, settings, flavors), builder.Options)!;
         }
 
+        public static TEntity Protect<TEntity>(this TEntity entity, IEntityProtector<TEntity> protector) where TEntity : class
+        {
+            protector.Protect(entity);
+            return entity;
+        }
+
+        public static TEntity Unprotect<TEntity>(this TEntity entity, IEntityProtector<TEntity> protector) where TEntity : class
+        {
+            protector.Unprotect(entity);
+            return entity;
+        }
     }
 }
 

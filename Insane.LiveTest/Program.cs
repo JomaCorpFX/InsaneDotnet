@@ -102,31 +102,42 @@ namespace Insane.LiveTest
             return $"{configuration.GetValue("Value", ":)")} {name} {lastName}";
         }
 
-        public class Person : IEntityProtect<Person>
+        public class PersonProtector : IEntityProtector<Person>
         {
-            private readonly AesStringValueConverter stringConverter;
+            public PersonProtector(AesStringValueConverter converter)
+            {
+                Converter = converter;
+            }
+
+            public AesStringValueConverter Converter { get; }
+
+            public Person Protect(Person entity)
+            {
+                entity.Name = Converter.Convert(entity.Name);
+                return entity;
+            }
+
+            public Person Unprotect(Person entity)
+            {
+                entity.Name = Converter.Deconvert(entity.Name);
+                return entity;
+            }
+        }
+
+        public class Person
+        {
 
             public int Id { get; set; }
 
             public string Name { get; set; } = null!;
            
 
-            public Person(AesStringValueConverter stringConverter)
+            public Person()
             {
-                this.stringConverter = stringConverter;
+                
             }
+            
 
-            public Person Protect()
-            {
-                Name = stringConverter.Convert(Name);
-                return this;
-            }
-
-            public Person Unprotect()
-            {
-                Name = stringConverter.Deconvert(Name);
-                return this;
-            }
         }
 
         static void Main(string[] args)
@@ -174,13 +185,13 @@ namespace Insane.LiveTest
             Console.WriteLine(json);
             result = HmacResult.Deserialize(json, encoder)!;
             Console.WriteLine(encoder.Name());
-            var person = new Person(new AesStringValueConverter(new AesEncryptor("hello123", Base64Encoder.Instance))) { Name = "Joma", Id = 100};
-            person.Protect();
+            var person = new Person() { Name = "Joma", Id = 100};
+            IEntityProtector<Person> protector = new PersonProtector(new AesStringValueConverter(new AesEncryptor("hello123", Base64Encoder.Instance)));
+            person.Protect(protector);
             Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(person));
-            person.Unprotect();
+            person.Unprotect(protector);
             Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(person));
             Console.WriteLine("grape".ToHash(encoder));
-            AesStringValueConverter x = new AesStringValueConverter(new AesEncryptor("", Base64Encoder.Instance));
             
 
             sw.Stop();
