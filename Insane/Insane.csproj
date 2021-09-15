@@ -15,7 +15,7 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
-    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+    <!--<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>-->
 
     <RepositoryUrl>https://github.com/Satancito/InsaneDotnet</RepositoryUrl>
 
@@ -29,9 +29,6 @@
     <UserSecretsId>dcead069-ffae-4de4-be81-720ec8ff2ac7</UserSecretsId>
   </PropertyGroup>
  
- 
-
-  
   <ItemGroup>
     <PackageReference Include="Konscious.Security.Cryptography.Argon2" Version="1.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.7" />
@@ -46,13 +43,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CryptSharp.SCrypt\CryptSharp.SCrypt.csproj">
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <IncludeAssets>CryptSharp.SCrypt</IncludeAssets>
-    </ProjectReference>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\Icon.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
@@ -63,10 +53,19 @@
     </None>
   </ItemGroup>
 
-  <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
+  <ItemGroup>
+    <ProjectReference Include="..\CryptSharp.SCrypt\CryptSharp.SCrypt.csproj">
+      <!--<ReferenceOutputAssembly>true</ReferenceOutputAssembly>-->
+      <!--<IncludeAssets>CryptSharp.SCryptz</IncludeAssets>-->
+    </ProjectReference>
+  </ItemGroup>
+
+  <!--<Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
     <ItemGroup>
-      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
     </ItemGroup>
-  </Target>
+  </Target>-->
+
+
 
 </Project>

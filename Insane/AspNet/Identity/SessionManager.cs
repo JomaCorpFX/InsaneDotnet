@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Insane.AspNet.Identity
 {
-    class SessionManager
+    public class SessionManager
     {
     }
 }

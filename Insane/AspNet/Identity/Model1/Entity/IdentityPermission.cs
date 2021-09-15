@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Insane.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Insane.AspNet.Identity.Model1.Entity
 {
-    public class IdentityPermission
+    public class IdentityPermission: IEntity
     {
         public long Id { get; set; } 
         public long UserId { get; set; } 

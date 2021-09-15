@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
@@ -14,10 +14,16 @@ using System.Threading.Tasks;
 using Insane.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System.IO;
-using Insane.EntityFramework;
+using Insane.EntityFrameworkCore;
 using Insane.AspNet.Identity.Model1.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using System.Collections.ObjectModel;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Insane.AspNet.Identity.Model1.Entity;
+using MyIdentityModel = Insane.AspNet.Identity.Model1.Entity;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace Insane.WebApiTest
 {
@@ -30,44 +36,95 @@ namespace Insane.WebApiTest
 
         public IConfiguration Configuration { get; private set; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             Configuration = new ConfigurationBuilder().
                    SetBasePath(Directory.GetCurrentDirectory())
                    .AddJsonFile("appsettings.json", false, true)
-                   
+                   .AddUserSecrets<Program>(false, true)
                    .Build();
 
-            DbContextOptionsBuilder builder = new DbContextOptionsBuilder().EnableSensitiveDataLogging().EnableDetailedErrors();
-            DbContextFlavors<IdentityDbContextBase<long>> flavors = DbContextFlavors<IdentityDbContextBase<long>>.CreateInstance<IdentitySqlServerDbContext<long>,
-                IdentityPostgreSqlDbContext<long>,
-                IdentityMySqlDbContext<long>,
-                IdentityOracleDbContext<long>>();
-            //IdentityUser<>
-            
-            services.AddDbContext<IdentityDbContextBase<long>>(builder, Configuration, nameof(DbContextSettings), flavors, ServiceLifetime.Scoped);
+
+            DbContextSettings dbContextSettings = new DbContextSettings();
+            Configuration.Bind("InsaneIdentity:DbContextSettings", dbContextSettings);
+            string migrationAssembly = typeof(Startup).Assembly.FullName;
+
+            DbContextFlavors<IdentityDbContextBase> flavors = DbContextFlavors<IdentityDbContextBase>
+                .CreateInstance<IdentitySqlServerDbContext,
+                                IdentityPostgreSqlDbContext,
+                                IdentityMySqlDbContext,
+                                IdentityOracleDbContext>();
+
+            DbContextOptionsBuilderActionFlavors builderActionFlavors = new DbContextOptionsBuilderActionFlavors()
+            {
+                SqlServer = (options) =>
+                {
+                    options.MigrationsAssembly(migrationAssembly);
+                },
+                PostgreSql = (options) =>
+                {
+                    options.MigrationsAssembly(migrationAssembly);
+                },
+                MySql = (options) =>
+                {
+                    options.MigrationsAssembly(migrationAssembly);
+                },
+                Oracle = (options) =>
+                {
+                    options.MigrationsAssembly(migrationAssembly);
+                }
+            };
+
+            Action<DbContextOptionsBuilder> builderAction = (options) =>
+            {
+                options.EnableDetailedErrors();
+                options.EnableSensitiveDataLogging();
+            };
+
+            services.AddDbContext(dbContextSettings, flavors,  builderAction, builderActionFlavors);
+
+
+
+
+
+
+
+
+
+
+
+
+            //services.AddDbContext<IdentitySqlServerDbContext>(options =>
+            //{
+            //    options.UseSqlServer(dbContextSettings.SqlServerConnectionString);
+            //});
+
+            //services.AddDbContext<IdentityPostgreSqlDbContext>(options =>
+            //{
+            //    options.UseNpgsql(dbContextSettings.PostgreSqlConnectionString);
+            //});
+
             //services.AddIdentity<IdentityUser, IdentityRole>(op=> {
             //    op.Password = new PasswordOptions
             //    {
-                    
+
             //    };
             //    op.Lockout = new LockoutOptions
             //    {
-                    
+
             //    };
             //    op.SignIn = new SignInOptions
             //    {
-                    
+
             //    };
             //    op.Stores = new StoreOptions
             //    {
-                    
+
             //    };
 
             //    op.Tokens = new TokenOptions
             //    {
-                    
+
             //    };
 
             //    op.ClaimsIdentity = new ClaimsIdentityOptions
@@ -83,11 +140,19 @@ namespace Insane.WebApiTest
             });
         }
 
-        
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public class Role
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+        }
+
+
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IdentityDbContextBase context/*, IdentitySqlServerDbContext context, IdentityPostgreSqlDbContext context2*/)
         {
 
-            //context.Database.Migrate();
+            context.Database.ProviderName.WriteLine();
+            context.Database.Migrate();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

@@ -1,4 +1,4 @@
-﻿using Insane.EntityFramework;
+﻿using Insane.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ namespace Insane.AspNet.Identity.Model1.Context
 {
     public class IdentityPostgreSqlDbContext : IdentityDbContextBase, IPostgreSqlDbContext
     {
-        public IdentityPostgreSqlDbContext(DbContextOptions options) : base(options)
+        public IdentityPostgreSqlDbContext(DbContextOptions<IdentityPostgreSqlDbContext> options) : base(options)
         {
         }
     }

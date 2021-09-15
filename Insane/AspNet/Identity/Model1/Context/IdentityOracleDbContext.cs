@@ -1,4 +1,4 @@
-﻿using Insane.EntityFramework;
+﻿using Insane.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ namespace Insane.AspNet.Identity.Model1.Context
 {
     public class IdentityOracleDbContext : IdentityDbContextBase, IOracleDbContext
     {
-        public IdentityOracleDbContext(DbContextOptions options) : base(options)
+        public IdentityOracleDbContext(DbContextOptions<IdentityOracleDbContext> options) : base(options)
         {
         }
     }

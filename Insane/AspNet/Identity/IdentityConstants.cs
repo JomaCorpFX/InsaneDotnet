@@ -9,7 +9,7 @@ namespace Insane.AspNet.Identity
     public class IdentityConstants
     {
         public const string InsaneIdentityConfigurationName = "InsaneIdentity";
-        public const string InsaneIdentityDbSettingsConfigurationName = "InsaneIdentity:DbContextSettings";
+        public const string InsaneIdentityDbSettingsConfigurationPath = "InsaneIdentity:DbContextSettings";
         public const string DefaultConfigurationFile = "appsettings.json";
         public const string DefaultSchema = "Identity";
         public const int IdentityColumnStartValue = 10000;

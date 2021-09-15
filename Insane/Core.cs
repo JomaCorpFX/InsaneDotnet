@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Insane
 {
-    public class Insane
+    public class InsaneCore
     {
         public const string Empty = "";
         
