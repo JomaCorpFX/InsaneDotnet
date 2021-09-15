@@ -1,6 +1,6 @@
 ﻿using Insane.Converter;
 using Insane.Cryptography;
-using Insane.EntityFramework;
+using Insane.EntityFrameworkCore;
 using Insane.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -124,7 +124,7 @@ namespace Insane.LiveTest
             }
         }
 
-        public class Person
+        public class Person:IEntity
         {
 
             public int Id { get; set; }
@@ -186,6 +186,7 @@ namespace Insane.LiveTest
             result = HmacResult.Deserialize(json, encoder)!;
             Console.WriteLine(encoder.Name());
             var person = new Person() { Name = "Joma", Id = 100};
+            
             IEntityProtector<Person> protector = new PersonProtector(new AesStringValueConverter(new AesEncryptor("hello123", Base64Encoder.Instance)));
             person.Protect(protector);
             Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(person));

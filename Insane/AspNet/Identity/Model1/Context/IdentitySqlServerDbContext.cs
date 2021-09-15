@@ -1,4 +1,4 @@
-﻿using Insane.EntityFramework;
+﻿using Insane.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ namespace Insane.AspNet.Identity.Model1.Context
 {
     public class IdentitySqlServerDbContext : IdentityDbContextBase, ISqlServerDbContext
     {
-        public IdentitySqlServerDbContext(DbContextOptions options) : base(options)
+        public IdentitySqlServerDbContext(DbContextOptions<IdentitySqlServerDbContext> options) : base(options)
         {
         }
 

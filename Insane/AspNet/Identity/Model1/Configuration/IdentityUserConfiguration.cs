@@ -1,5 +1,5 @@
 ﻿using Insane.AspNet.Identity.Model1.Entity;
-using Insane.EntityFramework;
+using Insane.EntityFrameworkCore;
 using Insane.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;

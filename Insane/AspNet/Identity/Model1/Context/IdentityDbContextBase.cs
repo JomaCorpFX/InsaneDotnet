@@ -1,6 +1,6 @@
 ﻿using Insane.AspNet.Identity.Model1.Configuration;
 using Insane.AspNet.Identity.Model1.Entity;
-using Insane.EntityFramework;
+using Insane.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 

@@ -1,4 +1,4 @@
-﻿using Insane.EntityFramework;
+﻿using Insane.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ namespace Insane.AspNet.Identity.Model1.Context
 {
     public class IdentityMySqlDbContext : IdentityDbContextBase, IMySqlDbContext
     {
-        public IdentityMySqlDbContext(DbContextOptions options) : base(options)
+        public IdentityMySqlDbContext(DbContextOptions<IdentityMySqlDbContext> options) : base(options)
         {
         }
     }

@@ -1,5 +1,7 @@
-﻿using Insane.EntityFramework;
+﻿using Insane.EntityFrameworkCore;
+using Insane.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -13,54 +15,36 @@ namespace Insane.Extensions
 {
     public static class EntityFrameworkServiceCollectionExtensions
     {
-        private static Type GetDbContextType<TCoreDbContext>(this DbContextOptionsBuilder builder, IConfiguration configuration, string configPath, DbContextFlavors<TCoreDbContext> flavors)
-            where TCoreDbContext:CoreDbContextBase
-        {
-            DbContextSettings dbContextSettings = new DbContextSettings();
-            configuration.Bind(configPath, dbContextSettings);
-            Type dbContextType = builder.ConfigureDbProvider(dbContextSettings, flavors);
-            return dbContextType;
-        }
 
-        public static IServiceCollection AddDbContext<TCoreDbContext>(this IServiceCollection services, DbContextOptionsBuilder builder, IConfiguration configuration, string configurationPath, DbContextFlavors<TCoreDbContext> flavors, ServiceLifetime lifetime = ServiceLifetime.Scoped)
-            where TCoreDbContext : CoreDbContextBase
+        public static IServiceCollection AddDbContext<TContextBase>(this IServiceCollection services, DbContextSettings settings, DbContextFlavors<TContextBase> flavors, Action<DbContextOptionsBuilder> dbContextOptionsBuilderAction = null!, DbContextOptionsBuilderActionFlavors dbContextOptionsBuilderActionFlavors = null!, ServiceLifetime lifetime = ServiceLifetime.Scoped)
+            where TContextBase : CoreDbContextBase
         {
-            if (typeof(TCoreDbContext).Equals(typeof(CoreDbContextBase)))
+
+            if (typeof(TContextBase).Equals(typeof(CoreDbContextBase)))
             {
-                throw new ArgumentException($"\"{nameof(TCoreDbContext)}\" type parameter cannot be \"{nameof(CoreDbContextBase)}\".");
+                throw new ArgumentException($"\"{nameof(TContextBase)}\" type parameter cannot be \"{nameof(CoreDbContextBase)}\".");
             }
+
+            (Type dbContextType, DbContextOptionsBuilder builder)  = settings.ConfigureDbProvider(flavors, dbContextOptionsBuilderAction,dbContextOptionsBuilderActionFlavors);
+            
+            Func<IServiceProvider, TContextBase> factory = (serviceProvider) =>
+            {
+                return dbContextType.CreateDbContext<TContextBase>(builder);
+            };
 
             switch (lifetime)
             {
                 case ServiceLifetime.Scoped:
-                    services.AddScoped<TCoreDbContext>((serviceProvider) =>
-                    { 
-                        Type dbContextType = GetDbContextType(builder, configuration, configurationPath, flavors);
-                        var exNew = Expression.New(dbContextType.GetConstructor(new Type[] { typeof(DbContextOptions) })!, Expression.Constant(builder.Options));
-                        var exConvert = Expression.Convert(exNew, typeof(TCoreDbContext));
-                        return Expression.Lambda<Func<TCoreDbContext>>(exConvert).Compile().Invoke();
-                    });
+                    services.AddScoped(factory);
                     break;
                 case ServiceLifetime.Transient:
-                    services.AddTransient<TCoreDbContext>((serviceProvider) =>
-                    {
-                        Type dbContextType = GetDbContextType(builder, configuration, configurationPath, flavors);
-                        var exNew = Expression.New(dbContextType.GetConstructor(new Type[] { typeof(DbContextOptions) })!, Expression.Constant(builder.Options));
-                        var exConvert = Expression.Convert(exNew, typeof(TCoreDbContext));
-                        return Expression.Lambda<Func<TCoreDbContext>>(exConvert).Compile().Invoke();
-                    });
+                    services.AddTransient(factory);
                     break;
                 case ServiceLifetime.Singleton:
-                    services.AddSingleton<TCoreDbContext>((serviceProvider) =>
-                    {
-                        Type dbContextType = GetDbContextType(builder, configuration, configurationPath, flavors);
-                        var exNew = Expression.New(dbContextType.GetConstructor(new Type[] { typeof(DbContextOptions) })!, Expression.Constant(builder.Options));
-                        var exConvert = Expression.Convert(exNew, typeof(TCoreDbContext));
-                        return Expression.Lambda<Func<TCoreDbContext>>(exConvert).Compile().Invoke();
-                    });
+                    services.AddSingleton(factory);
                     break;
                 default:
-                    throw new NotImplementedException("Not implemented lifetime.");
+                    throw new NotImplementedException($"{nameof(ServiceLifetime)} {lifetime}");
             }
             return services;
         }
