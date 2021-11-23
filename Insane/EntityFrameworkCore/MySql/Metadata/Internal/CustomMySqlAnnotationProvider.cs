@@ -20,19 +20,24 @@ namespace Insane.EntityFrameworkCore.MySql.Metadata.Internal
         {
         }
 
-        public override IEnumerable<IAnnotation> For(ITable table)
+        public override IEnumerable<IAnnotation> For(ITable table, bool designTime)
         {
-            var annotations = base.For(table);
+            var annotations = base.For(table, designTime);
             IEntityType entityType = table.EntityTypeMappings.First().EntityType;
 
-            IAnnotation autoIncrement = entityType.FindAnnotation(AutoincrementAnnotation);
+            IAnnotation? autoIncrement = entityType.FindAnnotation(AutoincrementAnnotation);
             if (autoIncrement is not null)
             {
                 annotations = annotations.Append(autoIncrement);
             }
-
             return annotations;
         }
+
+
+        //public override IEnumerable<IAnnotation> For(ITable table)
+        //{
+        //    
+        //}
 
     }
 }

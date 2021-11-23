@@ -1,5 +1,4 @@
-﻿using Insane.AspNet.Identity.Model1.Context;
-using Insane.EntityFrameworkCore;
+﻿using Insane.EntityFrameworkCore;
 using Insane.WebApiTest;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -13,16 +12,16 @@ using System.Threading.Tasks;
 
 namespace Insane.WebApiLiveTest.Factory
 {
-    public class IdentityPostgreSqlDbContextFactory : IdentityDbContextFactoryBase<IdentityDbContextBase, IdentityPostgreSqlDbContext>
+    //public class IdentityPostgreSqlDbContextFactory : IdentityDbContextFactoryBase<IdentityDbContextBase, IdentityPostgreSqlDbContext>
 
-    {
-        public override DbContextOptionsBuilderActionFlavors DbContextOptionsBuilderActionFlavors => new DbContextOptionsBuilderActionFlavors()
-        {
-            PostgreSql = (options) =>
-            {
-                options.MigrationsAssembly(typeof(Program).Assembly.FullName);
-            }
-        };
+    //{
+    //    public override DbContextOptionsBuilderActionFlavors DbContextOptionsBuilderActionFlavors => new DbContextOptionsBuilderActionFlavors()
+    //    {
+    //        PostgreSql = (options) =>
+    //        {
+    //            options.MigrationsAssembly(typeof(Program).Assembly.FullName);
+    //        }
+    //    };
 
-    }
+    //}
 }

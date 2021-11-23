@@ -1,7 +1,9 @@
 ﻿using Insane.Cryptography;
 using Insane.Extensions;
 using System;
+using System.Security.Cryptography;
 using System.Text;
+using HashAlgorithm = Insane.Cryptography.HashAlgorithm;
 
 namespace Insane.Extensions
 {
@@ -27,25 +29,22 @@ namespace Insane.Extensions
         public static byte[] EncryptAes(this byte[] data, byte[] key)
         {
             ValidateKey(key);
-            System.Security.Cryptography.AesManaged AesAlgorithm = new ()
-            {
-                Key = GenerateNormalizedKey(key)
-            };
-            AesAlgorithm.GenerateIV();
-            var Encrypted = AesAlgorithm.CreateEncryptor().TransformFinalBlock(data, 0, data.Length);
+            var z = System.Security.Cryptography.Aes.Create();
+            var aes = Aes.Create();
+            aes.GenerateIV();
+            aes.Key = GenerateNormalizedKey(key);
+            var Encrypted = aes.CreateEncryptor().TransformFinalBlock(data, 0, data.Length);
             byte[] ret = new byte[Encrypted.Length + MaxIvLength];
             Array.Copy(Encrypted, ret, Encrypted.Length);
-            Array.Copy(AesAlgorithm.IV, 0, ret, ret.Length - MaxIvLength, MaxIvLength);
+            Array.Copy(aes.IV, 0, ret, ret.Length - MaxIvLength, MaxIvLength);
             return ret;
         }
 
         public static byte[] DecryptAes(this byte[] data, byte[] key)
         {
             ValidateKey(key);
-            System.Security.Cryptography.AesManaged AesAlgorithm = new ()
-            {
-                Key = GenerateNormalizedKey(key)
-            };
+            Aes AesAlgorithm = Aes.Create();
+            AesAlgorithm.Key = GenerateNormalizedKey(key);
             byte[] IV = new byte[MaxIvLength];
             Array.Copy(data, data.Length - MaxIvLength, IV, 0, MaxIvLength);
             AesAlgorithm.IV = IV;

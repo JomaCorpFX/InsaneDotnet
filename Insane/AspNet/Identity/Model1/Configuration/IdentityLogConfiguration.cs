@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 
 namespace Insane.AspNet.Identity.Model1.Configuration
 {
-    class IdentitySessionConfiguration<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TLog> : EntityTypeConfigurationBase<TSession>
-       where TKey : IEquatable<TKey>
+    public class IdentityLogConfiguration<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TLog> : EntityTypeConfigurationBase<TLog>
+        where TKey : IEquatable<TKey>
         where TUser : IdentityUserBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TLog>
         where TRole : IdentityRoleBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TLog>
         where TAccess : IdentityAccessBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TLog>
@@ -19,11 +19,11 @@ namespace Insane.AspNet.Identity.Model1.Configuration
         where TSession : IdentitySessionBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TLog>
         where TLog : IdentityLogBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TLog>
     {
-        public IdentitySessionConfiguration(DatabaseFacade database, string? schema = null) : base(database, schema)
+        public IdentityLogConfiguration(DatabaseFacade database, string? schema = null) : base(database, schema)
         {
         }
 
-        public override void Configure(EntityTypeBuilder<TSession> builder)
+        public override void Configure(EntityTypeBuilder<TLog> builder)
         {
             throw new NotImplementedException();
         }

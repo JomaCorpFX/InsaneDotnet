@@ -57,7 +57,7 @@ namespace Insane.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void TestEncryptDecryptAesWithNullKey()
         {
-            TestEncryptDecryptAes(Data, null, Base64Encoder.Instance);
+            TestEncryptDecryptAes(Data, null!, Base64Encoder.Instance);
         }
 
         [TestMethod]
@@ -65,7 +65,7 @@ namespace Insane.Tests
         {
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
-                TestEncryptDecryptAes(null, Key, Base64Encoder.Instance);
+                TestEncryptDecryptAes(null!, Key, Base64Encoder.Instance);
             });
         }
 

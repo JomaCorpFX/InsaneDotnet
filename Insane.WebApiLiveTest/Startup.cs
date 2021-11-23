@@ -15,18 +15,34 @@ using Insane.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System.IO;
 using Insane.EntityFrameworkCore;
-using Insane.AspNet.Identity.Model1.Context;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System.Collections.ObjectModel;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Insane.AspNet.Identity.Model1.Entity;
-using MyIdentityModel = Insane.AspNet.Identity.Model1.Entity;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using Insane.WebApiLiveTest;
 
 namespace Insane.WebApiTest
 {
+    static class ServiceCollectionExtensions
+    {
+        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, Func<string> getConnectionStringFunction, Action<DbContextOptionsBuilder> dbContextOptionsBuilderAction = null!)
+        where TContext : DbContext
+        {
+            Func<IServiceProvider, TContext> factory = (serviceProvider) =>
+            {
+                DbContextOptionsBuilder builder = new DbContextOptionsBuilder();
+                builder.UseSqlServer(getConnectionStringFunction.Invoke());
+                dbContextOptionsBuilderAction.Invoke(builder);
+                return (TContext)typeof(TContext).GetConstructor(new Type[] { typeof(DbContextOptions) })!.Invoke(new[] { builder.Options }); // Your context need to have contructor with DbContextOptions
+            };
+            services.AddScoped(factory);
+            return services;
+        }
+    }
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -47,49 +63,56 @@ namespace Insane.WebApiTest
 
             DbContextSettings dbContextSettings = new DbContextSettings();
             Configuration.Bind("InsaneIdentity:DbContextSettings", dbContextSettings);
-            string migrationAssembly = typeof(Startup).Assembly.FullName;
+            //string migrationAssembly = typeof(Startup).Assembly.FullName;
 
-            DbContextFlavors<IdentityDbContextBase> flavors = DbContextFlavors<IdentityDbContextBase>
-                .CreateInstance<IdentitySqlServerDbContext,
-                                IdentityPostgreSqlDbContext,
-                                IdentityMySqlDbContext,
-                                IdentityOracleDbContext>();
 
-            DbContextOptionsBuilderActionFlavors builderActionFlavors = new DbContextOptionsBuilderActionFlavors()
+            //DbContextFlavors<IdentityDbContextBase> flavors = DbContextFlavors<IdentityDbContextBase>
+            //    .CreateInstance<IdentitySqlServerDbContext,
+            //                    IdentityPostgreSqlDbContext,
+            //                    IdentityMySqlDbContext,
+            //                    IdentityOracleDbContext>();
+
+            //DbContextOptionsBuilderActionFlavors builderActionFlavors = new DbContextOptionsBuilderActionFlavors()
+            //{
+            //    SqlServer = (options) =>
+            //    {
+            //        options.MigrationsAssembly(migrationAssembly);
+            //    },
+            //    PostgreSql = (options) =>
+            //    {
+            //        options.MigrationsAssembly(migrationAssembly);
+            //    },
+            //    MySql = (options) =>
+            //    {
+            //        options.MigrationsAssembly(migrationAssembly);
+            //    },
+            //    Oracle = (options) =>
+            //    {
+            //        options.MigrationsAssembly(migrationAssembly);
+            //    }
+            //};
+
+            //Action<DbContextOptionsBuilder> builderAction = (options) =>
+            //{
+            //    options.EnableDetailedErrors();
+            //    options.EnableSensitiveDataLogging();
+            //};
+
+            //services.AddDbContext(dbContextSettings, flavors, builderAction, builderActionFlavors);
+            //Microsoft.AspNetCore.Identity.IdentityUser
+
+
+
+
+
+            string getConnectionString()
             {
-                SqlServer = (options) =>
-                {
-                    options.MigrationsAssembly(migrationAssembly);
-                },
-                PostgreSql = (options) =>
-                {
-                    options.MigrationsAssembly(migrationAssembly);
-                },
-                MySql = (options) =>
-                {
-                    options.MigrationsAssembly(migrationAssembly);
-                },
-                Oracle = (options) =>
-                {
-                    options.MigrationsAssembly(migrationAssembly);
-                }
-            };
+                DbContextSettings dbContextSettings = new DbContextSettings();
+                Configuration.Bind("InsaneIdentity:DbContextSettings", dbContextSettings);
+                return dbContextSettings.SqlServerConnectionString; //this is an example // Read connection string from file/config/environment
+            }
 
-            Action<DbContextOptionsBuilder> builderAction = (options) =>
-            {
-                options.EnableDetailedErrors();
-                options.EnableSensitiveDataLogging();
-            };
-
-            services.AddDbContext(dbContextSettings, flavors,  builderAction, builderActionFlavors);
-
-
-
-
-
-
-
-
+            services.AddDbContext<MyContext>(getConnectionString, builder => builder.EnableDetailedErrors().EnableSensitiveDataLogging());//Dont call UseSqlServer method. It's called from AddDbContext with effective connection string
 
 
 
@@ -103,8 +126,10 @@ namespace Insane.WebApiTest
             //{
             //    options.UseNpgsql(dbContextSettings.PostgreSqlConnectionString);
             //});
+            //Microsoft.AspNetCore.Identity.Identity
 
-            //services.AddIdentity<IdentityUser, IdentityRole>(op=> {
+            //services.AddIdentity<IdentityUser, IdentityRole>(op =>
+            //{
             //    op.Password = new PasswordOptions
             //    {
 
@@ -132,7 +157,7 @@ namespace Insane.WebApiTest
             //        EmailClaimType = System.Security.Claims.ClaimTypes.WindowsAccountName
             //    };
 
-            //}).AddEntityFrameworkStores<IdentityDbContext>();
+            //};//).AddEntityFrameworkStores<IdentityDbContext>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -147,11 +172,12 @@ namespace Insane.WebApiTest
         }
 
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IdentityDbContextBase context/*, IdentitySqlServerDbContext context, IdentityPostgreSqlDbContext context2*/)
+
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, MyContext context/*, IdentitySqlServerDbContext context, IdentityPostgreSqlDbContext context2*/)
         {
 
-            context.Database.ProviderName.WriteLine();
-            context.Database.Migrate();
+            context.Database.GetDbConnection().ConnectionString.WriteLine();
+            //context.Database.Migrate();
 
             if (env.IsDevelopment())
             {

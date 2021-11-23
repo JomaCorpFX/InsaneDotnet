@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 
 namespace Insane.AspNet.Identity.Model1.Configuration
 {
-    class IdentityRoleConfiguration<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TLog> : EntityTypeConfigurationBase<TRole>
-       where TKey : IEquatable<TKey>
+    class IdentityUserClaimConfiguration<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TLog> : EntityTypeConfigurationBase<TUserClaim>
+         where TKey : IEquatable<TKey>
         where TUser : IdentityUserBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TLog>
         where TRole : IdentityRoleBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TLog>
         where TAccess : IdentityAccessBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TLog>
@@ -20,24 +20,28 @@ namespace Insane.AspNet.Identity.Model1.Configuration
         where TSession : IdentitySessionBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TLog>
         where TLog : IdentityLogBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TLog>
     {
-        public IdentityRoleConfiguration(DatabaseFacade database, string? schema = null) : base(database, schema)
+        public IdentityUserClaimConfiguration(DatabaseFacade database, string? schema = null) : base(database, schema)
         {
         }
 
-        public override void Configure(EntityTypeBuilder<TRole> builder)
+        public override void Configure(EntityTypeBuilder<TUserClaim> builder)
         {
             builder.ToTable(Database, Schema);
+
             builder.Property(e => e.Id).IsRequired().ValueGeneratedOnAdd(Database, builder, startsAt: IdentityConstants.IdentityColumnStartValue);
             builder.Ignore(e => e.UniqueId);
-            builder.Property(e => e.Name).IsRequired().IsUnicode().HasMaxLength(IdentityConstants.NameMaxLength).IsConcurrencyToken();
-            builder.Property(e => e.Description).IsRequired(false).IsUnicode().HasMaxLength(IdentityConstants.DescriptionMaxLength);
-            builder.Property(e => e.LogoUri).IsRequired(false).IsUnicode().HasMaxLength(IdentityConstants.UriMaxLength);
+            builder.Property(e => e.UserId).IsRequired();
+            builder.Property(e => e.Type).IsRequired().IsUnicode().HasMaxLength(IdentityConstants.IdentifierMaxLength);
+            builder.Property(e => e.Value).IsRequired().IsUnicode().HasMaxLength(IdentityConstants.SummaryMaxLength);
+            builder.Property(e => e.Enabled).IsRequired();
+            builder.Property(e => e.ActiveUntil).IsRequired();
             builder.Property(e => e.CreatedAt).IsRequired();
-            builder.Property(e => e.Enabled).IsRequired().IsConcurrencyToken().IsConcurrencyToken();
-            builder.Property(e => e.ActiveUntil).IsRequired(false).IsConcurrencyToken();
 
             builder.HasPrimaryKeyIndex(Database, e => e.Id);
-            builder.HasUniqueIndex(Database, e => e.Name);
+            builder.HasUniqueIndex(Database, e => new { e.UserId, e.Type, e.Value });
+            builder.HasIndex(Database, e => e.UserId);
+
+            builder.HasOne(e => e.User).WithMany(e => e.Claims).HasForeignKey(Database, builder, e => e.UserId).OnDelete(Microsoft.EntityFrameworkCore.DeleteBehavior.Restrict);
         }
     }
 }
