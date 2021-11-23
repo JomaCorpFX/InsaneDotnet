@@ -4,6 +4,8 @@ using System;
 using System.Linq;
 using System.Text;
 using Insane.Cryptography;
+using System.Security.Cryptography;
+using HashAlgorithm = Insane.Cryptography.HashAlgorithm;
 
 namespace Insane.Extensions
 {
@@ -29,20 +31,15 @@ namespace Insane.Extensions
             switch (algorithm)
             {
                 case HashAlgorithm.Md5:
-                    System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create();
-                    return md5.ComputeHash(data, 0, data.Length);
+                    return MD5.Create().ComputeHash(data);
                 case HashAlgorithm.Sha1:
-                    System.Security.Cryptography.SHA1Managed sha1 = new ();
-                    return sha1.ComputeHash(data);
+                    return SHA1.Create().ComputeHash(data);
                 case HashAlgorithm.Sha256:
-                    System.Security.Cryptography.SHA256Managed sha256 = new ();
-                    return sha256.ComputeHash(data);
+                    return SHA256.Create().ComputeHash(data);
                 case HashAlgorithm.Sha384:
-                    System.Security.Cryptography.SHA384Managed sha384 = new ();
-                    return sha384.ComputeHash(data);
+                    return SHA384.Create().ComputeHash(data);
                 case HashAlgorithm.Sha512:
-                    System.Security.Cryptography.SHA512Managed sha512 = new ();
-                    return sha512.ComputeHash(data, 0, data.Length);
+                    return SHA512.Create().ComputeHash(data);
                 default:
                     throw new NotImplementedException(algorithm.ToString());
             }
@@ -58,27 +55,27 @@ namespace Insane.Extensions
             switch (algorithm)
             {
                 case HashAlgorithm.Md5:
-                    using (System.Security.Cryptography.HMACMD5 hmac = new (key))
+                    using (System.Security.Cryptography.HMACMD5 hmac = new(key))
                     {
                         return hmac.ComputeHash(data);
                     }
                 case HashAlgorithm.Sha1:
-                    using (System.Security.Cryptography.HMACSHA1 hmac = new (key))
+                    using (System.Security.Cryptography.HMACSHA1 hmac = new(key))
                     {
                         return hmac.ComputeHash(data);
                     }
                 case HashAlgorithm.Sha256:
-                    using (System.Security.Cryptography.HMACSHA256 hmac = new (key))
+                    using (System.Security.Cryptography.HMACSHA256 hmac = new(key))
                     {
                         return hmac.ComputeHash(data);
                     }
                 case HashAlgorithm.Sha384:
-                    using (System.Security.Cryptography.HMACSHA384 hmac = new (key))
+                    using (System.Security.Cryptography.HMACSHA384 hmac = new(key))
                     {
                         return hmac.ComputeHash(data);
                     }
                 case HashAlgorithm.Sha512:
-                    using (System.Security.Cryptography.HMACSHA512 hmac = new (key))
+                    using (System.Security.Cryptography.HMACSHA512 hmac = new(key))
                     {
                         return hmac.ComputeHash(data);
                     }
@@ -142,21 +139,21 @@ namespace Insane.Extensions
             switch (variant)
             {
                 case Argon2Variant.Argon2d:
-                    Argon2d argon2d = new Argon2d(data);
+                    Argon2d argon2d = new(data);
                     argon2d.Salt = salt;
                     argon2d.Iterations = (int)iterations;
                     argon2d.MemorySize = (int)memorySizeKiB;
                     argon2d.DegreeOfParallelism = (int)parallelism;
                     return argon2d.GetBytes((int)derivedKeyLength);
                 case Argon2Variant.Argon2i:
-                    Argon2i argon2i = new Argon2i(data);
+                    Argon2i argon2i = new(data);
                     argon2i.Salt = salt;
                     argon2i.Iterations = (int)iterations;
                     argon2i.MemorySize = (int)memorySizeKiB;
                     argon2i.DegreeOfParallelism = (int)parallelism;
                     return argon2i.GetBytes((int)derivedKeyLength);
                 case Argon2Variant.Argon2id:
-                    Argon2id argon2id = new Argon2id(data);
+                    Argon2id argon2id = new(data);
                     argon2id.Salt = salt;
                     argon2id.Iterations = (int)iterations;
                     argon2id.MemorySize = (int)memorySizeKiB;

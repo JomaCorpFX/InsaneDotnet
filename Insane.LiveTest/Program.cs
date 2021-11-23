@@ -124,6 +124,7 @@ namespace Insane.LiveTest
             }
         }
 
+        //POCO
         public class Person:IEntity
         {
 
@@ -137,7 +138,6 @@ namespace Insane.LiveTest
                 
             }
             
-
         }
 
         static void Main(string[] args)

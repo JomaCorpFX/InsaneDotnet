@@ -19,10 +19,7 @@ namespace Insane.Cryptography
         public static int Next()
         {
             byte[] intBytes = new byte[4];
-            using(RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
-            {
-                rng.GetNonZeroBytes(intBytes);
-            }
+            RandomNumberGenerator.Fill(intBytes);
             return BitConverter.ToInt32(intBytes, 0);
         }
 
@@ -39,10 +36,7 @@ namespace Insane.Cryptography
                 throw new ArgumentException("Min value is greater or equals than Max value.");
             }
             byte[] intBytes = new byte[4];
-            using(RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
-            {
-                rng.GetNonZeroBytes(intBytes);
-            }
+            RandomNumberGenerator.Fill(intBytes);
             return  min +  Math.Abs(BitConverter.ToInt32(intBytes, 0)) % (max - min + 1);
         }
 
@@ -53,12 +47,9 @@ namespace Insane.Cryptography
         /// <returns></returns>
         public static byte[] Next(int size)
         {
-            using (RNGCryptoServiceProvider provider = new RNGCryptoServiceProvider())
-            {
-                byte[] ret = new byte[size];
-                provider.GetBytes(ret);
-                return ret;
-            }
+            byte[] ret = new byte[size];
+            RandomNumberGenerator.Fill(ret);
+            return ret;
         }
     }
 }

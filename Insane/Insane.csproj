@@ -2,12 +2,12 @@
   
   <PropertyGroup>
     <Nullable>enable</Nullable>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <PackageId>InsaneIO.Insane</PackageId>
     <Title>InsaneIO.Insane</Title>
     <Company>InsaneIO</Company>
-    <Description>Insane for .NET 5</Description>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Description>Insane for .NET 6</Description>
+    <PackageLicenseFile>..\LICENSE</PackageLicenseFile>
     <Copyright>©Joma Espinoza Bone - Satancito. All rights reserved.</Copyright>
     <Authors>Joma Espinoza Bone</Authors>
     <PackageIcon>Icon.png</PackageIcon>
@@ -21,25 +21,41 @@
 
     <RepositoryType>git</RepositoryType>
 
-    <PackageReleaseNotes>.NET 5 compatible.</PackageReleaseNotes>
+    <PackageReleaseNotes>.NET 6 compatible.</PackageReleaseNotes>
 
-    <Version>1.0.1</Version>
+    <Version>6.0.0-preview</Version>
 
     
     <UserSecretsId>dcead069-ffae-4de4-be81-720ec8ff2ac7</UserSecretsId>
+
+    
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <Compile Remove="AspNet\Identity\Model11\**" />
+    <Compile Remove="EntityFrameworkCore\Infrastructure\**" />
+    <EmbeddedResource Remove="AspNet\Identity\Model11\**" />
+    <EmbeddedResource Remove="EntityFrameworkCore\Infrastructure\**" />
+    <None Remove="AspNet\Identity\Model11\**" />
+    <None Remove="EntityFrameworkCore\Infrastructure\**" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Remove="AspNet\Identity\Model1\IdentityAccess.cs~RF1b80821.TMP" />
+  </ItemGroup>
  
   <ItemGroup>
     <PackageReference Include="Konscious.Security.Cryptography.Argon2" Version="1.2.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.7" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
-    <PackageReference Include="Oracle.EntityFrameworkCore" Version="5.21.1" />
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.1" NoWarn="NU5104" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.0" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.0" NoWarn="NU5104" />
   </ItemGroup>
 
   <ItemGroup>
@@ -51,6 +67,10 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -58,6 +78,10 @@
       <!--<ReferenceOutputAssembly>true</ReferenceOutputAssembly>-->
       <!--<IncludeAssets>CryptSharp.SCryptz</IncludeAssets>-->
     </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="AspNet\Identity\Model1\Entity\" />
   </ItemGroup>
 
   <!--<Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">

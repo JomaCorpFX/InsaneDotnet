@@ -8,5 +8,6 @@ namespace Insane.EntityFrameworkCore
 {
     public interface IEntity
     {
+        public string UniqueId { get; set; }
     }
 }

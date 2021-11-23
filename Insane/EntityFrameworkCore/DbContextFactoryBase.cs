@@ -1,22 +1,12 @@
-﻿using Insane.EntityFrameworkCore;
-using Insane.Enums;
-using Insane.Extensions;
+﻿using Insane.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure.Internal;
-using Oracle.EntityFrameworkCore.Infrastructure;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure.Internal;
+//using Oracle.EntityFrameworkCore.Infrastructure;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Insane.EntityFrameworkCore
 {
@@ -39,10 +29,11 @@ namespace Insane.EntityFrameworkCore
                 var addUserSecretsMethod = typeof(UserSecretsConfigurationExtensions).GetMethod(nameof(UserSecretsConfigurationExtensions.AddUserSecrets), new Type[] { typeof(IConfigurationBuilder) })!.MakeGenericMethod(UserSecretsType);
                 configurationBuilder = (IConfigurationBuilder)addUserSecretsMethod.Invoke(configurationBuilder, new object[] { configurationBuilder })!;
             }
+
             configurationBuilder = configurationBuilder.AddJsonFile(ConfigurationFilename, false, true);
             IConfiguration configuration = configurationBuilder.Build();
 
-            DbContextSettings dbContextSettings = new DbContextSettings();
+            DbContextSettings dbContextSettings = new();
             configuration.Bind(ConfigurationPath, dbContextSettings);
 
             switch (typeof(TContext).GetInterfaces())

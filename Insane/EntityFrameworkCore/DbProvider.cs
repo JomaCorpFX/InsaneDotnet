@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Insane
+namespace Insane.EntityFrameworkCore
 {
-    public class InsaneCore
+    public enum DbProvider
     {
-        public const string Empty = "";
+        SqlServer,
+        PostgreSql,
+        MySql,
+        Oracle
     }
 }
-

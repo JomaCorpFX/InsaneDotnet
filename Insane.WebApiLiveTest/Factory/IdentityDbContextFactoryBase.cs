@@ -1,5 +1,4 @@
 ﻿using Insane.AspNet;
-using Insane.AspNet.Identity.Model1.Context;
 using Insane.EntityFrameworkCore;
 using Insane.WebApiTest;
 using Microsoft.EntityFrameworkCore;

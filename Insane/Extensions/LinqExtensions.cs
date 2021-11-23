@@ -9,11 +9,13 @@ namespace Insane.Extensions
 {
     public static class LinqExtensions
     {
-        public static List<string> GetExpressionReturnMembersNames<T>(this Expression<Func<T, object>> expression)
+        public static List<string> GetExpressionReturnMembersNames<T>(this Expression<Func<T, object?>> expression)
         {
             List<string> ret = new();
             switch (expression.Body.NodeType)
             {
+                case ExpressionType.Constant:
+                    return ret;
                 case ExpressionType.New:
                     foreach (var value in ((NewExpression)expression.Body).Members!)
                     {

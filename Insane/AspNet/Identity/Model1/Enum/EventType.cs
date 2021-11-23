@@ -4,13 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Insane.Enums
+namespace Insane.AspNet.Identity.Model1.Enum
 {
-    public enum DbProvider
+    public enum EventType
     {
-        SqlServer,
-        PostgreSql,
-        MySql,
-        Oracle
     }
 }

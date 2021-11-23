@@ -4,21 +4,16 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Insane.EntityFrameworkCore
 {
-    public abstract class EntityTypeConfigurationBase<TEntity> : IEntityTypeConfiguration<TEntity> where TEntity : class
+    public abstract class EntityTypeConfigurationBase<TEntity> : IEntityTypeConfiguration<TEntity> where TEntity : class,IEntity
     {
         public readonly DatabaseFacade Database;
-        public readonly string Schema;
-        public EntityTypeConfigurationBase(DatabaseFacade database, string schema)
+        public readonly string? Schema;
+        public EntityTypeConfigurationBase(DatabaseFacade database, string? schema= null)
         {
             Database = database;
             Schema = schema;
         }
 
-        public EntityTypeConfigurationBase(DatabaseFacade database)
-        {
-            Database = database;
-            Schema = null!;
-        }
 
         public abstract void Configure(EntityTypeBuilder<TEntity> builder);
     }

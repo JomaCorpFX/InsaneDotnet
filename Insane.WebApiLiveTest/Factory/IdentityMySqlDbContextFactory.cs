@@ -1,5 +1,4 @@
-﻿using Insane.AspNet.Identity.Model1.Context;
-using Insane.EntityFrameworkCore;
+﻿using Insane.EntityFrameworkCore;
 using Insane.WebApiLiveTest.Factory;
 using Insane.WebApiTest;
 using Microsoft.EntityFrameworkCore;
@@ -14,15 +13,15 @@ using System.Threading.Tasks;
 
 namespace Insane.WebApiLiveTest.Factory
 {
-    public class IdentityMySqlDbContextFactory : IdentityDbContextFactoryBase<IdentityDbContextBase, IdentityMySqlDbContext>
-    {
-        public override DbContextOptionsBuilderActionFlavors DbContextOptionsBuilderActionFlavors => new DbContextOptionsBuilderActionFlavors()
-        {
-            MySql = (options) =>
-            {
-                options.MigrationsAssembly(typeof(Program).Assembly.FullName);
-            }
-        };
+    //public class IdentityMySqlDbContextFactory : IdentityDbContextFactoryBase<IdentityDbContextBase, IdentityMySqlDbContext>
+    //{
+    //    public override DbContextOptionsBuilderActionFlavors DbContextOptionsBuilderActionFlavors => new DbContextOptionsBuilderActionFlavors()
+    //    {
+    //        MySql = (options) =>
+    //        {
+    //            options.MigrationsAssembly(typeof(Program).Assembly.FullName);
+    //        }
+    //    };
 
-    }
+    //}
 }
