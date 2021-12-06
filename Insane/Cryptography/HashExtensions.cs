@@ -26,7 +26,7 @@ namespace Insane.Extensions
 
         public const uint HmacKeySize = 16;
 
-        public static byte[] ToRawHash(this byte[] data, HashAlgorithm algorithm = HashAlgorithm.Sha512)
+        public static byte[] ToHash(this byte[] data, HashAlgorithm algorithm = HashAlgorithm.Sha512)
         {
             switch (algorithm)
             {
@@ -45,9 +45,15 @@ namespace Insane.Extensions
             }
         }
 
+        public static byte[] ToHash(this string data, HashAlgorithm algorithm = HashAlgorithm.Sha512)
+        {
+            byte[] dataBytes = data.ToByteArray();
+            return ToHash(dataBytes, algorithm);
+        }
+
         public static string ToHash(this string data, IEncoder encoder, HashAlgorithm algorithm = HashAlgorithm.Sha512)
         {
-            return encoder.Encode(ToRawHash(data.ToByteArray(), algorithm));
+            return encoder.Encode(ToHash(data.ToByteArray(), algorithm));
         }
 
         public static byte[] ToHmac(this byte[] data, byte[] key, HashAlgorithm algorithm = HashAlgorithm.Sha512)

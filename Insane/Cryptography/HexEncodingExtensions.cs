@@ -11,6 +11,7 @@ namespace Insane.Extensions
     {
         public static string ToHex(this byte[] data)
         {
+            data.ThrowIfNull();
             StringBuilder ret = new StringBuilder(string.Empty);
             foreach (byte Value in data)
             {
@@ -29,7 +30,6 @@ namespace Insane.Extensions
             byte[] ret = new byte[data.Length / 2];
             for (int i = 0; i < data.Length / 2; i++)
             {
-
                 ret[i] = Convert.ToByte(data.Substring(i * 2, 2), 16);
             }
             return ret;

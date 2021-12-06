@@ -28,7 +28,7 @@ namespace Insane.AspNet.Identity.Model1.Configuration
         {
             builder.ToTable(Database, Schema);
 
-            builder.Property(e => e.Id).IsRequired().ValueGeneratedOnAdd(Database, builder, startsAt: IdentityConstants.IdentityColumnStartValue);
+            builder.Property(e => e.Id).IsRequired().ValueGeneratedOnAdd(Database, builder, startsAt: Constants.IdentityColumnStartValue);
             builder.Ignore(e => e.UniqueId);
             builder.Property(e => e.AdminUserId).IsRequired().IsConcurrencyToken();
             builder.Property(e => e.Name).IsUnicode().IsRequired().IsConcurrencyToken();
@@ -37,8 +37,9 @@ namespace Insane.AspNet.Identity.Model1.Configuration
             builder.Property(e => e.LogoUri).IsRequired(false).IsUnicode();
             builder.Property(e => e.Type).IsRequired().IsConcurrencyToken();
             builder.Property(e => e.InDevelopment).IsRequired().IsConcurrencyToken();
-            builder.Property(e => e.CanUseApiKey).IsRequired().IsConcurrencyToken();
-            builder.Property(e => e.ContactEmail).IsRequired(false).IsUnicode().HasMaxLength(IdentityConstants.EmailMaxLength);
+            builder.Property(e => e.IsServerSide).IsRequired().IsConcurrencyToken();
+            builder.Property(e => e.RevokeTokenWhenLogout).IsRequired().IsConcurrencyToken();
+            builder.Property(e => e.ContactEmail).IsRequired(false).IsUnicode().HasMaxLength(Constants.EmailMaxLength);
             builder.Property(e => e.Enabled).IsRequired().IsConcurrencyToken();
             builder.Property(e => e.ActiveUntil).IsRequired(false).IsConcurrencyToken();
             builder.Property(e => e.CreatedAt).IsRequired();
@@ -48,7 +49,7 @@ namespace Insane.AspNet.Identity.Model1.Configuration
             builder.HasUniqueIndex(Database, e => e.ApiKey);
             builder.HasIndex(Database, e => e.AdminUserId);
             builder.HasOne(e => e.AdminUser).WithMany(e => e.ManagedPlatforms).HasForeignKey(e => e.AdminUserId).OnDelete(Microsoft.EntityFrameworkCore.DeleteBehavior.Restrict);
-            //LAST 
+            
         }
     }
 }

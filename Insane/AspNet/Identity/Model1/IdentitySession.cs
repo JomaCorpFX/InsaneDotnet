@@ -30,17 +30,19 @@ namespace Insane.AspNet.Identity.Model1
         public string Jti { get; set; } = null!;
         public string TokenHash { get; set; } = null!;
         public string RefreshToken { get; set; } = null!;
-        public string Key { get; set; } = null!;
+        public string Salt { get; set; } = null!;
+        public string ClientDeviceUid { get; set; } = null!;
         public string ClientUserAgent { get; set; } = null!;
         public string ClientFriendlyName { get; set; } = null!;
         public string ClientOS { get; set; } = null!;
-        public string ClientIP { get; set; } = null!;
+        public string? ClientIP { get; set; } = null!;
         public int ClientTimezone { get; set; }
-        public decimal ClientLatitude { get; set; }
-        public decimal ClientLongitude { get; set; }
+        public decimal? ClientLatitude { get; set; }
+        public decimal? ClientLongitude { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset ExpiresAt { get; set; }
         public bool Revoked { get; set; }
+        public DateTimeOffset? ActiveUntil { get; set; }
 
 
         public TUser User { get; set; } = null!;

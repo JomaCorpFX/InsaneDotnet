@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Insane.AspNet.Identity
+namespace Insane.AspNet.Identity.Model1
 {
-    public class IdentityConstants
+    public class Constants
     {
         public const string InsaneIdentityConfigurationName = "InsaneIdentity";
         public const string InsaneIdentityDbSettingsConfigurationPath = "InsaneIdentity:DbContextSettings";

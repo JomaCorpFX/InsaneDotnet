@@ -28,7 +28,7 @@ namespace Insane.AspNet.Identity.Model1.Configuration
         {
             builder.ToTable(Database, Schema);
 
-            builder.Property(e => e.Id).IsRequired().ValueGeneratedOnAdd(Database, builder, startsAt: IdentityConstants.IdentityColumnStartValue);
+            builder.Property(e => e.Id).IsRequired().ValueGeneratedOnAdd(Database, builder, startsAt: Constants.IdentityColumnStartValue);
             builder.Ignore(e => e.UniqueId);
             builder.Property(e => e.UserId).IsRequired();
             builder.Property(e => e.RoleId).IsRequired();

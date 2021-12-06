@@ -43,6 +43,8 @@ namespace Insane.AspNet.Identity.Model1
         public string? ProfilePictureUri { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public bool Enabled { get; set; }
+        public bool TwoFactorEnabled { get; set; }
+        public string TwoFactorSecretKey { get; set; } = null!;
         public DateTimeOffset? ActiveUntil { get; set; }
 
 
