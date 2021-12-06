@@ -28,11 +28,11 @@ namespace Insane.AspNet.Identity.Model1.Configuration
         {
             builder.ToTable(Database, Schema);
 
-            builder.Property(e => e.Id).IsRequired().ValueGeneratedOnAdd(Database, builder, startsAt: IdentityConstants.IdentityColumnStartValue);
+            builder.Property(e => e.Id).IsRequired().ValueGeneratedOnAdd(Database, builder, startsAt: Constants.IdentityColumnStartValue);
             builder.Ignore(e => e.UniqueId);
             builder.Property(e => e.UserId).IsRequired();
-            builder.Property(e => e.Type).IsRequired().IsUnicode().HasMaxLength(IdentityConstants.IdentifierMaxLength);
-            builder.Property(e => e.Value).IsRequired().IsUnicode().HasMaxLength(IdentityConstants.SummaryMaxLength);
+            builder.Property(e => e.Type).IsRequired().IsUnicode().HasMaxLength(Constants.IdentifierMaxLength);
+            builder.Property(e => e.Value).IsRequired().IsUnicode().HasMaxLength(Constants.SummaryMaxLength);
             builder.Property(e => e.Enabled).IsRequired();
             builder.Property(e => e.ActiveUntil).IsRequired();
             builder.Property(e => e.CreatedAt).IsRequired();

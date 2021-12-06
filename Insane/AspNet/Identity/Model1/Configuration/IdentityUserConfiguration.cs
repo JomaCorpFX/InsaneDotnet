@@ -29,27 +29,29 @@ namespace Insane.AspNet.Identity.Model1.Configuration
         {
             builder.ToTable(Database, Schema);
 
-            builder.Property(e => e.Id).IsRequired().ValueGeneratedOnAdd(Database, builder, startsAt: IdentityConstants.IdentityColumnStartValue);
+            builder.Property(e => e.Id).IsRequired().ValueGeneratedOnAdd(Database, builder, startsAt: Constants.IdentityColumnStartValue);
             builder.Ignore(e => e.UniqueId);
-            builder.Property(e => e.Username).IsRequired().IsUnicode().HasMaxLength(IdentityConstants.UsernameMaxLength).IsConcurrencyToken();
-            builder.Property(e => e.NormalizedUsername).IsRequired().IsUnicode().HasMaxLength(IdentityConstants.UsernameMaxLength).IsConcurrencyToken();
-            builder.Property(e => e.Password).IsRequired().HasMaxLength(IdentityConstants.PasswordInfoMaxLength).IsConcurrencyToken();
-            builder.Property(e => e.Email).IsRequired().IsUnicode().HasMaxLength(IdentityConstants.EmailMaxLength).IsConcurrencyToken();
-            builder.Property(e => e.NormalizedEmail).IsRequired().IsUnicode().HasMaxLength(IdentityConstants.EmailMaxLength).IsConcurrencyToken();
-            builder.Property(e => e.Phone).IsRequired().HasMaxLength(IdentityConstants.PhoneMaxLength);
-            builder.Property(e => e.Mobile).IsRequired().HasMaxLength(IdentityConstants.PhoneMaxLength).IsConcurrencyToken();
+            builder.Property(e => e.Username).IsRequired().IsUnicode().HasMaxLength(Constants.UsernameMaxLength).IsConcurrencyToken();
+            builder.Property(e => e.NormalizedUsername).IsRequired().IsUnicode().HasMaxLength(Constants.UsernameMaxLength).IsConcurrencyToken();
+            builder.Property(e => e.Password).IsRequired().HasMaxLength(Constants.PasswordInfoMaxLength).IsConcurrencyToken();
+            builder.Property(e => e.Email).IsRequired().IsUnicode().HasMaxLength(Constants.EmailMaxLength).IsConcurrencyToken();
+            builder.Property(e => e.NormalizedEmail).IsRequired().IsUnicode().HasMaxLength(Constants.EmailMaxLength).IsConcurrencyToken();
+            builder.Property(e => e.Phone).IsRequired().HasMaxLength(Constants.PhoneMaxLength);
+            builder.Property(e => e.Mobile).IsRequired().HasMaxLength(Constants.PhoneMaxLength).IsConcurrencyToken();
             builder.Property(e => e.EmailConfirmed).IsRequired().IsConcurrencyToken();
-            builder.Property(e => e.EmailConfirmationCode).IsRequired(false).HasMaxLength(IdentityConstants.IdentifierMaxLength).IsConcurrencyToken();
+            builder.Property(e => e.EmailConfirmationCode).IsRequired(false).HasMaxLength(Constants.IdentifierMaxLength).IsConcurrencyToken();
             builder.Property(e => e.EmailConfirmationDeadline).IsRequired(false).IsConcurrencyToken();
             builder.Property(e => e.MobileConfirmed).IsRequired().IsConcurrencyToken();
-            builder.Property(e => e.MobileConfirmationCode).IsRequired(false).HasMaxLength(IdentityConstants.IdentifierMaxLength).IsConcurrencyToken();
+            builder.Property(e => e.MobileConfirmationCode).IsRequired(false).HasMaxLength(Constants.IdentifierMaxLength).IsConcurrencyToken();
             builder.Property(e => e.MobileConfirmationDeadline).IsRequired(false).IsConcurrencyToken();
             builder.Property(e => e.LoginFailCount).IsRequired().IsConcurrencyToken();
             builder.Property(e => e.LockoutUntil).IsRequired(false).IsConcurrencyToken();
-            builder.Property(e => e.Summary).IsRequired(false).IsUnicode().HasMaxLength(IdentityConstants.SummaryMaxLength);
-            builder.Property(e => e.ProfilePictureUri).IsRequired(false).IsUnicode().HasMaxLength(IdentityConstants.UriMaxLength);
+            builder.Property(e => e.Summary).IsRequired(false).IsUnicode().HasMaxLength(Constants.SummaryMaxLength);
+            builder.Property(e => e.ProfilePictureUri).IsRequired(false).IsUnicode().HasMaxLength(Constants.UriMaxLength);
             builder.Property(e => e.CreatedAt).IsRequired();
             builder.Property(e => e.Enabled).IsRequired().IsConcurrencyToken();
+            builder.Property(e => e.TwoFactorEnabled).IsRequired().IsConcurrencyToken();
+            builder.Property(e => e.TwoFactorSecretKey).IsRequired().HasMaxLength(Constants.KeyMaxLength).IsConcurrencyToken();
             builder.Property(e => e.ActiveUntil).IsRequired(false).IsConcurrencyToken();
 
             builder.HasPrimaryKeyIndex(Database, e => e.Id);

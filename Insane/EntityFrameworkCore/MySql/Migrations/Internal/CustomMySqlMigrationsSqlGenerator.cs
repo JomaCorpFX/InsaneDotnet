@@ -59,7 +59,7 @@ namespace Insane.EntityFrameworkCore.MySql.Migrations.Internal
                 builder.Append("ALTER TABLE ")
                     .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name, operation.Schema))
                     .Append(" AUTO_INCREMENT ")
-                    .Append(autoIncrementValue.ToString());
+                    .Append(autoIncrementValue.ToString()!);
 
                 builder.AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
                 EndStatement(builder);

@@ -1,94 +1,89 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  
-  <PropertyGroup>
-    <Nullable>enable</Nullable>
-    <TargetFramework>net6.0</TargetFramework>
-    <PackageId>InsaneIO.Insane</PackageId>
-    <Title>InsaneIO.Insane</Title>
-    <Company>InsaneIO</Company>
-    <Description>Insane for .NET 6</Description>
-    <PackageLicenseFile>..\LICENSE</PackageLicenseFile>
-    <Copyright>©Joma Espinoza Bone - Satancito. All rights reserved.</Copyright>
-    <Authors>Joma Espinoza Bone</Authors>
-    <PackageIcon>Icon.png</PackageIcon>
-    <PackageTags>Insane InsaneIO InsaneDotnet libInsane</PackageTags>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
-    <!--<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>-->
+	<PropertyGroup>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<TargetFramework>net6.0</TargetFramework>
+		<PackageId>InsaneIO.Insane</PackageId>
+		<Title>InsaneIO.Insane</Title>
+		<Company>InsaneIO</Company>
+		<Description>Insane for .NET 6</Description>
+		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+		<Copyright>©Joma Espinoza Bone - Satancito. All rights reserved.</Copyright>
+		<Authors>Joma Espinoza Bone</Authors>
+		<PackageIcon>Icon.png</PackageIcon>
+		<PackageTags>Insane InsaneIO InsaneDotnet libInsane</PackageTags>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
-    <RepositoryUrl>https://github.com/Satancito/InsaneDotnet</RepositoryUrl>
+		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
 
-    <RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/Satancito/InsaneDotnet</RepositoryUrl>
 
-    <PackageReleaseNotes>.NET 6 compatible.</PackageReleaseNotes>
+		<RepositoryType>git</RepositoryType>
 
-    <Version>6.0.0-preview</Version>
+		<PackageReleaseNotes>.NET 6 compatible.</PackageReleaseNotes>
 
-    
-    <UserSecretsId>dcead069-ffae-4de4-be81-720ec8ff2ac7</UserSecretsId>
+		<Version>6.0.0-preview</Version>
 
-    
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-  </PropertyGroup>
-  
-  <ItemGroup>
-    <Compile Remove="AspNet\Identity\Model11\**" />
-    <Compile Remove="EntityFrameworkCore\Infrastructure\**" />
-    <EmbeddedResource Remove="AspNet\Identity\Model11\**" />
-    <EmbeddedResource Remove="EntityFrameworkCore\Infrastructure\**" />
-    <None Remove="AspNet\Identity\Model11\**" />
-    <None Remove="EntityFrameworkCore\Infrastructure\**" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <None Remove="AspNet\Identity\Model1\IdentityAccess.cs~RF1b80821.TMP" />
-  </ItemGroup>
- 
-  <ItemGroup>
-    <PackageReference Include="Konscious.Security.Cryptography.Argon2" Version="1.2.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.0" />
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.0" NoWarn="NU5104" />
-  </ItemGroup>
 
-  <ItemGroup>
-    <None Include="..\Icon.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-    <None Include="..\LICENSE">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-    <None Include="..\README.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
+		<UserSecretsId>dcead069-ffae-4de4-be81-720ec8ff2ac7</UserSecretsId>
 
-  <ItemGroup>
-    <ProjectReference Include="..\CryptSharp.SCrypt\CryptSharp.SCrypt.csproj">
-      <!--<ReferenceOutputAssembly>true</ReferenceOutputAssembly>-->
-      <!--<IncludeAssets>CryptSharp.SCryptz</IncludeAssets>-->
-    </ProjectReference>
-  </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="AspNet\Identity\Model1\Entity\" />
-  </ItemGroup>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
 
-  <!--<Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
-    <ItemGroup>
-      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
-    </ItemGroup>
-  </Target>-->
+	<ItemGroup>
+		<Compile Remove="AspNet\Identity\Model11\**" />
+		<Compile Remove="EntityFrameworkCore\Infrastructure\**" />
+		<EmbeddedResource Remove="AspNet\Identity\Model11\**" />
+		<EmbeddedResource Remove="EntityFrameworkCore\Infrastructure\**" />
+		<None Remove="AspNet\Identity\Model11\**" />
+		<None Remove="EntityFrameworkCore\Infrastructure\**" />
+	</ItemGroup>
+
+
+
+	<ItemGroup>
+		<PackageReference Include="Konscious.Security.Cryptography.Argon2" Version="1.2.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.0" />
+		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.0" NoWarn="NU5104" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="../Icon.png">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+		<None Include="../LICENSE.md">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+		<None Include="../README.md">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\CryptSharp.SCrypt\CryptSharp.SCrypt.csproj">
+			<!--<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <IncludeAssets>CryptSharp.SCrypt</IncludeAssets>-->
+		</ProjectReference>
+	</ItemGroup>
+
+	<Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
+		<ItemGroup>
+			<BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+		</ItemGroup>
+	</Target>
 
 
 

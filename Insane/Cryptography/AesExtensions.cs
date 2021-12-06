@@ -15,7 +15,7 @@ namespace Insane.Extensions
         private static byte[] GenerateNormalizedKey(byte[] keyBytes)
         {
             byte[] ret = new byte[MaxKeyLength];
-            byte[] hash = HashExtensions.ToRawHash(keyBytes, HashAlgorithm.Sha512);
+            byte[] hash = HashExtensions.ToHash(keyBytes, HashAlgorithm.Sha512);
             Array.Copy(hash, ret, MaxKeyLength);
             return ret;
         }

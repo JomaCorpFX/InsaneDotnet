@@ -12,7 +12,7 @@ namespace Insane.Cryptography
     public class HexEncoder : IEncoder
     {
         public static readonly HexEncoder Instance = new HexEncoder();
-        public bool ToUpper { get; set; }
+        public bool ToUpper { get; set; } 
 
         public HexEncoder(bool toUpper= false)
         {

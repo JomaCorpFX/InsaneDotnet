@@ -6,14 +6,10 @@ using System.Threading.Tasks;
 
 namespace Insane.AspNet.Identity.Model1.Enum
 {
-    public enum PlatformClass
+    public enum RememberDeviceStrategy
     {
-        Service,
-        Console,
-        Desktop,
-        Mobile,
-        WebClient,
-        WebServer,
-        Script
+        NoPersistent,
+        Persistent,
+        UserDefined
     }
 }

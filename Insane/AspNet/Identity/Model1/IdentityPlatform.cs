@@ -34,7 +34,9 @@ namespace Insane.AspNet.Identity.Model1
         public PlatformClass Type { get; set; }
         public string? ContactEmail { get; set; } = null!;
         public bool InDevelopment { get; set; }
-        public bool CanUseApiKey { get; set; }
+        public bool IsServerSide { get; set; }
+        public bool RevokeTokenWhenLogout { get; set; } 
+        public RememberDeviceStrategy RememberDeviceStrategy { get; set; }
         public bool Enabled { get; set; } = true;
         public DateTimeOffset? ActiveUntil { get; set; }
         public DateTimeOffset CreatedAt { get; set; }

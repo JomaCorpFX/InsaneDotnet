@@ -5,15 +5,19 @@ using Insane.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using OtpNet;
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+
 
 namespace Insane.LiveTest
 {
@@ -125,20 +129,23 @@ namespace Insane.LiveTest
         }
 
         //POCO
-        public class Person:IEntity
+        public class Person : IEntity
         {
 
             public int Id { get; set; }
 
             public string Name { get; set; } = null!;
-           
+            public string UniqueId { get; set; }
 
             public Person()
             {
-                
+
             }
-            
+
         }
+
+        
+        
 
         static void Main(string[] args)
         {
@@ -179,21 +186,54 @@ namespace Insane.LiveTest
             //Console.ReadLine();
             //Console.WriteLine(serviceProvider.GetService<Greetings>()!.Text);
             //Console.ReadLine();
-            IEncoder encoder = Base64Encoder.Instance;
-            HmacResult result = new HmacResult("MTAw", "MTAw", HashAlgorithm.Sha512, encoder);
-            string json = result.Serialize();
-            Console.WriteLine(json);
-            result = HmacResult.Deserialize(json, encoder)!;
-            Console.WriteLine(encoder.Name());
-            var person = new Person() { Name = "Joma", Id = 100};
+
+            //IEncoder encoder = Base64Encoder.Instance;
+            //HmacResult result = new HmacResult("MTAw", "MTAw", HashAlgorithm.Sha512, encoder);
+            //string json = result.Serialize();
+            //Console.WriteLine(json);
+            //result = HmacResult.Deserialize(json, encoder)!;
+            //Console.WriteLine(encoder.Name());
+            //var person = new Person() { Name = "Joma", Id = 100 };
+
+            //IEntityProtector<Person> protector = new PersonProtector(new AesStringValueConverter(new AesEncryptor("hello123", Base64Encoder.Instance)));
+            //person.Protect(protector);
+            //Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(person));
+            //person.Unprotect(protector);
+            //Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(person));
+            //Console.WriteLine("grape".ToHash(encoder));
+
+
+
             
-            IEntityProtector<Person> protector = new PersonProtector(new AesStringValueConverter(new AesEncryptor("hello123", Base64Encoder.Instance)));
-            person.Protect(protector);
-            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(person));
-            person.Unprotect(protector);
-            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(person));
-            Console.WriteLine("grape".ToHash(encoder));
-            
+
+            byte[] secretBytes = "grapes".ToHash(HashAlgorithm.Sha512);
+            string secretHex = secretBytes.ToHex();
+            string secretBase32 = secretBytes.ToBase32();
+            string secretBase64 = secretBytes.ToBase64();
+
+            Console.WriteLine(secretBytes.GenerateTotpUri("Joma", "Insane"));
+            Console.WriteLine();
+
+            Console.WriteLine(secretHex.GenerateTotpUri(HexEncoder.Instance, "Joma", "Insane"));
+            Console.WriteLine();
+
+            Console.WriteLine(secretBase32.GenerateTotpUri("Joma", "Insane"));
+            Console.WriteLine();
+
+            Console.WriteLine(secretBase64.GenerateTotpUri(Base64Encoder.Instance, "Joma", "Insane"));
+            Console.WriteLine();
+
+            var totp = new Totp(secretBytes, 30, OtpHashMode.Sha1, 6);
+            while(true)
+            {
+                Console.WriteLine(totp.ComputeTotp());
+                Console.WriteLine(secretBase32.ComputeTotpCode());
+                Console.WriteLine(DateTimeOffset.UtcNow.ComputeTotpRemainingSeconds());
+                string code = Console.ReadLine();
+                Console.WriteLine(code.VerifyTotpCode(secretBytes));
+            };
+
+           
 
             sw.Stop();
             Console.ReadLine();

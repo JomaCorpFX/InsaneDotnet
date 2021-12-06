@@ -60,7 +60,6 @@ namespace Insane.WebApiTest
                    .AddUserSecrets<Program>(false, true)
                    .Build();
 
-
             DbContextSettings dbContextSettings = new DbContextSettings();
             Configuration.Bind("InsaneIdentity:DbContextSettings", dbContextSettings);
             //string migrationAssembly = typeof(Startup).Assembly.FullName;
