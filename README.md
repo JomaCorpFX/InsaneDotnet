@@ -1,21 +1,21 @@
 # InsaneDotnet
-Insane library Compatible with .NET 5 and upwards.
+Insane library Compatible with .NET 6 and upwards.
 
 ## Add to your project
 
 **Package Reference**   
 ```
-<PackageReference Include="InsaneIO.Insane" Version="1.0.1" />
+<PackageReference Include="InsaneIO.Insane" Version="6.0.0-preview" />
 ```
 
 **Dotnet CLI**   
 ```
-dotnet add package InsaneIO.Insane --version 1.0.1
+dotnet add package InsaneIO.Insane --version 6.0.0-preview
 ```
 
 **Package Manager**   
 ```
-Install-Package InsaneIO.Insane -Version 1.0.1
+Install-Package InsaneIO.Insane -Version 6.0.0-preview
 ```
 <hr />
 
