@@ -11,13 +11,12 @@ namespace Insane.EntityFrameworkCore
         where TContextBase: CoreDbContextBase
     {
 
-        
-
         public static DbContextFlavors<TContextBase> CreateInstance<TSqlServerDbContext, TPosgreSqlDbContext, TMySqlDbContext, TOracleDbContext>()
         where TSqlServerDbContext : TContextBase, ISqlServerDbContext
         where TPosgreSqlDbContext : TContextBase, IPostgreSqlDbContext
         where TMySqlDbContext : TContextBase, IMySqlDbContext
         where TOracleDbContext : TContextBase, IOracleDbContext
+
         {
             DbContextFlavors<TContextBase> flavors = new DbContextFlavors<TContextBase>()
             {

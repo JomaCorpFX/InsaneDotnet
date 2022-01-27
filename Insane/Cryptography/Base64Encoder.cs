@@ -14,9 +14,9 @@ namespace Insane.Cryptography
         public const int MimeLineBreaksLength = 76;
         public const int PemLineBreaksLength = 64;
 
-        public uint LineBreaksLength { get; init; } = NoLineBreaks;
-        public bool RemovePadding { get; init; } = false;
-        public Base64Encoding EncodingType { get; init; } = Base64Encoding.Base64;
+        public uint LineBreaksLength { get; set; } = NoLineBreaks;
+        public bool RemovePadding { get; set; } = false;
+        public Base64Encoding EncodingType { get; set; } = Base64Encoding.Base64;
 
         public static readonly Base64Encoder Instance = new Base64Encoder();
 

@@ -32,10 +32,10 @@ namespace Insane.Extensions
 
         private const int IdentifierNameSuffixLength = 5;
 
-        public static EntityTypeBuilder<TEntity> ToTable<TEntity>(this EntityTypeBuilder<TEntity> builder, DatabaseFacade database, string? schema = null, string? name = null, Action<TableBuilder<TEntity>>? buildAction = null)
+        public static EntityTypeBuilder<TEntity> ToTable<TEntity>(this EntityTypeBuilder<TEntity> builder, DatabaseFacade database, string? name = null, Action<TableBuilder<TEntity>>? buildAction = null)
             where TEntity : class, IEntity
         {
-            schema = GetSchema(builder, database, schema);
+            string schema = GetSchema(builder, database);
             name = string.IsNullOrWhiteSpace(name) ? typeof(TEntity).GetPrincipalName() : name;
             string identifier = name;
             if(database.IsMySql())
@@ -56,11 +56,9 @@ namespace Insane.Extensions
                     : identifier;
         }
 
-        internal static string GetSchema<TEntity>(this EntityTypeBuilder<TEntity> builder, DatabaseFacade database, string? schema)
+        internal static string GetSchema<TEntity>(this EntityTypeBuilder<TEntity> builder, DatabaseFacade database)
             where TEntity : class
-        {
-            if (string.IsNullOrWhiteSpace(schema))
-            {
+        {  
                 if (string.IsNullOrWhiteSpace(builder.Metadata.GetSchema()))
                 {
                     if (string.IsNullOrWhiteSpace(builder.Metadata.GetDefaultSchema()))
@@ -70,8 +68,7 @@ namespace Insane.Extensions
                     return ValidateIdentifierLength(database, builder.Metadata.GetDefaultSchema());
                 }
                 return ValidateIdentifierLength(database, builder.Metadata.GetSchema());
-            }
-            return ValidateIdentifierLength(database, schema);
+
         }
 
         internal static string GetConstraintFieldSegments<TEntity>(Expression<Func<TEntity, object?>> property) where TEntity : class
@@ -91,7 +88,7 @@ namespace Insane.Extensions
                 DatabaseFacade db when db.IsSqlServer() => DbProvider.SqlServer,
                 DatabaseFacade db when db.IsNpgsql() => DbProvider.PostgreSql,
                 DatabaseFacade db when db.IsMySql() => DbProvider.MySql,
-                //DatabaseFacade db when db.IsOracle() => DbProvider.Oracle,
+                DatabaseFacade db when db.IsOracle() => DbProvider.Oracle,
                 _ => throw new NotImplementedException("Unknown database provider")
             };
         } 
@@ -112,11 +109,10 @@ namespace Insane.Extensions
             return $"{(name.Length < (maxLength) ? name : name.Substring(0, maxLength)) }_{ HashExtensions.ToHash(name, HexEncoder.Instance).Substring(0, IdentifierNameSuffixLength).ToUpper() }";
         }
 
-        internal static string GetPrincipalName<TEntity>(this EntityTypeBuilder<TEntity> builder, DatabaseFacade database, string? schema)
+        internal static string GetPrincipalName<TEntity>(this EntityTypeBuilder<TEntity> builder, DatabaseFacade database)
             where TEntity : class, IEntity
         {
-            
-            schema = GetSchema(builder, database, schema);
+            string schema = GetSchema(builder, database) ?? string.Empty;
             switch (database)
             {
                 case DatabaseFacade db when db.GetProvider() is DbProvider.MySql:
@@ -134,17 +130,17 @@ namespace Insane.Extensions
 
         internal static string GetConstraintName<TEntity>(this EntityTypeBuilder<TEntity> builder, DatabaseFacade database, string prefix, Expression<Func<TEntity, object?>> expression) where TEntity : class, IEntity
         {
-            return GetIdentifierName($"{prefix}_{GetPrincipalName(builder, database, null)}{GetConstraintFieldSegments(expression)}", database);
+            return GetIdentifierName($"{prefix}_{GetPrincipalName(builder, database)}{GetConstraintFieldSegments(expression)}", database);
         }
 
         internal static string GetConstraintName<TRelated, TPrincipal>(this ReferenceCollectionBuilder<TRelated, TPrincipal> builder, DatabaseFacade database, EntityTypeBuilder<TPrincipal> entityBuilder, string prefix, Expression<Func<TPrincipal, object?>> expression) where TRelated : class, IEntity where TPrincipal : class, IEntity
         {
-            return GetIdentifierName($"{prefix}_{entityBuilder.GetPrincipalName(database, null)}{GetConstraintFieldSegments(expression)}", database);
+            return GetIdentifierName($"{prefix}_{entityBuilder.GetPrincipalName(database)}{GetConstraintFieldSegments(expression)}", database);
         }
 
         internal static string GetConstraintName<TPrincipal, TRelated>(this ReferenceReferenceBuilder<TPrincipal, TRelated> builder, DatabaseFacade database, EntityTypeBuilder<TPrincipal> entityBuilder, string prefix, Expression<Func<TPrincipal, object?>> expression) where TPrincipal : class, IEntity where TRelated : class, IEntity
         {
-            return GetIdentifierName($"{prefix}_{entityBuilder.GetPrincipalName(database, null)}{GetConstraintFieldSegments(expression)}", database);
+            return GetIdentifierName($"{prefix}_{entityBuilder.GetPrincipalName(database)}{GetConstraintFieldSegments(expression)}", database);
         }
 
         public static ReferenceCollectionBuilder<TRelated, TPrincipal> HasForeignKey<TRelated, TPrincipal>(this ReferenceCollectionBuilder<TRelated, TPrincipal> builder, DatabaseFacade database, EntityTypeBuilder<TPrincipal> entityBuilder, Expression<Func<TPrincipal, object?>> foreignKeyExpression) where TRelated : class, IEntity where TPrincipal : class, IEntity
@@ -218,10 +214,9 @@ namespace Insane.Extensions
                 case DatabaseFacade db when db.GetProvider() is DbProvider.MySql:
                     entityBuilder.HasAnnotation(CustomMySqlAnnotationProvider.AutoincrementAnnotation, startsAt);
                     break;
-                //TODO: Implement as soon as posible Oracle.
-                //case DatabaseFacade db when db.GetProvider() is DbProvider.Oracle: 
-                //    OraclePropertyBuilderExtensions.UseIdentityColumn(propertyBuilder, startsAt, incrementsBy);
-                //    break;
+                case DatabaseFacade db when db.GetProvider() is DbProvider.Oracle: 
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(propertyBuilder, startsAt, incrementsBy);
+                    break;
                 default:
                     throw new NotImplementedException($"Not implemented provider \"{database.ProviderName}\".");
             }
@@ -261,10 +256,9 @@ namespace Insane.Extensions
                     });
                     builder.UseMySql(settings.MySqlConnectionString, ServerVersion.AutoDetect(settings.MySqlConnectionString), actionFlavors.MySql);
                     return (flavors.MySql, builder);
-                //TODO: Implement as soon as posible Oracle.
-                //case DbProvider.Oracle: 
-                //    builder.UseOracle(settings.OracleConnectionString, actionFlavors.Oracle);
-                //    return (flavors.Oracle, builder);
+                case DbProvider.Oracle: 
+                    builder.UseOracle(settings.OracleConnectionString, actionFlavors.Oracle);
+                    return (flavors.Oracle, builder);
                 default:
                     throw new NotImplementedException($"Not implemented provider \"{settings.Provider}\".");
             }

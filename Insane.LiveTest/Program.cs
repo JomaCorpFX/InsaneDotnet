@@ -2,6 +2,7 @@
 using Insane.Cryptography;
 using Insane.EntityFrameworkCore;
 using Insane.Extensions;
+using Insane.Security;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -204,9 +205,9 @@ namespace Insane.LiveTest
 
 
 
-            
 
-            byte[] secretBytes = "grapes".ToHash(HashAlgorithm.Sha512);
+            var sz = System.Security.Cryptography.SHA256.Create().HashSize / 8;
+            byte[] secretBytes = new byte[] { 65 };// "grapes".ToHash(HashAlgorithm.Sha512);
             string secretHex = secretBytes.ToHex();
             string secretBase32 = secretBytes.ToBase32();
             string secretBase64 = secretBytes.ToBase64();
@@ -223,14 +224,42 @@ namespace Insane.LiveTest
             Console.WriteLine(secretBase64.GenerateTotpUri(Base64Encoder.Instance, "Joma", "Insane"));
             Console.WriteLine();
 
+            void GenarateTOTP()
+            {
+                var bytes = Base32Encoding.ToBytes("JBSWY3DPEHPK3PXP");
+
+                var totp = new Totp(bytes, step: 300);
+
+                var result = totp.ComputeTotp(DateTime.UtcNow);
+
+                Console.WriteLine(result);
+
+                var input = Console.ReadLine();
+                long timeStepMatched;
+                bool verify = totp.VerifyTotp(input, out timeStepMatched, window: null);
+
+                Console.WriteLine("{0}-:{1}", "timeStepMatched", timeStepMatched);
+                Console.WriteLine("{0}-:{1}", "Remaining seconds", totp.RemainingSeconds());
+                Console.WriteLine("{0}-:{1}", "verify", verify);
+
+            }
+
             var totp = new Totp(secretBytes, 30, OtpHashMode.Sha1, 6);
+            var totp2 = new TotpGenerator(secretBytes)
+            {
+                Issuer = "Insane",
+                Label = "Joma"
+            };
+
             while(true)
             {
-                Console.WriteLine(totp.ComputeTotp());
-                Console.WriteLine(secretBase32.ComputeTotpCode());
-                Console.WriteLine(DateTimeOffset.UtcNow.ComputeTotpRemainingSeconds());
-                string code = Console.ReadLine();
-                Console.WriteLine(code.VerifyTotpCode(secretBytes));
+                GenarateTOTP();
+                //Console.WriteLine( totp.ComputeTotp());
+                //Console.WriteLine(totp2.ComputeTotpCode());
+                ////Console.WriteLine(DateTimeOffset.UtcNow.ComputeTotpRemainingSeconds(TotpPeriod.ValueOf60Seconds));
+                //Console.WriteLine(totp2.ComputeTotpRemainingSeconds());
+                //string code = Console.ReadLine();
+                //Console.WriteLine(totp2.VerifyTotpCode(code));
             };
 
            

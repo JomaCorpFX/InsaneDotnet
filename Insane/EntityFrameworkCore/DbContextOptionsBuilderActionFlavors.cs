@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Infrastructure;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
-//using Oracle.EntityFrameworkCore.Infrastructure;
+using Oracle.EntityFrameworkCore.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,8 +33,5 @@ namespace Insane.EntityFrameworkCore
         public Action<OracleDbContextOptionsBuilder> Oracle { init; get; } = null!;
     }
 
-    //TODO. Implement as soon as posible Oracle real class.
-    public class OracleDbContextOptionsBuilder
-    {
-    }
+
 }

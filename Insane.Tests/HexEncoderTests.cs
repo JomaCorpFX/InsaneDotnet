@@ -10,40 +10,37 @@ using System.Threading.Tasks;
 namespace Insane.Tests
 {
     [TestClass]
-    public class HexEncoderTests
+    public class HexEncoderUnitTests
     {
+        private readonly byte[] testTytes = new byte[] { 0xff, 0xa, 1, 0x22 };
+        private string testhexStringUppercase = "FF0A0122";
+        private string testhexStringLowercase = "ff0a0122";
         [TestMethod]
         public void TestDecodeUppercase()
         {
-            string hexString = "FF0A0122";
-            byte[] bytes = HexEncoder.Instance.Decode(hexString);
-            Assert.IsTrue(Enumerable.SequenceEqual(bytes, new byte[] { 0xff, 0xa, 1, 0x22}));
+            byte[] bytes = HexEncoder.Instance.Decode(testhexStringUppercase);
+            Assert.IsTrue(Enumerable.SequenceEqual(bytes, testTytes));
         }
 
         [TestMethod]
         public void TestDecodeLowercase()
         {
-            string hexString = "ff0a0122";
-            byte[] bytes = HexEncoder.Instance.Decode(hexString);
-            Assert.IsTrue(Enumerable.SequenceEqual(bytes, new byte[] { 0xff, 0xa, 1, 0x22 }));
+            byte[] bytes = HexEncoder.Instance.Decode(testhexStringLowercase);
+            Assert.IsTrue(Enumerable.SequenceEqual(bytes, testTytes));
         }
 
         [TestMethod]
         public void TestEncodeUpper()
         {
-            string hexData = "FF0A0122";
-            byte[] bytes = new byte[] { 0xff, 0xa, 1, 0x22 };
             IEncoder encoder = new HexEncoder(true);
-            Assert.AreEqual(hexData, encoder.Encode(bytes));
+            Assert.AreEqual(testhexStringUppercase, encoder.Encode(testTytes));
         }
 
         [TestMethod]
         public void TestEncodeLower()
         {
-            string hexData = "ff0a0122";
-            byte[] bytes = new byte[] { 0xff, 0xa, 1, 0x22 };
             IEncoder encoder = new HexEncoder(false);
-            Assert.AreEqual(hexData, encoder.Encode(bytes));
+            Assert.AreEqual(testhexStringLowercase, encoder.Encode(testTytes));
         }
 
     }
