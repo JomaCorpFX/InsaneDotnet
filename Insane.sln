@@ -1,17 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29806.167
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Insane", "Insane\Insane.csproj", "{36224FCC-F10D-420F-A64B-AC9675ED7C2D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CryptSharp.SCrypt", "CryptSharp.SCrypt\CryptSharp.SCrypt.csproj", "{5EBD8686-09C1-4809-8C70-25D99FB5DF73}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Insane.Tests", "Insane.Tests\Insane.Tests.csproj", "{EE6C5999-E070-4CFB-A3B8-A89F97AC1300}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Insane.WebApiLiveTest", "Insane.WebApiLiveTest\Insane.WebApiLiveTest.csproj", "{80C8F619-3C15-4D49-8525-B4A0548BE6E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Insane.Tests", "Insane.Tests\Insane.Tests.csproj", "{EE6C5999-E070-4CFB-A3B8-A89F97AC1300}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Insane.LiveTest", "Insane.LiveTest\Insane.LiveTest.csproj", "{6D97DA4B-ED6C-4071-8918-3A3BA2E6D7A7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Insane.WebApiLiveTests", "Insane.WebApiLiveTests\Insane.WebApiLiveTests.csproj", "{7FADA191-CE2E-4A65-BF30-420CCFD01DC1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Insane.MinimalWebApiLiveTests", "Insane.MinimalWebApiLiveTests\Insane.MinimalWebApiLiveTests.csproj", "{36A3EBF8-A932-463D-8CBA-CF707F76C93B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Insane.Exe", "Insane.Exe\Insane.Exe.csproj", "{41BE4E42-B33F-4B96-8D2A-B14978DA59B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,14 +35,22 @@ Global
 		{EE6C5999-E070-4CFB-A3B8-A89F97AC1300}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE6C5999-E070-4CFB-A3B8-A89F97AC1300}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE6C5999-E070-4CFB-A3B8-A89F97AC1300}.Release|Any CPU.Build.0 = Release|Any CPU
-		{80C8F619-3C15-4D49-8525-B4A0548BE6E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{80C8F619-3C15-4D49-8525-B4A0548BE6E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{80C8F619-3C15-4D49-8525-B4A0548BE6E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{80C8F619-3C15-4D49-8525-B4A0548BE6E8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6D97DA4B-ED6C-4071-8918-3A3BA2E6D7A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6D97DA4B-ED6C-4071-8918-3A3BA2E6D7A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D97DA4B-ED6C-4071-8918-3A3BA2E6D7A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D97DA4B-ED6C-4071-8918-3A3BA2E6D7A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FADA191-CE2E-4A65-BF30-420CCFD01DC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FADA191-CE2E-4A65-BF30-420CCFD01DC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FADA191-CE2E-4A65-BF30-420CCFD01DC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FADA191-CE2E-4A65-BF30-420CCFD01DC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36A3EBF8-A932-463D-8CBA-CF707F76C93B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36A3EBF8-A932-463D-8CBA-CF707F76C93B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36A3EBF8-A932-463D-8CBA-CF707F76C93B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36A3EBF8-A932-463D-8CBA-CF707F76C93B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41BE4E42-B33F-4B96-8D2A-B14978DA59B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41BE4E42-B33F-4B96-8D2A-B14978DA59B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41BE4E42-B33F-4B96-8D2A-B14978DA59B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41BE4E42-B33F-4B96-8D2A-B14978DA59B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

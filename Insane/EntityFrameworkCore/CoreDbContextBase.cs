@@ -15,14 +15,16 @@ namespace Insane.EntityFrameworkCore
 {
     public abstract class CoreDbContextBase : DbContext
     {
+        public string? Schema { get; init; }
 
         private CoreDbContextBase()
         {
 
         }
 
-        public CoreDbContextBase(DbContextOptions options) : base(options)
+        public CoreDbContextBase(DbContextOptions options, string? schema) : base(options)
         {
+            Schema = schema;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

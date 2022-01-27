@@ -10,8 +10,8 @@ namespace Insane.Cryptography
     public class Base32Encoder : IEncoder
     {
         public static readonly Base32Encoder Instance = new Base32Encoder();
-        public bool ToLower { get; init; } = false;
-        public bool RemovePadding { get; init; } = false;
+        public bool ToLower { get; set; } = false;
+        public bool RemovePadding { get; set; } = false;
 
         public Base32Encoder(bool toLower=false)
         {

@@ -5,15 +5,16 @@ namespace Insane.Extensions
     public static class TotpExtensions
     {
         private const long InitialCounterTime = 0;
+        public const long TotpDefaultPeriod = 30;
 
-        private static long ComputeTotpRemainingSeconds(this DateTimeOffset time, TotpPeriod period)
+        private static long ComputeTotpRemainingSeconds(this DateTimeOffset time, long period)
         {
-            return period.IntValue() - (time.ToUniversalTime().ToUnixTimeSeconds() - InitialCounterTime) % period.IntValue();
+            return period - (time.ToUniversalTime().ToUnixTimeSeconds() - InitialCounterTime) % period;
         }
 
-        private static string ComputeTotpCode(this byte[] secret, TwoFactorCodeLength length, HashAlgorithm hashAlgorithm, TotpPeriod period)
+        private static string ComputeTotpCode(this byte[] secret, TwoFactorCodeLength length, HashAlgorithm hashAlgorithm, long period)
         {
-            long timeInterval = (DateTimeOffset.UtcNow.ToUnixTimeSeconds() - InitialCounterTime) / period.IntValue();
+            long timeInterval = (DateTimeOffset.UtcNow.ToUnixTimeSeconds() - InitialCounterTime) / period;
             timeInterval = BitConverter.IsLittleEndian ? BinaryPrimitives.ReverseEndianness(timeInterval) : timeInterval;
             byte[] hmac = BitConverter.GetBytes(timeInterval).ToHmac(secret, hashAlgorithm);
             byte offset = (byte)(hmac[19] & 0xF);
@@ -22,65 +23,65 @@ namespace Insane.Extensions
             return code.ToString().PadLeft(length.IntValue(), '0');
         }
 
-        private static string GenerateTotpUri(this byte[] secret, string label, string issuer, HashAlgorithm algorithm, TwoFactorCodeLength codeLength, TotpPeriod period)
+        private static string GenerateTotpUri(this byte[] secret, string label, string issuer, HashAlgorithm algorithm, TwoFactorCodeLength codeLength, long period)
         {
-            return $"otpauth://totp/{HttpUtility.UrlEncode(label)}?secret={secret.ToBase32(true)}&issuer={HttpUtility.UrlEncode(issuer)}&algorithm={algorithm.ToString().ToUpper()}&digits={codeLength.IntValue()}&period={period.IntValue()}";
+            return $"otpauth://totp/{HttpUtility.UrlEncode(label)}?secret={secret.ToBase32(true)}&issuer={HttpUtility.UrlEncode(issuer)}&algorithm={algorithm.ToString().ToUpper()}&digits={codeLength.IntValue()}&period={period}";
         }
 
         public static string GenerateTotpUri(this byte[] secret, string label, string issuer)
         {
-            return GenerateTotpUri(secret, label, issuer, HashAlgorithm.Sha1, TwoFactorCodeLength.ValueOf6Digits, TotpPeriod.ValueOf30Seconds);
+            return GenerateTotpUri(secret, label, issuer, HashAlgorithm.Sha1, TwoFactorCodeLength.ValueOf6Digits, TotpDefaultPeriod);
         }
 
-        public static string GenerateTotpUri(this string secret, string label, string issuer)
+        public static string GenerateTotpUri(this string base32EncodedSecret, string label, string issuer)
         {
-            return GenerateTotpUri(secret.FromBase32(), label, issuer);
+            return GenerateTotpUri(base32EncodedSecret.FromBase32(), label, issuer);
         }
 
-        public static string GenerateTotpUri(this string secret, IEncoder secretDecoder, string label, string issuer)
+        public static string GenerateTotpUri(this string encodedSecret, IEncoder secretDecoder, string label, string issuer)
         {
-            return GenerateTotpUri(secretDecoder.Decode(secret), label, issuer);
+            return GenerateTotpUri(secretDecoder.Decode(encodedSecret), label, issuer);
         }
 
 
-        private static bool VerifyTotpCode(this string code, byte[] secret, TwoFactorCodeLength length, HashAlgorithm hashAlgorithm, TotpPeriod period)
+        private static bool VerifyTotpCode(this string code, byte[] secret, TwoFactorCodeLength length, HashAlgorithm hashAlgorithm, long period)
         {
             return code == ComputeTotpCode(secret, length, hashAlgorithm, period);
         }
         
         public static bool VerifyTotpCode(this string code, byte[] secret)
         {
-            return VerifyTotpCode(code, secret, TwoFactorCodeLength.ValueOf6Digits, HashAlgorithm.Sha1, TotpPeriod.ValueOf30Seconds);
+            return VerifyTotpCode(code, secret, TwoFactorCodeLength.ValueOf6Digits, HashAlgorithm.Sha1, TotpDefaultPeriod);
         }
 
-        public static bool VerifyTotpCode(this string code, string secret)
+        public static bool VerifyTotpCode(this string code, string base32EncodedSecret)
         {
-            return VerifyTotpCode(code, secret.FromBase32());
+            return VerifyTotpCode(code, base32EncodedSecret.FromBase32());
         }
 
-        public static bool VerifyTotpCode(this string code, string secret, IEncoder secretDecoder)
+        public static bool VerifyTotpCode(this string code, string encodedSecret, IEncoder secretDecoder)
         {
-            return VerifyTotpCode(code, secretDecoder.Decode( secret));
+            return VerifyTotpCode(code, secretDecoder.Decode( encodedSecret));
         }
 
         public static string ComputeTotpCode(this byte[] secret)
         {
-            return ComputeTotpCode(secret, TwoFactorCodeLength.ValueOf6Digits, HashAlgorithm.Sha1, TotpPeriod.ValueOf30Seconds);
+            return ComputeTotpCode(secret, TwoFactorCodeLength.ValueOf6Digits, HashAlgorithm.Sha1, TotpDefaultPeriod);
         }
 
-        public static string ComputeTotpCode(this string secret)
+        public static string ComputeTotpCode(this string base32EncodedSecret)
         {
-            return ComputeTotpCode(secret.FromBase32());
+            return ComputeTotpCode(base32EncodedSecret.FromBase32());
         }
 
-        public static string ComputeTotpCode(this string secret, IEncoder secretDecoder)
+        public static string ComputeTotpCode(this string encodedSecret, IEncoder secretDecoder)
         {
-            return ComputeTotpCode(secretDecoder.Decode(secret));
+            return ComputeTotpCode(secretDecoder.Decode(encodedSecret));
         }
 
         public static long ComputeTotpRemainingSeconds(this DateTimeOffset time)
         {
-            return ComputeTotpRemainingSeconds(time, TotpPeriod.ValueOf30Seconds);
+            return ComputeTotpRemainingSeconds(time, TotpDefaultPeriod);
         }
 
         

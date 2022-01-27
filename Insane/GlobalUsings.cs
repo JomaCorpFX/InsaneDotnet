@@ -8,5 +8,6 @@ global using Insane.Cryptography;
 global using Insane.Security;
 global using Insane.Extensions;
 global using System.Web;
-
+global using System.Linq.Expressions;
+global using Microsoft.EntityFrameworkCore;
 

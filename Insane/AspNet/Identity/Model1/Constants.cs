@@ -23,11 +23,14 @@ namespace Insane.AspNet.Identity.Model1
         public const int DescriptionMaxLength = 512;
         public const int KeyMaxLength = 128;
         public const int UriMaxLength = 256;
-        public const int IpMaxLength = 64;
+        public const int IpMaxLength = 45;
         public const int AddressMaxLength = 128;
         public const int GuidMaxLength = 36;
         public const int PasswordInfoMaxLength = 4096;
         public const int SummaryMaxLength = 1024;
+        public const int RecoveryCodeLength = 8;
+        public const int SaltLength = 64;
+        public const int SaltBytesLength = 32;
 
         //TODO: █ REVISAR https://dotnetcorecentral.com/blog/authentication-handler-in-asp-net-core/
         //TODO: █ REVISAR https://www.youtube.com/watch?v=6Go46VRs7hI

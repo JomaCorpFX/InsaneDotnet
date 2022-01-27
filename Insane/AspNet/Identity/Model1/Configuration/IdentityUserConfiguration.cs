@@ -1,4 +1,5 @@
-﻿using Insane.EntityFrameworkCore;
+﻿using Insane.AspNet.Identity.Model1.Entity;
+using Insane.EntityFrameworkCore;
 using Insane.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -11,23 +12,32 @@ using System.Threading.Tasks;
 
 namespace Insane.AspNet.Identity.Model1.Configuration
 {
-    public class IdentityUserConfiguration<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TLog> : EntityTypeConfigurationBase<TUser>
-       where TKey : IEquatable<TKey>
-        where TUser : IdentityUserBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TLog>
-        where TRole : IdentityRoleBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TLog>
-        where TAccess : IdentityAccessBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TLog>
-        where TUserClaim : IdentityUserClaimBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TLog>
-        where TPlatform : IdentityPlatformBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TLog>
-        where TSession : IdentitySessionBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TLog>
-        where TLog : IdentityLogBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TLog>
+
+    public class IdentityUserConfiguration : IdentityUserConfigurationBase<long, IdentityUser, IdentityRole, IdentityAccess, IdentityUserClaim, IdentityPlatform, IdentitySession, IdentityUserRecoveryCode, IdentityLog>
     {
-        public IdentityUserConfiguration(DatabaseFacade database, string? schema = null) : base(database, schema)
+        public IdentityUserConfiguration(DatabaseFacade database) : base(database)
+        {
+        }
+    }
+
+    public abstract class IdentityUserConfigurationBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TRecoveryCode, TLog> : EntityTypeConfigurationBase<TUser>
+       where TKey : IEquatable<TKey>
+        where TUser : IdentityUserBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TRecoveryCode, TLog>
+        where TRole : IdentityRoleBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TRecoveryCode, TLog>
+        where TAccess : IdentityAccessBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TRecoveryCode, TLog>
+        where TUserClaim : IdentityUserClaimBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TRecoveryCode, TLog>
+        where TPlatform : IdentityPlatformBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TRecoveryCode, TLog>
+        where TSession : IdentitySessionBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TRecoveryCode, TLog>
+        where TRecoveryCode : IdentityUserRecoveryCodeBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TRecoveryCode, TLog>
+        where TLog : IdentityLogBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TRecoveryCode, TLog>
+    {
+        public IdentityUserConfigurationBase(DatabaseFacade database) : base(database)
         {
         }
 
         public override void Configure(EntityTypeBuilder<TUser> builder)
         {
-            builder.ToTable(Database, Schema);
+            builder.ToTable(Database, builder.GetSchema(Database));
 
             builder.Property(e => e.Id).IsRequired().ValueGeneratedOnAdd(Database, builder, startsAt: Constants.IdentityColumnStartValue);
             builder.Ignore(e => e.UniqueId);
@@ -39,19 +49,17 @@ namespace Insane.AspNet.Identity.Model1.Configuration
             builder.Property(e => e.Phone).IsRequired().HasMaxLength(Constants.PhoneMaxLength);
             builder.Property(e => e.Mobile).IsRequired().HasMaxLength(Constants.PhoneMaxLength).IsConcurrencyToken();
             builder.Property(e => e.EmailConfirmed).IsRequired().IsConcurrencyToken();
-            builder.Property(e => e.EmailConfirmationCode).IsRequired(false).HasMaxLength(Constants.IdentifierMaxLength).IsConcurrencyToken();
-            builder.Property(e => e.EmailConfirmationDeadline).IsRequired(false).IsConcurrencyToken();
             builder.Property(e => e.MobileConfirmed).IsRequired().IsConcurrencyToken();
-            builder.Property(e => e.MobileConfirmationCode).IsRequired(false).HasMaxLength(Constants.IdentifierMaxLength).IsConcurrencyToken();
-            builder.Property(e => e.MobileConfirmationDeadline).IsRequired(false).IsConcurrencyToken();
-            builder.Property(e => e.LoginFailCount).IsRequired().IsConcurrencyToken();
-            builder.Property(e => e.LockoutUntil).IsRequired(false).IsConcurrencyToken();
+            builder.Property(e => e.AccessFailCount).IsRequired().IsConcurrencyToken();
+            builder.Property(e => e.LockoutDeadline).IsRequired(false).IsConcurrencyToken();
             builder.Property(e => e.Summary).IsRequired(false).IsUnicode().HasMaxLength(Constants.SummaryMaxLength);
             builder.Property(e => e.ProfilePictureUri).IsRequired(false).IsUnicode().HasMaxLength(Constants.UriMaxLength);
             builder.Property(e => e.CreatedAt).IsRequired();
             builder.Property(e => e.Enabled).IsRequired().IsConcurrencyToken();
             builder.Property(e => e.TwoFactorEnabled).IsRequired().IsConcurrencyToken();
             builder.Property(e => e.TwoFactorSecretKey).IsRequired().HasMaxLength(Constants.KeyMaxLength).IsConcurrencyToken();
+            builder.Property(e => e.SecurityActionSecretKey).IsRequired().HasMaxLength(Constants.KeyMaxLength).IsConcurrencyToken();
+            builder.Property(e => e.NormalActionSecretKey).IsRequired().HasMaxLength(Constants.KeyMaxLength).IsConcurrencyToken();
             builder.Property(e => e.ActiveUntil).IsRequired(false).IsConcurrencyToken();
 
             builder.HasPrimaryKeyIndex(Database, e => e.Id);
