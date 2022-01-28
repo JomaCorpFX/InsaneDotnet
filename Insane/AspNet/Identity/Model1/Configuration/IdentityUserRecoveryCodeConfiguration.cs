@@ -10,12 +10,21 @@ using System.Threading.Tasks;
 
 namespace Insane.AspNet.Identity.Model1.Configuration
 {
-    public class IdentityUserRecoveryCodeConfiguration : IdentityUserRecoveryCodeConfigurationBase<long, IdentityUser, IdentityRole, IdentityAccess, IdentityUserClaim, IdentityPlatform, IdentitySession, IdentityUserRecoveryCode, IdentityLog>
+    public class IdentityUserRecoveryCodeConfiguration : IdentityUserRecoveryCodeConfiguration<long>
     {
         public IdentityUserRecoveryCodeConfiguration(DatabaseFacade database) : base(database)
         {
         }
     }
+
+    public class IdentityUserRecoveryCodeConfiguration<TKey> : IdentityUserRecoveryCodeConfigurationBase<TKey, IdentityUser<TKey>, IdentityRole<TKey>, IdentityAccess<TKey>, IdentityUserClaim<TKey>, IdentityPlatform<TKey>, IdentitySession<TKey>, IdentityUserRecoveryCode<TKey>, IdentityLog<TKey>>
+        where TKey : IEquatable<TKey>
+    {
+        public IdentityUserRecoveryCodeConfiguration(DatabaseFacade database) : base(database)
+        {
+        }
+    }
+
     public abstract class IdentityUserRecoveryCodeConfigurationBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TRecoveryCode, TLog> : EntityTypeConfigurationBase<TRecoveryCode>
         where TKey : IEquatable<TKey>
         where TUser : IdentityUserBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TRecoveryCode, TLog>
