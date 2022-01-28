@@ -11,12 +11,21 @@ using System.Threading.Tasks;
 
 namespace Insane.AspNet.Identity.Model1.Configuration
 {
-    public class IdentityPlatformConfiguration : IdentityPlatformConfigurationBase<long, IdentityUser, IdentityRole, IdentityAccess, IdentityUserClaim, IdentityPlatform, IdentitySession, IdentityUserRecoveryCode, IdentityLog>
+    public class IdentityPlatformConfiguration : IdentityPlatformConfiguration<long>
     {
         public IdentityPlatformConfiguration(DatabaseFacade database) : base(database)
         {
         }
     }
+
+    public class IdentityPlatformConfiguration<TKey> : IdentityPlatformConfigurationBase<TKey, IdentityUser<TKey>, IdentityRole<TKey>, IdentityAccess<TKey>, IdentityUserClaim<TKey>, IdentityPlatform<TKey>, IdentitySession<TKey>, IdentityUserRecoveryCode<TKey>, IdentityLog<TKey>>
+        where TKey : IEquatable<TKey>
+    {
+        public IdentityPlatformConfiguration(DatabaseFacade database) : base(database)
+        {
+        }
+    }
+
 
     public abstract class IdentityPlatformConfigurationBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TRecoveryCode, TLog> : EntityTypeConfigurationBase<TPlatform>
         where TKey : IEquatable<TKey>

@@ -10,7 +10,15 @@ using System.Threading.Tasks;
 
 namespace Insane.AspNet.Identity.Model1.Configuration
 {
-    public class IdentityLogConfiguration : IdentityLogConfigurationBase<long, IdentityUser, IdentityRole, IdentityAccess, IdentityUserClaim, IdentityPlatform, IdentitySession, IdentityUserRecoveryCode, IdentityLog>
+    public class IdentityLogConfiguration : IdentityLogConfiguration<long>
+    {
+        public IdentityLogConfiguration(DatabaseFacade database) : base(database)
+        {
+        }
+    }
+
+    public class IdentityLogConfiguration<TKey> : IdentityLogConfigurationBase<TKey, IdentityUser<TKey>, IdentityRole<TKey>, IdentityAccess<TKey>, IdentityUserClaim<TKey>, IdentityPlatform<TKey>, IdentitySession<TKey>, IdentityUserRecoveryCode<TKey>, IdentityLog<TKey>>
+        where TKey : IEquatable<TKey>
     {
         public IdentityLogConfiguration(DatabaseFacade database) : base(database)
         {

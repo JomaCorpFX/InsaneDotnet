@@ -12,8 +12,16 @@ namespace Insane.AspNet.Identity.Model1.Context
 {
 
     
-    public class IdentityDbContext : IdentityDbContextBase<long, IdentityUser, IdentityRole, IdentityAccess, IdentityUserClaim, IdentityPlatform, IdentitySession, IdentityUserRecoveryCode, IdentityLog,
-        IdentityUserConfiguration, IdentityRoleConfiguration, IdentityAccessConfiguration, IdentityUserClaimConfiguration, IdentityPlatformConfiguration, IdentitySessionConfiguration, IdentityUserRecoveryCodeConfiguration, IdentityLogConfiguration>
+    public class IdentityDbContext : IdentityDbContext<long>
+    {
+        public IdentityDbContext(DbContextOptions options, string? defaultSchema = null) : base(options, defaultSchema)
+        {
+        }
+    }
+
+    public class IdentityDbContext<TKey> : IdentityDbContextBase<TKey, IdentityUser<TKey>, IdentityRole<TKey>, IdentityAccess<TKey>, IdentityUserClaim<TKey>, IdentityPlatform<TKey>, IdentitySession<TKey>, IdentityUserRecoveryCode<TKey>, IdentityLog<TKey>,
+        IdentityUserConfiguration<TKey>, IdentityRoleConfiguration<TKey>, IdentityAccessConfiguration<TKey>, IdentityUserClaimConfiguration<TKey>, IdentityPlatformConfiguration<TKey>, IdentitySessionConfiguration<TKey>, IdentityUserRecoveryCodeConfiguration<TKey>, IdentityLogConfiguration<TKey>>
+        where TKey: IEquatable<TKey>
     {
         public IdentityDbContext(DbContextOptions options, string? defaultSchema = null) : base(options, defaultSchema)
         {
