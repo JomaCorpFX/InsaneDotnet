@@ -10,4 +10,5 @@ global using Insane.Extensions;
 global using System.Web;
 global using System.Linq.Expressions;
 global using Microsoft.EntityFrameworkCore;
+global using Insane.EntityFrameworkCore;
 

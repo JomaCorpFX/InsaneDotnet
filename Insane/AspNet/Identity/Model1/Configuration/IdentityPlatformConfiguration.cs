@@ -44,20 +44,20 @@ namespace Insane.AspNet.Identity.Model1.Configuration
 
         public override void Configure(EntityTypeBuilder<TPlatform> builder)
         {
-            builder.ToTable(Database, builder.GetSchema(Database));
+            builder.ToTable(Database);
 
             builder.Property(e => e.Id).IsRequired().ValueGeneratedOnAdd(Database, builder, startsAt: Constants.IdentityColumnStartValue);
             builder.Ignore(e => e.UniqueId);
             builder.Property(e => e.AdminUserId).IsRequired().IsConcurrencyToken();
-            builder.Property(e => e.Name).IsUnicode().IsRequired().IsConcurrencyToken();
-            builder.Property(e => e.Description).IsUnicode().IsRequired(false);
-            builder.Property(e => e.ApiKey).IsRequired().IsConcurrencyToken();
-            builder.Property(e => e.LogoUri).IsRequired(false).IsUnicode();
+            builder.Property(e => e.Name).IsRequired().IsConcurrencyToken();
+            builder.Property(e => e.Description).IsRequired(false);
+            builder.Property(e => e.ApiKey).IsUnicode(false).IsRequired().IsConcurrencyToken();
+            builder.Property(e => e.LogoUri).IsRequired(false).HasMaxLength(Constants.UriMaxLength);
             builder.Property(e => e.Type).IsRequired().IsConcurrencyToken();
             builder.Property(e => e.InDevelopment).IsRequired().IsConcurrencyToken();
             builder.Property(e => e.IsServerSide).IsRequired().IsConcurrencyToken();
             builder.Property(e => e.RevokeTokenWhenLogout).IsRequired().IsConcurrencyToken();
-            builder.Property(e => e.ContactEmail).IsRequired(false).IsUnicode().HasMaxLength(Constants.EmailMaxLength);
+            builder.Property(e => e.ContactEmail).IsRequired(false).HasMaxLength(Constants.EmailMaxLength);
             builder.Property(e => e.Enabled).IsRequired().IsConcurrencyToken();
             builder.Property(e => e.ActiveUntil).IsRequired(false).IsConcurrencyToken();
             builder.Property(e => e.CreatedAt).IsRequired();
@@ -66,7 +66,7 @@ namespace Insane.AspNet.Identity.Model1.Configuration
             builder.HasUniqueIndex(Database, e => e.Name);
             builder.HasUniqueIndex(Database, e => e.ApiKey);
             builder.HasIndex(Database, e => e.AdminUserId);
-            builder.HasOne(e => e.AdminUser).WithMany(e => e.ManagedPlatforms).HasForeignKey(e => e.AdminUserId).OnDelete(Microsoft.EntityFrameworkCore.DeleteBehavior.Restrict);
+            builder.HasOne(e => e.AdminUser).WithMany(e => e.ManagedPlatforms).HasForeignKey(e => e.AdminUserId).OnDelete(DeleteBehavior.Restrict);
             
         }
     }

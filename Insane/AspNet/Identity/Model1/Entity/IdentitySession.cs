@@ -8,8 +8,9 @@ using System.Threading.Tasks;
 
 namespace Insane.AspNet.Identity.Model1.Entity
 {
-   
-    public class IdentitySession:IdentitySessionBase<long, IdentityUser, IdentityRole, IdentityAccess, IdentityUserClaim, IdentityPlatform, IdentitySession, IdentityUserRecoveryCode, IdentityLog> { }
+
+    public class IdentitySessionString : IdentitySession<string> { }
+    public class IdentitySessionLong : IdentitySession<long> { }
 
     public class IdentitySession<TKey> : IdentitySessionBase<TKey, IdentityUser<TKey>, IdentityRole<TKey>, IdentityAccess<TKey>, IdentityUserClaim<TKey>, IdentityPlatform<TKey>, IdentitySession<TKey>, IdentityUserRecoveryCode<TKey>, IdentityLog<TKey>> where TKey : IEquatable<TKey> { }
 
@@ -28,8 +29,8 @@ namespace Insane.AspNet.Identity.Model1.Entity
 
         [NotMapped]
         public string UniqueId { get; set; } = null!;
-        public long PlatformId { get; set; }
-        public long UserId { get; set; }
+        public TKey PlatformId { get; set; } = default(TKey)!;
+        public TKey UserId { get; set; } = default(TKey)!;
         public string Jti { get; set; } = null!;
         public string JwtHash { get; set; } = null!;
         public string RefreshToken { get; set; } = null!;
@@ -40,8 +41,8 @@ namespace Insane.AspNet.Identity.Model1.Entity
         public string ClientOS { get; set; } = null!;
         public string ClientIP { get; set; } = null!;
         public int ClientTimezone { get; set; }
-        public decimal ClientLatitude { get; set; }
-        public decimal ClientLongitude { get; set; }
+        public decimal? ClientLatitude { get; set; }
+        public decimal? ClientLongitude { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset ExpiresAt { get; set; }
         public bool Revoked { get; set; }

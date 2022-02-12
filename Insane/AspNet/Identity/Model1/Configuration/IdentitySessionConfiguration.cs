@@ -42,17 +42,17 @@ namespace Insane.AspNet.Identity.Model1.Configuration
 
         public override void Configure(EntityTypeBuilder<TSession> builder)
         {
-            builder.ToTable(Database, builder.GetSchema(Database));
+            builder.ToTable(Database);
 
-            builder.Property(e => e.Id).IsRequired();
+            builder.Property(e => e.Id).IsRequired().ValueGeneratedOnAdd(Database, builder, startsAt: Constants.IdentityColumnStartValue); ;
             builder.Ignore(e => e.UniqueId);
             builder.Property(e => e.PlatformId).IsRequired();
             builder.Property(e =>e.UserId).IsRequired();
-            builder.Property(e =>e.Jti ).IsRequired().HasMaxLength(Constants.IdentifierMaxLength).IsConcurrencyToken();
-            builder.Property(e => e.JwtHash).IsRequired().HasMaxLength(Constants.HashMaxLength).IsConcurrencyToken();
-            builder.Property(e => e.RefreshToken).IsRequired().HasMaxLength(Constants.IdentifierMaxLength).IsConcurrencyToken();
-            builder.Property(e => e.SessionKey).IsRequired().HasMaxLength(Constants.SaltLength).IsConcurrencyToken();
-            builder.Property(e =>  e.ClientDeviceUid).IsRequired().HasMaxLength(Constants.IdentifierMaxLength);
+            builder.Property(e =>e.Jti ).IsUnicode(false).IsRequired().HasMaxLength(Constants.IdentifierMaxLength).IsConcurrencyToken();
+            builder.Property(e => e.JwtHash).IsUnicode(false).IsRequired().HasMaxLength(Constants.HashMaxLength).IsConcurrencyToken();
+            builder.Property(e => e.RefreshToken).IsUnicode(false).IsRequired().HasMaxLength(Constants.IdentifierMaxLength).IsConcurrencyToken();
+            builder.Property(e => e.SessionKey).IsUnicode(false).IsRequired().HasMaxLength(Constants.SaltLength).IsConcurrencyToken();
+            builder.Property(e =>  e.ClientDeviceUid).IsUnicode(false).IsRequired().HasMaxLength(Constants.IdentifierMaxLength);
             builder.Property(e => e.ClientUserAgent).IsRequired().HasMaxLength(Constants.SummaryMaxLength);
             builder.Property(e => e.ClientFriendlyName).IsRequired().HasMaxLength(Constants.NameMaxLength);
             builder.Property(e => e.ClientOS).IsRequired().HasMaxLength(Constants.NameMaxLength);

@@ -1,5 +1,6 @@
 ﻿using Insane.AspNet.Identity.Model1.Configuration;
 using Insane.AspNet.Identity.Model1.Entity;
+using Insane.Core;
 using Insane.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -8,28 +9,38 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Insane.AspNet.Identity.Model1.Context
+namespace Insane.AspNet.Identity.Model1
 {
 
-    
-    public class IdentityDbContext : IdentityDbContext<long>
+    public class IdentityDbContextLong<TDerivedContext> : IdentityDbContext<TDerivedContext, long>
+        where TDerivedContext : CoreDbContextBase<TDerivedContext>
     {
-        public IdentityDbContext(DbContextOptions options, string? defaultSchema = null) : base(options, defaultSchema)
+        public IdentityDbContextLong(DbContextOptions options, string? defaultSchema = null) : base(options, defaultSchema)
         {
         }
     }
 
-    public class IdentityDbContext<TKey> : IdentityDbContextBase<TKey, IdentityUser<TKey>, IdentityRole<TKey>, IdentityAccess<TKey>, IdentityUserClaim<TKey>, IdentityPlatform<TKey>, IdentitySession<TKey>, IdentityUserRecoveryCode<TKey>, IdentityLog<TKey>,
+    public class IdentityDbContextString<TDerivedContext> : IdentityDbContext<TDerivedContext, string>
+        where TDerivedContext : CoreDbContextBase<TDerivedContext>
+    {
+        public IdentityDbContextString(DbContextOptions options, string? defaultSchema = null) : base(options, defaultSchema)
+        {
+        }
+    }
+
+    public class IdentityDbContext<TDerivedContext, TKey> : IdentityDbContextBase<TDerivedContext, TKey, IdentityUser<TKey>, IdentityRole<TKey>, IdentityAccess<TKey>, IdentityUserClaim<TKey>, IdentityPlatform<TKey>, IdentitySession<TKey>, IdentityUserRecoveryCode<TKey>, IdentityLog<TKey>,
         IdentityUserConfiguration<TKey>, IdentityRoleConfiguration<TKey>, IdentityAccessConfiguration<TKey>, IdentityUserClaimConfiguration<TKey>, IdentityPlatformConfiguration<TKey>, IdentitySessionConfiguration<TKey>, IdentityUserRecoveryCodeConfiguration<TKey>, IdentityLogConfiguration<TKey>>
         where TKey: IEquatable<TKey>
+        where TDerivedContext : CoreDbContextBase<TDerivedContext>
     {
         public IdentityDbContext(DbContextOptions options, string? defaultSchema = null) : base(options, defaultSchema)
         {
         }
     }
 
-    public abstract class IdentityDbContextBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TRecoveryCode, TLog, 
-        TUserConfiguration, TRoleConfiguration, TAccessConfiguration, TUserClaimConfiguration, TPlatformConfiguration, TSessionConfiguration, TRecoveryCodeConfiguration, TLogConfiguration> : CoreDbContextBase
+    public abstract class IdentityDbContextBase<TDerivedContext, TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TRecoveryCode, TLog, 
+        TUserConfiguration, TRoleConfiguration, TAccessConfiguration, TUserClaimConfiguration, TPlatformConfiguration, TSessionConfiguration, TRecoveryCodeConfiguration, TLogConfiguration> : CoreDbContextBase<TDerivedContext>
+        where TDerivedContext: CoreDbContextBase<TDerivedContext>
        where TKey : IEquatable<TKey>
         where TUser : IdentityUserBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TRecoveryCode, TLog>
         where TRole : IdentityRoleBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TRecoveryCode, TLog>

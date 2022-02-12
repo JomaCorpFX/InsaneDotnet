@@ -43,13 +43,13 @@ namespace Insane.AspNet.Identity.Model1.Configuration
 
         public override void Configure(EntityTypeBuilder<TRole> builder)
         {
-            builder.ToTable(Database, builder.GetSchema(Database));
+            builder.ToTable(Database);
 
             builder.Property(e => e.Id).IsRequired().ValueGeneratedOnAdd(Database, builder, startsAt: Constants.IdentityColumnStartValue);
             builder.Ignore(e => e.UniqueId);
-            builder.Property(e => e.Name).IsRequired().IsUnicode().HasMaxLength(Constants.NameMaxLength).IsConcurrencyToken();
-            builder.Property(e => e.Description).IsRequired(false).IsUnicode().HasMaxLength(Constants.DescriptionMaxLength);
-            builder.Property(e => e.LogoUri).IsRequired(false).IsUnicode().HasMaxLength(Constants.UriMaxLength);
+            builder.Property(e => e.Name).IsRequired().HasMaxLength(Constants.NameMaxLength).IsConcurrencyToken();
+            builder.Property(e => e.Description).IsRequired(false).HasMaxLength(Constants.DescriptionMaxLength);
+            builder.Property(e => e.LogoUri).IsRequired(false).HasMaxLength(Constants.UriMaxLength);
             builder.Property(e => e.CreatedAt).IsRequired();
             builder.Property(e => e.Enabled).IsRequired().IsConcurrencyToken().IsConcurrencyToken();
             builder.Property(e => e.ActiveUntil).IsRequired(false).IsConcurrencyToken();

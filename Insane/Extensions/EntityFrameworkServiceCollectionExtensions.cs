@@ -1,4 +1,5 @@
-﻿using Insane.EntityFrameworkCore;
+﻿using Insane.Core;
+using Insane.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
@@ -16,8 +17,8 @@ namespace Insane.Extensions
     public static class EntityFrameworkServiceCollectionExtensions
     {
 
-        public static IServiceCollection AddDbContext<TContextBase, TSettings>(this IServiceCollection services, TSettings settings, DbContextFlavors<TContextBase> flavors, Action<DbContextOptionsBuilder> dbContextOptionsBuilderAction = null!, DbContextOptionsBuilderActionFlavors dbContextOptionsBuilderActionFlavors = null!, ServiceLifetime lifetime = ServiceLifetime.Scoped)
-            where TContextBase : CoreDbContextBase
+        public static IServiceCollection AddDbContext<TContext, TSettings>(this IServiceCollection services, TSettings settings, List<object>? constructorAdditionalParameters = null, Action<DbContextOptionsBuilder>? dbContextOptionsBuilderAction = null, DbContextOptionsBuilderActionFlavors? dbContextOptionsBuilderActionFlavors = null, ServiceLifetime lifetime = ServiceLifetime.Scoped)
+            where TContext : CoreDbContextBase<TContext>, ISelfReference<TContext>
             where TSettings : DbContextSettings, new()
         {
             Action<TSettings> settingsAction = (s) =>
@@ -29,12 +30,12 @@ namespace Insane.Extensions
                 s.OracleConnectionString = settings.OracleConnectionString;
             };
 
-            services.AddDbContext(settingsAction, flavors, dbContextOptionsBuilderAction, dbContextOptionsBuilderActionFlavors, lifetime);
+            services.AddDbContext<TContext, TSettings>(settingsAction, constructorAdditionalParameters, dbContextOptionsBuilderAction, dbContextOptionsBuilderActionFlavors, lifetime);
             return services;
         }
 
-        public static IServiceCollection AddDbContext<TContextBase, TSettings>(this IServiceCollection services, IConfigurationSection settingsSection, DbContextFlavors<TContextBase> flavors, Action<DbContextOptionsBuilder> dbContextOptionsBuilderAction = null!, DbContextOptionsBuilderActionFlavors dbContextOptionsBuilderActionFlavors = null!, ServiceLifetime lifetime = ServiceLifetime.Scoped)
-            where TContextBase : CoreDbContextBase
+        public static IServiceCollection AddDbContext<TContext, TSettings>(this IServiceCollection services, IConfigurationSection settingsSection, List<object>? constructorAdditionalParameters = null, Action<DbContextOptionsBuilder>? dbContextOptionsBuilderAction = null, DbContextOptionsBuilderActionFlavors? dbContextOptionsBuilderActionFlavors = null, ServiceLifetime lifetime = ServiceLifetime.Scoped)
+            where TContext : CoreDbContextBase<TContext>, ISelfReference<TContext>
             where TSettings : DbContextSettings, new()
         {
             Action<TSettings> settingsAction = (s) =>
@@ -46,35 +47,37 @@ namespace Insane.Extensions
                 s.MySqlConnectionString = settings.MySqlConnectionString;
                 s.OracleConnectionString = settings.OracleConnectionString;
             };
-            services.AddDbContext(settingsAction, flavors, dbContextOptionsBuilderAction, dbContextOptionsBuilderActionFlavors, lifetime);
+            services.AddDbContext<TContext, TSettings>(settingsAction, constructorAdditionalParameters, dbContextOptionsBuilderAction, dbContextOptionsBuilderActionFlavors, lifetime);
             return services;
         }
 
 
-        public static IServiceCollection AddDbContext<TContextBase, TSettings>(this IServiceCollection services, Action<TSettings> settingsAction, DbContextFlavors<TContextBase> flavors, Action<DbContextOptionsBuilder> dbContextOptionsBuilderAction = null!, DbContextOptionsBuilderActionFlavors dbContextOptionsBuilderActionFlavors = null!, ServiceLifetime lifetime = ServiceLifetime.Scoped)
-            where TContextBase : CoreDbContextBase
+        public static IServiceCollection AddDbContext<TContext, TSettings>(this IServiceCollection services, Action<TSettings> settingsAction, List<object>? constructorAdditionalParameters = null, Action<DbContextOptionsBuilder>? dbContextOptionsBuilderAction = null, DbContextOptionsBuilderActionFlavors? dbContextOptionsBuilderActionFlavors = null, ServiceLifetime lifetime = ServiceLifetime.Scoped)
+            where TContext : CoreDbContextBase<TContext>, ISelfReference<TContext>
             where TSettings : DbContextSettings, new()
         {
-            services.AddDbContext("", settingsAction, flavors, dbContextOptionsBuilderAction, dbContextOptionsBuilderActionFlavors, lifetime);
+            services.AddDbContext<TContext, TSettings>("", settingsAction, constructorAdditionalParameters, dbContextOptionsBuilderAction, dbContextOptionsBuilderActionFlavors, lifetime);
             return services;
         }
 
-        public static IServiceCollection AddDbContext<TContextBase, TSettings>(this IServiceCollection services, string settingsInstanceName, Action<TSettings> settingsAction, DbContextFlavors<TContextBase> flavors, Action<DbContextOptionsBuilder> dbContextOptionsBuilderAction = null!, DbContextOptionsBuilderActionFlavors dbContextOptionsBuilderActionFlavors = null!, ServiceLifetime lifetime = ServiceLifetime.Scoped)
-            where TContextBase : CoreDbContextBase
+        public static IServiceCollection AddDbContext<TContext, TSettings>(this IServiceCollection services, string settingsInstanceName, Action<TSettings> settingsAction, List<object>? constructorAdditionalParameters = null, Action<DbContextOptionsBuilder<TContext>>? dbContextOptionsBuilderAction = null, DbContextOptionsBuilderActionFlavors? dbContextOptionsBuilderActionFlavors = null, ServiceLifetime lifetime = ServiceLifetime.Scoped)
+            where TContext : CoreDbContextBase<TContext>, ISelfReference<TContext>
             where TSettings : DbContextSettings, new()
         {
-            if (typeof(TContextBase).Equals(typeof(CoreDbContextBase)))
+            if (typeof(TContext).Equals(typeof(CoreDbContextBase<TContext>)))
             {
-                throw new ArgumentException($"\"{nameof(TContextBase)}\" type parameter cannot be \"{nameof(CoreDbContextBase)}\".");
+                throw new ArgumentException($"\"{nameof(TContext)}\" type parameter cannot be \"{nameof(CoreDbContextBase<TContext>)}\".");
             }
 
+            constructorAdditionalParameters ??= new List<object>();
             services.Configure(settingsInstanceName, settingsAction);
-            Func<IServiceProvider, TContextBase> factory = (serviceProvider) =>
+            Func<IServiceProvider, TContext> factory = (serviceProvider) =>
             {
                 IOptionsMonitor<TSettings> options = serviceProvider.GetRequiredService<IOptionsMonitor<TSettings>>();
                 TSettings settings = options.Get(settingsInstanceName);
-                (Type dbContextType, DbContextOptionsBuilder builder) = settings.ConfigureDbProvider(flavors, dbContextOptionsBuilderAction, dbContextOptionsBuilderActionFlavors);
-                return dbContextType.CreateDbContext<TContextBase>(builder);
+                DbContextOptionsBuilder<TContext> builder = settings.ConfigureDbProvider(dbContextOptionsBuilderAction, dbContextOptionsBuilderActionFlavors);
+                constructorAdditionalParameters.Insert(0, builder);
+                return (TContext)Activator.CreateInstance(typeof(TContext), constructorAdditionalParameters.ToArray())!;
             };
 
             switch (lifetime)

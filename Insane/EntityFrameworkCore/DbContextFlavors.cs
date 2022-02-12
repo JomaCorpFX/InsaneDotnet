@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Insane.Core;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 namespace Insane.EntityFrameworkCore
 {
     public class DbContextFlavors<TContextBase>
-        where TContextBase: CoreDbContextBase
+        where TContextBase : CoreDbContextBase<TContextBase>, ISelfReference<TContextBase>
     {
 
         public static DbContextFlavors<TContextBase> CreateInstance<TSqlServerDbContext, TPosgreSqlDbContext, TMySqlDbContext, TOracleDbContext>()

@@ -42,15 +42,15 @@ namespace Insane.AspNet.Identity.Model1.Configuration
 
         public override void Configure(EntityTypeBuilder<TLog> builder)
         {
-            builder.ToTable(Database, builder.GetSchema(Database));
+            builder.ToTable(Database);
 
-            builder.Property(e => e.Id).IsRequired();
+            builder.Property(e => e.Id).IsRequired().ValueGeneratedOnAdd(Database, builder, startsAt: Constants.IdentityColumnStartValue); ;
             builder.Ignore(e => e.UniqueId);
             builder.Property(e => e.Level).IsRequired();
             builder.Property(e => e.Type).IsRequired();
-            builder.Property(e => e.Message).IsRequired(false).IsUnicode();
-            builder.Property(e => e.RelatedData).IsRequired(false).IsUnicode();
-            builder.Property(e => e.RelatedExceptionStacktrace).IsRequired(false).IsUnicode();
+            builder.Property(e => e.Message).IsRequired(false);
+            builder.Property(e => e.RelatedData).IsRequired(false);
+            builder.Property(e => e.RelatedExceptionStacktrace).IsRequired(false);
             builder.Property(e => e.CreatedAt).IsRequired();
 
 
