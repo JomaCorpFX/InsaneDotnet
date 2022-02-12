@@ -1,4 +1,5 @@
-﻿using Insane.Extensions;
+﻿using Insane.Core;
+using Insane.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
@@ -10,120 +11,95 @@ using System.Linq;
 
 namespace Insane.EntityFrameworkCore
 {
-    public abstract class DbContextFactoryBase<TContextBase, TContext> : IDesignTimeDbContextFactory<TContext>
-        where TContext : TContextBase
-        where TContextBase : CoreDbContextBase
+    public abstract class DbContextFactoryBase<TContext> : IDesignTimeDbContextFactory<TContext>
+        where TContext : CoreDbContextBase<TContext>
     {
-        public abstract string ConfigurationFilename { get; }
-        public abstract string ConfigurationPath { get; }
-        public abstract Type UserSecretsType { get; }
-        public abstract DbContextOptionsBuilderActionFlavors DbContextOptionsBuilderActionFlavors { get; }
-        public abstract Action<DbContextOptionsBuilder> DbContextOptionsBuilderAction { get; }
 
-        public virtual TContext CreateDbContext(string[] args)
+        public class ConfigureSettingsParameters
+        {
+            public string? ConfigurationFilename { get; set; } = null;
+            public string[]? CommandLineArgs { get; set; } = null;
+            public string? ConfigurationPath { get; set; } = null;
+            public ICollection<Type>? SecretTypes { get; set; } = null;
+        }
+
+        public virtual Action<DbContextSettings, ConfigureSettingsParameters> SettingsConfigureAction { get; } = (dbContextSettings, parameters) =>
         {
             IConfigurationBuilder configurationBuilder = new ConfigurationBuilder()
               .SetBasePath(Directory.GetCurrentDirectory());
-            if (UserSecretsType != null)
+            configurationBuilder.AddJsonFile(parameters.ConfigurationFilename ?? EntityFrameworkCoreConstants.DefaultConfigurationFilename, false, true);
+            if (parameters.SecretTypes is not null && parameters.SecretTypes.Count > 0)
             {
-                var addUserSecretsMethod = typeof(UserSecretsConfigurationExtensions).GetMethod(nameof(UserSecretsConfigurationExtensions.AddUserSecrets), new Type[] { typeof(IConfigurationBuilder) })!.MakeGenericMethod(UserSecretsType);
-                configurationBuilder = (IConfigurationBuilder)addUserSecretsMethod.Invoke(configurationBuilder, new object[] { configurationBuilder })!;
+                foreach (var secretType in parameters.SecretTypes)
+                {
+                    var addUserSecretsMethod = typeof(UserSecretsConfigurationExtensions).GetMethod(nameof(UserSecretsConfigurationExtensions.AddUserSecrets), new Type[] { typeof(IConfigurationBuilder) })!.MakeGenericMethod(secretType);
+                    configurationBuilder = (IConfigurationBuilder)addUserSecretsMethod.Invoke(configurationBuilder, new object[] { configurationBuilder })!;
+                }
             }
-
-            configurationBuilder = configurationBuilder.AddJsonFile(ConfigurationFilename, false, true);
+            if (parameters.CommandLineArgs is not null && parameters.CommandLineArgs.Length > 0)
+            {
+                configurationBuilder.AddCommandLine(parameters.CommandLineArgs);
+            }
             IConfiguration configuration = configurationBuilder.Build();
+            configuration.Bind(parameters.ConfigurationPath ?? EntityFrameworkCoreConstants.DefaultConfigurationPath, dbContextSettings);
+        };
 
-            DbContextSettings dbContextSettings = new();
-            configuration.Bind(ConfigurationPath, dbContextSettings);
-
-            switch (typeof(TContext).GetInterfaces())
+        public virtual DbContextOptionsBuilderActionFlavors DbContextOptionsBuilderActionFlavors { get; } = new DbContextOptionsBuilderActionFlavors()
+        {
+            SqlServer = (builder) =>
             {
-                case var interfaces when interfaces.Contains(typeof(ISqlServerDbContext)):
-                    dbContextSettings.Provider = DbProvider.SqlServer;
-                    break;
-                case var interfaces when interfaces.Contains(typeof(IPostgreSqlDbContext)):
-                    dbContextSettings.Provider = DbProvider.PostgreSql;
-                    break;
-                case var interfaces when interfaces.Contains(typeof(IMySqlDbContext)):
-                    dbContextSettings.Provider = DbProvider.MySql;
-                    break;
-                case var interfaces when interfaces.Contains(typeof(IOracleDbContext)):
-                    dbContextSettings.Provider = DbProvider.Oracle;
-                    break;
-            }
-            
-            DbContextFlavors<TContextBase> flavors = DbContextFlavors<TContextBase>.CreateInstance(new Type[] { typeof(TContext) });
-            return (TContext)dbContextSettings.CreateDbContext(flavors, DbContextOptionsBuilderAction, DbContextOptionsBuilderActionFlavors);
-        }
 
+            },
+
+            PostgreSql = (builder) =>
+            {
+
+            },
+
+            MySql = (builder) =>
+            {
+
+            },
+
+            Oracle = (builder) =>
+            {
+
+            }
+        };
+
+        public virtual Action<DbContextOptionsBuilder<TContext>> DbContextOptionsBuilderAction { get; } = (builder) =>
+        {
+            builder.EnableDetailedErrors();
+            builder.EnableSensitiveDataLogging();
+        };
+
+        public virtual List<object?> ConstructorAdditionalParameters { get; } = new List<object?> { };
+
+        public virtual TContext CreateDbContext(string[] args)
+        {
+            ConfigureSettingsParameters parameters = new ConfigureSettingsParameters()
+            {
+                SecretTypes = new List<Type>()
+            };
+
+            string? secretTypeNames = args.Where(a => a.StartsWith($"{nameof(ConfigureSettingsParameters.SecretTypes)}=")).Select(e => e.Split("=")[1]).FirstOrDefault();
+            if (!string.IsNullOrWhiteSpace(secretTypeNames))
+            {
+                foreach (var typename in secretTypeNames.Split(","))
+                {
+                    parameters.SecretTypes.Add(Type.GetType(typename)!);
+                }
+            }
+            parameters.ConfigurationFilename = args.Where(a => a.StartsWith($"{nameof(ConfigureSettingsParameters.ConfigurationFilename)}=")).FirstOrDefault()?.Split(",")[1];
+            parameters.ConfigurationPath = args.Where(a => a.StartsWith($"{nameof(ConfigureSettingsParameters.ConfigurationPath)}=")).FirstOrDefault()?.Split(",")[1];
+            parameters.CommandLineArgs = args;
+
+            DbContextSettings dbContextSettings = new DbContextSettings();
+            SettingsConfigureAction.Invoke(dbContextSettings, parameters);
+
+            DbContextOptionsBuilder<TContext> builder = dbContextSettings.ConfigureDbProvider(DbContextOptionsBuilderAction, DbContextOptionsBuilderActionFlavors);
+            ConstructorAdditionalParameters.Insert(0, builder.Options);
+            return (TContext)Activator.CreateInstance(typeof(TContext), ConstructorAdditionalParameters.ToArray())!;
+        }
     }
 }
-
-
-
-//public virtual TContext CreateDbContext(string[] args)
-//{
-//    Action<TContextOptionsBuilder> contextOptionsBuilder = (ProviderAction == null) ? (options) => { } : ProviderAction;
-//    IConfigurationBuilder configurationBuilder = new ConfigurationBuilder()
-//      .SetBasePath(Directory.GetCurrentDirectory());
-//    if (UserSecretsType != null)
-//    {
-//        var addUserSecretsMethod = typeof(UserSecretsConfigurationExtensions).GetMethod(nameof(UserSecretsConfigurationExtensions.AddUserSecrets), new Type[] { typeof(IConfigurationBuilder) })!.MakeGenericMethod(UserSecretsType);
-//        configurationBuilder = (IConfigurationBuilder)addUserSecretsMethod.Invoke(configurationBuilder, new object[] { configurationBuilder })!;
-//    }
-//    configurationBuilder = configurationBuilder.AddJsonFile(ConfigurationFilename, false, true);
-//    IConfiguration configuration = configurationBuilder.Build();
-
-//    DbContextSettings dbContextSettings = new DbContextSettings();
-//    configuration.Bind(ConfigurationPath, dbContextSettings);
-//    DbContext.prov
-
-//            DbContextOptionsBuilder<TContext> builder = new DbContextOptionsBuilder<TContext>()
-//                .EnableSensitiveDataLogging(true)
-//                .EnableDetailedErrors(true);
-
-//    switch (typeof(TContext).GetInterfaces())
-//    {
-//        case var interfaces when interfaces.Contains(typeof(ISqlServerDbContext)):
-//            Action<SqlServerDbContextOptionsBuilder> optionsActionSqlServer = (options) =>
-//            {
-//                options.MigrationsAssembly(MigrationAssembly.FullName);
-//            };
-//            builder.UseSqlServer(optionsActionSqlServer);
-//            builder.UseSqlServer(contextOptionsBuilder as Action<SqlServerDbContextOptionsBuilder>);
-//            dbContextSettings.Provider = DbProvider.SqlServer;
-//            break;
-
-//        case var interfaces when interfaces.Contains(typeof(IPostgreSqlDbContext)):
-//            Action<NpgsqlDbContextOptionsBuilder> optionsActionPostgreSql = (options) =>
-//            {
-//                options.MigrationsAssembly(MigrationAssembly.FullName);
-//            };
-//            builder.UseNpgsql(optionsActionPostgreSql);
-//            builder.UseNpgsql(contextOptionsBuilder as Action<NpgsqlDbContextOptionsBuilder>);
-//            dbContextSettings.Provider = DbProvider.PostgreSql;
-//            break;
-
-//        case var interfaces when interfaces.Contains(typeof(IMySqlDbContext)):
-//            Action<MySqlDbContextOptionsBuilder> optionsActionMySql = (options) =>
-//            {
-//                options.MigrationsAssembly(MigrationAssembly.FullName);
-//            };
-//            builder.UseMySql(ServerVersion.AutoDetect(dbContextSettings.MySqlConnectionString), optionsActionMySql);
-//            builder.UseMySql(ServerVersion.AutoDetect(dbContextSettings.MySqlConnectionString), contextOptionsBuilder as Action<MySqlDbContextOptionsBuilder>);
-//            dbContextSettings.Provider = DbProvider.MySql;
-//            break;
-
-//        case var interfaces when interfaces.Contains(typeof(IOracleDbContext)):
-//            Action<OracleDbContextOptionsBuilder> optionsActionOracle = (options) =>
-//            {
-//                options.MigrationsAssembly(MigrationAssembly.FullName);
-//            };
-//            builder.UseOracle(optionsActionOracle);
-//            builder.UseOracle(contextOptionsBuilder as Action<OracleDbContextOptionsBuilder>);
-//            dbContextSettings.Provider = DbProvider.Oracle;
-//            break;
-//    }
-//    DbContextFlavors<TContextBase> flavors = DbContextFlavors<TContextBase>.CreateInstance(new Type[] { typeof(TContext) });
-//    return (TContext)EntityFrameworkExtensions.CreateDbContext(dbContextSettings, flavors, builder);
-//}

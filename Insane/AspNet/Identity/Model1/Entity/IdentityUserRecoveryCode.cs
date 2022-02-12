@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 
 namespace Insane.AspNet.Identity.Model1.Entity
 {
-    public class IdentityUserRecoveryCode : IdentityUserRecoveryCodeBase<long, IdentityUser, IdentityRole, IdentityAccess, IdentityUserClaim, IdentityPlatform, IdentitySession, IdentityUserRecoveryCode, IdentityLog> { }
+    public class IdentityUserRecoveryCodeString : IdentityUserRecoveryCode<string> { }
+    public class IdentityUserRecoveryCodeLong : IdentityUserRecoveryCode<long> { }
+    
 
     public class IdentityUserRecoveryCode<TKey> : IdentityUserRecoveryCodeBase<TKey, IdentityUser<TKey>, IdentityRole<TKey>, IdentityAccess<TKey>, IdentityUserClaim<TKey>, IdentityPlatform<TKey>, IdentitySession<TKey>, IdentityUserRecoveryCode<TKey>, IdentityLog<TKey>> where TKey : IEquatable<TKey> { }
 

@@ -1,4 +1,5 @@
-﻿using Insane.Cryptography;
+﻿using Insane.Core;
+using Insane.Cryptography;
 using Insane.EntityFrameworkCore;
 using Insane.EntityFrameworkCore.MySql.Metadata.Internal;
 using Insane.EntityFrameworkCore.ValueGeneration;
@@ -194,7 +195,7 @@ namespace Insane.Extensions
                     return new EncoderValueGenerator(property, encoder ?? Base64Encoder.Instance);
                 };
 
-                builder.ValueGeneratedOnAdd().HasValueGenerator(factory);
+                builder.ValueGeneratedOnAdd().HasValueGenerator(factory).HasMaxLength(EntityFrameworkCoreConstants.GuidLength);
             }
             return builder;
         }
@@ -224,23 +225,23 @@ namespace Insane.Extensions
             return propertyBuilder;
         }
 
-        public static (Type, DbContextOptionsBuilder) ConfigureDbProvider<TContextBase>(this DbContextSettings settings, DbContextFlavors<TContextBase> flavors, Action<DbContextOptionsBuilder> dbContextOptionsAction, DbContextOptionsBuilderActionFlavors actionFlavors)
-            where TContextBase : CoreDbContextBase
+        public static DbContextOptionsBuilder<TContext> ConfigureDbProvider<TContext>(this DbContextSettings settings, Action<DbContextOptionsBuilder<TContext>>? dbContextOptionsAction, DbContextOptionsBuilderActionFlavors? actionFlavors)
+            where TContext : CoreDbContextBase<TContext>, ISelfReference<TContext>
         {
-            DbContextOptionsBuilder builder = new DbContextOptionsBuilder();
+            DbContextOptionsBuilder<TContext> builder = new DbContextOptionsBuilder<TContext>();
             if (dbContextOptionsAction != null)
             {
-                dbContextOptionsAction.Invoke(builder);
+                dbContextOptionsAction?.Invoke(builder);
             }
 
             switch (settings.Provider)
             {
                 case DbProvider.SqlServer:
-                    builder.UseSqlServer(settings.SqlServerConnectionString, actionFlavors.SqlServer);
-                    return (flavors.SqlServer, builder);
+                    builder.UseSqlServer(settings.SqlServerConnectionString, actionFlavors?.SqlServer);
+                    break;
                 case DbProvider.PostgreSql:
-                    builder.UseNpgsql(settings.PostgreSqlConnectionString, actionFlavors.PostgreSql);
-                    return (flavors.PostgreSql, builder);
+                    builder.UseNpgsql(settings.PostgreSqlConnectionString, actionFlavors?.PostgreSql);
+                    break;
                 case DbProvider.MySql:
                     builder.UseMySql(ServerVersion.AutoDetect(settings.MySqlConnectionString), options =>
                     {
@@ -254,44 +255,15 @@ namespace Insane.Extensions
 
                         });
                     });
-                    builder.UseMySql(settings.MySqlConnectionString, ServerVersion.AutoDetect(settings.MySqlConnectionString), actionFlavors.MySql);
-                    return (flavors.MySql, builder);
+                    builder.UseMySql(settings.MySqlConnectionString, ServerVersion.AutoDetect(settings.MySqlConnectionString), actionFlavors?.MySql);
+                    break;
                 case DbProvider.Oracle: 
-                    builder.UseOracle(settings.OracleConnectionString, actionFlavors.Oracle);
-                    return (flavors.Oracle, builder);
+                    builder.UseOracle(settings.OracleConnectionString, actionFlavors?.Oracle);
+                    break;
                 default:
                     throw new NotImplementedException($"Not implemented provider \"{settings.Provider}\".");
             }
-        }
-
-        public static TContextBase CreateDbContext<TContextBase>(this DbContextSettings settings, DbContextFlavors<TContextBase> flavors, Action<DbContextOptionsBuilder> dbContextOptionsBuilderAction = null!, DbContextOptionsBuilderActionFlavors actionFlavors = null!)
-            where TContextBase : CoreDbContextBase
-        {
-            if (typeof(TContextBase).Equals(typeof(CoreDbContextBase)))
-            {
-                throw new ArgumentException($"\"{nameof(TContextBase)}\" type parameter cannot be \"{nameof(CoreDbContextBase)}\".");
-            }
-            (Type dbContextType, DbContextOptionsBuilder builder) = ConfigureDbProvider(settings, flavors, dbContextOptionsBuilderAction, actionFlavors);
-
-            return CreateDbContext<TContextBase>(dbContextType, builder);
-        }
-
-        public static TContextBase CreateDbContext<TContextBase>(this Type dbContextType, DbContextOptionsBuilder builder)
-            where TContextBase : CoreDbContextBase
-        {
-            if (typeof(TContextBase).Equals(typeof(CoreDbContextBase)))
-            {
-                throw new ArgumentException($"\"{nameof(TContextBase)}\" type parameter cannot be \"{nameof(CoreDbContextBase)}\".");
-            }
-            Dictionary<Type, IDbContextOptionsExtension> extensions = new();
-            builder.Options.Extensions.ToList().ForEach(extension =>
-            {
-                extensions.Add(extension.GetType(), extension);
-            });
-            Type dbContextOptionsType = typeof(DbContextOptions<>).MakeGenericType(new[] { dbContextType });
-            var dbContextOptions = dbContextOptionsType.GetConstructor(new[] { typeof(IReadOnlyDictionary<Type, IDbContextOptionsExtension>) })!.Invoke(new[] { extensions });
-            var dbContext = dbContextType.GetConstructor(new Type[] { dbContextOptionsType })!.Invoke(new[] { dbContextOptions });
-            return (TContextBase)dbContext;
+            return builder;
         }
 
         public static TEntity Protect<TEntity>(this TEntity entity, IEntityProtector<TEntity> protector) where TEntity : class, IEntity

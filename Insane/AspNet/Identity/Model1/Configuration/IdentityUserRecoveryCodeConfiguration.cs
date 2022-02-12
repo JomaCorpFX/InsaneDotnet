@@ -42,9 +42,9 @@ namespace Insane.AspNet.Identity.Model1.Configuration
 
         public override void Configure(EntityTypeBuilder<TRecoveryCode> builder)
         {
-            builder.ToTable(Database, builder.GetSchema(Database));
+            builder.ToTable(Database);
 
-            builder.Property(e => e.Id).IsRequired();
+            builder.Property(e => e.Id).IsRequired().ValueGeneratedOnAdd(Database, builder, startsAt: Constants.IdentityColumnStartValue); ;
             builder.Ignore(e => e.UniqueId);
             builder.Property(e => e.UserId).IsRequired();
             builder.Property(e => e.Value).IsRequired().HasMaxLength(Constants.RecoveryCodeLength);

@@ -3,6 +3,7 @@ using Insane.AspNet.Identity.Model1.Context;
 using Insane.AspNet.Identity.Model1.Entity;
 using Insane.EntityFrameworkCore;
 using Insane.Extensions;
+using Insane.WebApiLiveTests.EntityFrameworkCore.Factory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System.Reflection;
@@ -10,6 +11,7 @@ using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddCommandLine(new string[] { "Hi:Joma=HelloWorld" });
+
 
 //var z = builder.Configuration.GetSection("");
 //builder.Services.Configure<DbContextSettings>(z,);
@@ -58,7 +60,20 @@ var empty = options2.Get("").Tag;
 var a = options2.Get("A").Tag;
 var b = options2.Get("B").Tag;
 
+
+using var context = new IdentitySqlServerDbContextFactory().CreateDbContext(new string[]{ });
+var name = context.GetType().AssemblyQualifiedName;
+
+//context.Roles.Add(new IdentityRoleString
+//{
+//    Name = "User"
+//});
+
+context.Roles.ToList().ForEach(role => Console.WriteLine(role.Name));
+context.SaveChanges();
+
 // Configure the HTTP request pipeline.
+Utils.HelloWorld.Show();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
