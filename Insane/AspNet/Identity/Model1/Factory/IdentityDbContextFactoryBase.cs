@@ -4,16 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Insane.AspNet.Identity.Model1
+namespace Insane.AspNet.Identity.Model1.Factory
 {
     public abstract class IdentityDbContextFactoryBase<TContext> : DbContextFactoryBase<TContext>
         where TContext : CoreDbContextBase<TContext>
     {
+        public const string IdentityConfigurationPath = "Insane:AspNet:Identity:Model1:DbContextSettings";
 
         public override TContext CreateDbContext(string[] args)
         {
-            ConstructorAdditionalParameters.Add("Insane");
-            return base.CreateDbContext(args);
+            var argsLst = args.ToList();
+            argsLst.Add($"{nameof(ConfigureSettingsParameters.ConfigurationPath)}={IdentityConfigurationPath}");
+            return base.CreateDbContext(argsLst.ToArray());
         }
     }
 }

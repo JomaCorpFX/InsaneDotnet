@@ -15,7 +15,7 @@ namespace Insane.AspNet.Identity.Model1
     public class IdentityDbContextLong<TDerivedContext> : IdentityDbContext<TDerivedContext, long>
         where TDerivedContext : CoreDbContextBase<TDerivedContext>
     {
-        public IdentityDbContextLong(DbContextOptions options, string? defaultSchema = null) : base(options, defaultSchema)
+        public IdentityDbContextLong(DbContextOptions options) : base(options)
         {
         }
     }
@@ -23,7 +23,7 @@ namespace Insane.AspNet.Identity.Model1
     public class IdentityDbContextString<TDerivedContext> : IdentityDbContext<TDerivedContext, string>
         where TDerivedContext : CoreDbContextBase<TDerivedContext>
     {
-        public IdentityDbContextString(DbContextOptions options, string? defaultSchema = null) : base(options, defaultSchema)
+        public IdentityDbContextString(DbContextOptions options) : base(options)
         {
         }
     }
@@ -33,7 +33,7 @@ namespace Insane.AspNet.Identity.Model1
         where TKey: IEquatable<TKey>
         where TDerivedContext : CoreDbContextBase<TDerivedContext>
     {
-        public IdentityDbContext(DbContextOptions options, string? defaultSchema = null) : base(options, defaultSchema)
+        public IdentityDbContext(DbContextOptions options) : base(options)
         {
         }
     }
@@ -69,15 +69,13 @@ namespace Insane.AspNet.Identity.Model1
         public DbSet<TRecoveryCode> RecoveryCodes { get; set; } = null!;
         public DbSet<TLog> Logs { get; set; } = null!;
 
-        public IdentityDbContextBase(DbContextOptions options,string? schema = null) : base(options,schema )
+        public IdentityDbContextBase(DbContextOptions options) : base(options )
         {
-            Schema = schema;
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.HasDefaultSchema(Schema);
             builder.ApplyConfiguration((TUserConfiguration)Activator.CreateInstance(typeof(TUserConfiguration), new object[] { Database })!);
             builder.ApplyConfiguration((TRoleConfiguration)Activator.CreateInstance(typeof(TRoleConfiguration), new object[] { Database })!);
             builder.ApplyConfiguration((TAccessConfiguration)Activator.CreateInstance(typeof(TAccessConfiguration), new object[] { Database })!);

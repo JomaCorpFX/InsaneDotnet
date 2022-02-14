@@ -23,7 +23,7 @@ namespace Insane.Extensions
         {
             Action<TSettings> settingsAction = (s) =>
             {
-                s.Provider = settings.Provider;
+                //TODO: ARREGLAR PROVIDER s.Provider = settings.Provider;
                 s.SqlServerConnectionString = settings.SqlServerConnectionString;
                 s.PostgreSqlConnectionString = settings.PostgreSqlConnectionString;
                 s.MySqlConnectionString = settings.MySqlConnectionString;
@@ -41,7 +41,7 @@ namespace Insane.Extensions
             Action<TSettings> settingsAction = (s) =>
             {
                 TSettings settings = settingsSection.Get<TSettings>();
-                s.Provider = settings.Provider;
+                //TODO: ARREGLAR PROVIDER s.Provider = settings.Provider;
                 s.SqlServerConnectionString = settings.SqlServerConnectionString;
                 s.PostgreSqlConnectionString = settings.PostgreSqlConnectionString;
                 s.MySqlConnectionString = settings.MySqlConnectionString;
@@ -75,7 +75,7 @@ namespace Insane.Extensions
             {
                 IOptionsMonitor<TSettings> options = serviceProvider.GetRequiredService<IOptionsMonitor<TSettings>>();
                 TSettings settings = options.Get(settingsInstanceName);
-                DbContextOptionsBuilder<TContext> builder = settings.ConfigureDbProvider(dbContextOptionsBuilderAction, dbContextOptionsBuilderActionFlavors);
+                DbContextOptionsBuilder<TContext> builder = settings.ConfigureDbContextProviderOptions(dbContextOptionsBuilderAction, dbContextOptionsBuilderActionFlavors);
                 constructorAdditionalParameters.Insert(0, builder);
                 return (TContext)Activator.CreateInstance(typeof(TContext), constructorAdditionalParameters.ToArray())!;
             };

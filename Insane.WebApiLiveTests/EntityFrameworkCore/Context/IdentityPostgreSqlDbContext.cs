@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Insane.AspNet.Identity.Model1.Context
+namespace Insane.WebApiLiveTests.EntityFrameworkCore.Context
 {
-    public class IdentityPostgreSqlDbContext : IdentityDbContextString<IdentityPostgreSqlDbContext>, IPostgreSqlDbContext
+    public class IdentityPostgreSqlDbContext : IdentityCommonDbContextBase<IdentityPostgreSqlDbContext>, IPostgreSqlDbContext
     {
-        public IdentityPostgreSqlDbContext(DbContextOptions options, string? defaultSchema = null) : base(options, defaultSchema)
+        public IdentityPostgreSqlDbContext(DbContextOptions options) : base(options)
         {
         }
     }

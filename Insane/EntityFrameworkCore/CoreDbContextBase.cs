@@ -21,10 +21,9 @@ using System.Threading.Tasks;
 namespace Insane.EntityFrameworkCore
 {
     
-    public class CoreDbContextBase<T> : DbContext, ISelfReference<T>
+    public abstract class CoreDbContextBase<T> : DbContext, ISelfReference<T>
         where T: CoreDbContextBase<T>
     {
-        public string? Schema { get; init; }
 
 #pragma warning disable EF1001 // Internal EF Core API usage.
         public static readonly Type SqlServerOptionsExtensionType = typeof(SqlServerOptionsExtension);
@@ -33,7 +32,7 @@ namespace Insane.EntityFrameworkCore
         public static readonly Type OracleOptionsExtensionType = typeof(OracleOptionsExtension);
 #pragma warning restore EF1001 // Internal EF Core API usage.
 
-        private static Type ImplementedDbProviderInterface = typeof(object);
+        public static readonly Type ImplementedDbProviderInterface = typeof(object);
 
 
 
@@ -59,12 +58,12 @@ namespace Insane.EntityFrameworkCore
                     {
                         throw new InvalidOperationException($"Multiple db provider interface are implemented for this DbContext. Found: {string.Join(", ", implementedInterfaces.Select(e => e.Name))}. Implement only one of the following: {string.Join(", ", DbProviderTypes.Keys.Select(e => e.Name))}");
                     }
+                    ImplementedDbProviderInterface = implementedInterfaces.First();
                 }
                 else
                 {
                     throw new InvalidOperationException($"No db provider interface is implemented for this DbContext ({typeof(T).Name}). Implement only one of the following: {string.Join(", ", DbProviderTypes.Keys.Select(e => e.Name))}");
                 }
-                ImplementedDbProviderInterface = implementedInterfaces.First();
             }
         }
 
@@ -73,9 +72,8 @@ namespace Insane.EntityFrameworkCore
 
         }
 
-        public CoreDbContextBase(DbContextOptions options, string? schema) : base(options)
+        public CoreDbContextBase(DbContextOptions options) : base(options)
         {
-            Schema = schema;
             Type? extension = options.Extensions.Where(x => DbProviderTypes.Values.Contains(x.GetType())).Select(x => x.GetType()).FirstOrDefault();
             if (!DbProviderTypes.TryGetValue(ImplementedDbProviderInterface, out Type? value) || !(value?.Equals(extension) ?? false))
             {
@@ -103,5 +101,7 @@ namespace Insane.EntityFrameworkCore
         {
             base.OnModelCreating(modelBuilder);
         }
+
+
     }
 }
