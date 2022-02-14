@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace Insane.WebApiLiveTests.EntityFrameworkCore.Context
 {
-    public class IdentityMySqlDbContext : IdentityDbContextString<IdentityMySqlDbContext>, IMySqlDbContext
+    public class IdentityMySqlDbContext : IdentityCommonDbContextBase<IdentityMySqlDbContext>, IMySqlDbContext
     {
         
-        public IdentityMySqlDbContext(DbContextOptions options, string? defaultSchema = null) : base(options, defaultSchema)
+        public IdentityMySqlDbContext(DbContextOptions options) : base(options)
         {
         }
     }

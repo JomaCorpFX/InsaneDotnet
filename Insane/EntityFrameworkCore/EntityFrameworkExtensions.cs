@@ -225,24 +225,23 @@ namespace Insane.Extensions
             return propertyBuilder;
         }
 
-        public static DbContextOptionsBuilder<TContext> ConfigureDbProvider<TContext>(this DbContextSettings settings, Action<DbContextOptionsBuilder<TContext>>? dbContextOptionsAction, DbContextOptionsBuilderActionFlavors? actionFlavors)
-            where TContext : CoreDbContextBase<TContext>, ISelfReference<TContext>
+        public static DbContextOptionsBuilder<TContext> ConfigureDbContextProviderOptions<TContext>(this DbContextSettings settings, Action<DbContextOptionsBuilder<TContext>>? dbContextOptionsAction, DbContextOptionsBuilderActionFlavors? actionFlavors)
+            where TContext : CoreDbContextBase<TContext>
         {
             DbContextOptionsBuilder<TContext> builder = new DbContextOptionsBuilder<TContext>();
             if (dbContextOptionsAction != null)
             {
                 dbContextOptionsAction?.Invoke(builder);
             }
-
-            switch (settings.Provider)
+            switch (CoreDbContextBase<TContext>.ImplementedDbProviderInterface)
             {
-                case DbProvider.SqlServer:
+                case var type when type.Equals(typeof(ISqlServerDbContext)):
                     builder.UseSqlServer(settings.SqlServerConnectionString, actionFlavors?.SqlServer);
                     break;
-                case DbProvider.PostgreSql:
+                case var type when type.Equals(typeof(IPostgreSqlDbContext)):
                     builder.UseNpgsql(settings.PostgreSqlConnectionString, actionFlavors?.PostgreSql);
                     break;
-                case DbProvider.MySql:
+                case var type when type.Equals(typeof(IMySqlDbContext)):
                     builder.UseMySql(ServerVersion.AutoDetect(settings.MySqlConnectionString), options =>
                     {
                         options.SchemaBehavior(Pomelo.EntityFrameworkCore.MySql.Infrastructure.MySqlSchemaBehavior.Translate, (schema, entity) =>
@@ -257,11 +256,11 @@ namespace Insane.Extensions
                     });
                     builder.UseMySql(settings.MySqlConnectionString, ServerVersion.AutoDetect(settings.MySqlConnectionString), actionFlavors?.MySql);
                     break;
-                case DbProvider.Oracle: 
+                case var type when type.Equals(typeof(IOracleDbContext)):
                     builder.UseOracle(settings.OracleConnectionString, actionFlavors?.Oracle);
                     break;
                 default:
-                    throw new NotImplementedException($"Not implemented provider \"{settings.Provider}\".");
+                    throw new NotImplementedException($"Not implemented provider interface \"{CoreDbContextBase<TContext>.ImplementedDbProviderInterface.Name}\".");
             }
             return builder;
         }

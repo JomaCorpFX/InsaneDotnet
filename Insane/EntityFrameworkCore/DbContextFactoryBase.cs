@@ -17,34 +17,28 @@ namespace Insane.EntityFrameworkCore
 
         public class ConfigureSettingsParameters
         {
-            public string? ConfigurationFilename { get; set; } = null;
-            public string[]? CommandLineArgs { get; set; } = null;
-            public string? ConfigurationPath { get; set; } = null;
-            public ICollection<Type>? SecretTypes { get; set; } = null;
+            public string ConfigurationFilename { get; set; } = null!;
+            public List<string> CommandLineArgs { get; set; } = null!;
+            public string ConfigurationPath { get; set; } = null!;
+            public List<Type> SecretTypes { get; set; } = null!;
         }
 
-        public virtual Action<DbContextSettings, ConfigureSettingsParameters> SettingsConfigureAction { get; } = (dbContextSettings, parameters) =>
+        private Action<DbContextSettings, ConfigureSettingsParameters> SettingsConfigureAction { get; set; } = (dbContextSettings, parameters) =>
         {
             IConfigurationBuilder configurationBuilder = new ConfigurationBuilder()
               .SetBasePath(Directory.GetCurrentDirectory());
-            configurationBuilder.AddJsonFile(parameters.ConfigurationFilename ?? EntityFrameworkCoreConstants.DefaultConfigurationFilename, false, true);
-            if (parameters.SecretTypes is not null && parameters.SecretTypes.Count > 0)
+            configurationBuilder.AddJsonFile(parameters.ConfigurationFilename, false, true);
+            foreach (var secretType in parameters.SecretTypes)
             {
-                foreach (var secretType in parameters.SecretTypes)
-                {
-                    var addUserSecretsMethod = typeof(UserSecretsConfigurationExtensions).GetMethod(nameof(UserSecretsConfigurationExtensions.AddUserSecrets), new Type[] { typeof(IConfigurationBuilder) })!.MakeGenericMethod(secretType);
-                    configurationBuilder = (IConfigurationBuilder)addUserSecretsMethod.Invoke(configurationBuilder, new object[] { configurationBuilder })!;
-                }
+                var addUserSecretsMethod = typeof(UserSecretsConfigurationExtensions).GetMethod(nameof(UserSecretsConfigurationExtensions.AddUserSecrets), new Type[] { typeof(IConfigurationBuilder) })!.MakeGenericMethod(secretType);
+                configurationBuilder = (IConfigurationBuilder)addUserSecretsMethod.Invoke(configurationBuilder, new object[] { configurationBuilder })!;
             }
-            if (parameters.CommandLineArgs is not null && parameters.CommandLineArgs.Length > 0)
-            {
-                configurationBuilder.AddCommandLine(parameters.CommandLineArgs);
-            }
+            configurationBuilder.AddCommandLine(parameters.CommandLineArgs.ToArray());
             IConfiguration configuration = configurationBuilder.Build();
-            configuration.Bind(parameters.ConfigurationPath ?? EntityFrameworkCoreConstants.DefaultConfigurationPath, dbContextSettings);
+            configuration.Bind(parameters.ConfigurationPath, dbContextSettings);
         };
 
-        public virtual DbContextOptionsBuilderActionFlavors DbContextOptionsBuilderActionFlavors { get; } = new DbContextOptionsBuilderActionFlavors()
+        public virtual DbContextOptionsBuilderActionFlavors DbContextOptionsBuilderActionFlavors { get; set; } = new DbContextOptionsBuilderActionFlavors()
         {
             SqlServer = (builder) =>
             {
@@ -67,37 +61,37 @@ namespace Insane.EntityFrameworkCore
             }
         };
 
-        public virtual Action<DbContextOptionsBuilder<TContext>> DbContextOptionsBuilderAction { get; } = (builder) =>
+        public virtual Action<DbContextOptionsBuilder<TContext>> DbContextOptionsBuilderAction { get; set; } = (builder) =>
         {
             builder.EnableDetailedErrors();
             builder.EnableSensitiveDataLogging();
         };
 
-        public virtual List<object?> ConstructorAdditionalParameters { get; } = new List<object?> { };
+        public virtual List<object?> ConstructorAdditionalParameters { get; set; } = new List<object?> { };
 
         public virtual TContext CreateDbContext(string[] args)
         {
             ConfigureSettingsParameters parameters = new ConfigureSettingsParameters()
             {
-                SecretTypes = new List<Type>()
+                SecretTypes = new List<Type> { }
             };
 
-            string? secretTypeNames = args.Where(a => a.StartsWith($"{nameof(ConfigureSettingsParameters.SecretTypes)}=")).Select(e => e.Split("=")[1]).FirstOrDefault();
-            if (!string.IsNullOrWhiteSpace(secretTypeNames))
+            var secretTypeNames = args.Where(a => a.StartsWith($"{nameof(ConfigureSettingsParameters.SecretTypes)}=")).Select(e => e.Replace($"{nameof(ConfigureSettingsParameters.SecretTypes)}=", "").Trim('\"'));
+            foreach (var typename in secretTypeNames)
             {
-                foreach (var typename in secretTypeNames.Split(","))
-                {
-                    parameters.SecretTypes.Add(Type.GetType(typename)!);
-                }
+                parameters.SecretTypes.Add(Type.GetType(typename)!);
             }
-            parameters.ConfigurationFilename = args.Where(a => a.StartsWith($"{nameof(ConfigureSettingsParameters.ConfigurationFilename)}=")).FirstOrDefault()?.Split(",")[1];
-            parameters.ConfigurationPath = args.Where(a => a.StartsWith($"{nameof(ConfigureSettingsParameters.ConfigurationPath)}=")).FirstOrDefault()?.Split(",")[1];
-            parameters.CommandLineArgs = args;
+
+            parameters.ConfigurationFilename = args.Where(a => a.StartsWith($"{nameof(ConfigureSettingsParameters.ConfigurationFilename)}=")).Select(e => e.Replace($"{nameof(ConfigureSettingsParameters.ConfigurationFilename)}=", "").Trim('\"')).FirstOrDefault() ?? EntityFrameworkCoreConstants.DefaultConfigurationFilename;
+            parameters.ConfigurationPath = args.Where(a => a.StartsWith($"{nameof(ConfigureSettingsParameters.ConfigurationPath)}=")).Select(e => e.Replace($"{nameof(ConfigureSettingsParameters.ConfigurationPath)}=", "").Trim('\"')).FirstOrDefault() ?? EntityFrameworkCoreConstants.DefaultConfigurationPath;
+            parameters.CommandLineArgs = args.Where(a => !a.StartsWith($"{nameof(ConfigureSettingsParameters.ConfigurationFilename)}=")
+                                                      && !a.StartsWith($"{nameof(ConfigureSettingsParameters.ConfigurationPath)}=")
+                                                      && !a.StartsWith($"{nameof(ConfigureSettingsParameters.SecretTypes)}=")).ToList();
 
             DbContextSettings dbContextSettings = new DbContextSettings();
             SettingsConfigureAction.Invoke(dbContextSettings, parameters);
 
-            DbContextOptionsBuilder<TContext> builder = dbContextSettings.ConfigureDbProvider(DbContextOptionsBuilderAction, DbContextOptionsBuilderActionFlavors);
+            DbContextOptionsBuilder<TContext> builder = dbContextSettings.ConfigureDbContextProviderOptions(DbContextOptionsBuilderAction, DbContextOptionsBuilderActionFlavors);
             ConstructorAdditionalParameters.Insert(0, builder.Options);
             return (TContext)Activator.CreateInstance(typeof(TContext), ConstructorAdditionalParameters.ToArray())!;
         }

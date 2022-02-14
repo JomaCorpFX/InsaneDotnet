@@ -1,12 +1,14 @@
 using Insane.AspNet.Identity.Model1;
-using Insane.AspNet.Identity.Model1.Context;
 using Insane.AspNet.Identity.Model1.Entity;
 using Insane.EntityFrameworkCore;
 using Insane.Extensions;
+using Insane.WebApiLiveTests.EntityFrameworkCore.Context;
 using Insane.WebApiLiveTests.EntityFrameworkCore.Factory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System.Reflection;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +39,8 @@ builder.Services.AddOptions<IdentityOptions>("Z").Bind(builder.Configuration.Get
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
+string tn = typeof(Program).FullName!;
+Type tp = Type.GetType(tn);
 var value = builder.Configuration.GetValue<string>("AppName");
 var hi = builder.Configuration.GetValue<string>("Hi:Joma");
 Console.WriteLine($"AppName{1}");
@@ -60,9 +64,14 @@ var empty = options2.Get("").Tag;
 var a = options2.Get("A").Tag;
 var b = options2.Get("B").Tag;
 
+var op = new DbContextSettings
+{
+    SqlServerConnectionString = "Data Source=localhost;Initial Catalog=IdentityDb;User Id=sa;Password=100;"
+}
+.ConfigureDbContextProviderOptions<IdentitySqlServerDbContext>(null, null).Options;
 
-using var context = new IdentitySqlServerDbContextFactory().CreateDbContext(new string[]{ });
-var name = context.GetType().AssemblyQualifiedName;
+using IdentitySqlServerDbContext context = new IdentitySqlServerDbContext(op);
+using IdentitySqlServerDbContext context2 = new IdentitySqlServerDbContextFactory().CreateDbContext(new string[]{ });
 
 //context.Roles.Add(new IdentityRoleString
 //{
