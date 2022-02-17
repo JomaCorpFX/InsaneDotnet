@@ -16,7 +16,7 @@
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
-		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+		
 
 		<RepositoryUrl>https://github.com/Satancito/InsaneDotnet</RepositoryUrl>
 
@@ -24,7 +24,7 @@
 
 		<PackageReleaseNotes>.NET 6 compatible.</PackageReleaseNotes>
 
-		<Version>6.0.0-preview</Version>
+		<Version>6.0.1-preview</Version>
 
 
 		<UserSecretsId>dcead069-ffae-4de4-be81-720ec8ff2ac7</UserSecretsId>
@@ -33,22 +33,11 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<Compile Remove="AspNet\Identity\Model11\**" />
-		<Compile Remove="EntityFrameworkCore\Infrastructure\**" />
-		<EmbeddedResource Remove="AspNet\Identity\Model11\**" />
-		<EmbeddedResource Remove="EntityFrameworkCore\Infrastructure\**" />
-		<None Remove="AspNet\Identity\Model11\**" />
-		<None Remove="EntityFrameworkCore\Infrastructure\**" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Remove="AspNet\Identity\Model1\Entity\IdentityPlatform.cs~RF349ec2f4.TMP" />
-	</ItemGroup>
-
 
 
 	<ItemGroup>
+		<PackageReference Include="InsaneIO.CryptSharp.SCrypt" Version="1.0.0" />
+		<PackageReference Include="InsaneIO.Insane.Generators" Version="6.0.0-preview" />
 		<PackageReference Include="Konscious.Security.Cryptography.Argon2" Version="1.2.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
 		<PackageReference Include="Microsoft.CodeAnalysis" Version="4.0.1" />
@@ -83,18 +72,6 @@
 		</None>
 	</ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\CryptSharp.SCrypt\CryptSharp.SCrypt.csproj">
-			<!--<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <IncludeAssets>CryptSharp.SCrypt</IncludeAssets>-->
-		</ProjectReference>
-	</ItemGroup>
-
-	<Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
-		<ItemGroup>
-			<BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
-		</ItemGroup>
-	</Target>
 
 
 

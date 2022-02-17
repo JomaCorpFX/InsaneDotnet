@@ -2,7 +2,7 @@
 
 namespace Insane.WebApiLiveTests.EntityFrameworkCore.Factory
 {
-    public class IdentityPostgreSqlDbContextFactory: IdentityCommonDbContextFactoryBase<IdentityPostgreSqlDbContext>
+    public class IdentityPostgreSqlDbContextFactory : IdentityCoreDbContextFactoryBase<IdentityPostgreSqlDbContext>
     {
     }
 }

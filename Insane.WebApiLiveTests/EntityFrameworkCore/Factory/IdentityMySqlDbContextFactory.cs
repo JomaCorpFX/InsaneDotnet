@@ -2,7 +2,7 @@
 
 namespace Insane.WebApiLiveTests.EntityFrameworkCore.Factory
 {
-    public class IdentityMySqlDbContextFactory: IdentityCommonDbContextFactoryBase<IdentityMySqlDbContext>
+    public class IdentityMySqlDbContextFactory : IdentityCoreDbContextFactoryBase<IdentityMySqlDbContext>
     {
     }
 }

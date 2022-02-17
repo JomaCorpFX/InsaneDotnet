@@ -15,6 +15,7 @@ namespace Insane.AspNet.Identity.Model1.Configuration
     {
         public IdentityAccessConfiguration(DatabaseFacade database) : base(database)
         {
+
         }
     }
 

@@ -1,9 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <Nullable>disable</Nullable>
-    <TargetFramework>net6.0</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<Nullable>disable</Nullable>
+		<TargetFramework>net6.0</TargetFramework>
+		<PackageId>InsaneIO.$(AssemblyName)</PackageId>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	</PropertyGroup>
 
 
 </Project>

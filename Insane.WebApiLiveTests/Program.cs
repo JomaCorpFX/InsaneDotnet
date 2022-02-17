@@ -1,14 +1,10 @@
 using Insane.AspNet.Identity.Model1;
-using Insane.AspNet.Identity.Model1.Entity;
 using Insane.EntityFrameworkCore;
 using Insane.Extensions;
 using Insane.WebApiLiveTests.EntityFrameworkCore.Context;
 using Insane.WebApiLiveTests.EntityFrameworkCore.Factory;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using System.Reflection;
-
-
+//Generatorx.CoreDbContextGenerator.Show();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,9 +34,8 @@ builder.Services.AddOptions<IdentityOptions>("Z").Bind(builder.Configuration.Get
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-
-string tn = typeof(Program).FullName!;
-Type tp = Type.GetType(tn);
+var z1 = typeof(IdentitySqlServerDbContext);
+var zz1 = typeof(IdentityCoreDbContextBase<IdentitySqlServerDbContext>);
 var value = builder.Configuration.GetValue<string>("AppName");
 var hi = builder.Configuration.GetValue<string>("Hi:Joma");
 Console.WriteLine($"AppName{1}");
@@ -55,7 +50,7 @@ var options = app.Services.GetService<IOptions<IdentityOptions>>();
 var options2 = app.Services.GetRequiredService<IOptionsMonitor<IdentityOptions>>();
 IdentityOptions z;
 using (var scope = app.Services.CreateScope())
-{ 
+{
     var options3 = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<IdentityOptions>>();
     z = options3.Get("Z");
 }
@@ -71,7 +66,7 @@ var op = new DbContextSettings
 .ConfigureDbContextProviderOptions<IdentitySqlServerDbContext>(null, null).Options;
 
 using IdentitySqlServerDbContext context = new IdentitySqlServerDbContext(op);
-using IdentitySqlServerDbContext context2 = new IdentitySqlServerDbContextFactory().CreateDbContext(new string[]{ });
+using IdentitySqlServerDbContext context2 = new IdentitySqlServerDbContextFactory().CreateDbContext(new string[] { });
 
 //context.Roles.Add(new IdentityRoleString
 //{
@@ -82,7 +77,7 @@ context.Roles.ToList().ForEach(role => Console.WriteLine(role.Name));
 context.SaveChanges();
 
 // Configure the HTTP request pipeline.
-Utils.HelloWorld.Show();
+//Utils.HelloWorld.Show();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

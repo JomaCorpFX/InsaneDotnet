@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace Insane.EntityFrameworkCore
 {
-    public abstract class DbContextFactoryBase<TContext> : IDesignTimeDbContextFactory<TContext>
+    public abstract class CoreDbContextFactoryBase<TContext> : IDesignTimeDbContextFactory<TContext>
         where TContext : CoreDbContextBase<TContext>
     {
 
