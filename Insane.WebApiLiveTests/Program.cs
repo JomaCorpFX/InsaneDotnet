@@ -14,6 +14,7 @@ builder.Configuration.AddCommandLine(new string[] { "Hi:Joma=HelloWorld" });
 //var z = builder.Configuration.GetSection("");
 //builder.Services.Configure<DbContextSettings>(z,);
 //builder.Services.AddIdentity<IdentityUser, IdentityRole>(null).AddEntityFrameworkStores<IdentityDbContext>().AddRoleStore;
+
 string Tag = "Insane";
 builder.Services.Configure<IdentityOptions>("", options =>
 {

@@ -4,7 +4,7 @@ using Insane.EntityFrameworkCore;
 namespace Insane.WebApiLiveTests.EntityFrameworkCore.Factory
 {
     [CoreDbContextFactory]
-    public class IdentityCoreDbContextFactoryBase<TContext> : IdentityDbContextFactoryBase<TContext>
+    public partial class IdentityCoreDbContextFactoryBase<TContext> : IdentityDbContextFactoryBase<TContext>
         where TContext : CoreDbContextBase<TContext>
     {
         public override TContext CreateDbContext(string[] args)
@@ -14,5 +14,6 @@ namespace Insane.WebApiLiveTests.EntityFrameworkCore.Factory
             argsList.Add($"{nameof(ConfigureSettingsParameters.SecretTypes)}=\"{typeof(WeatherForecast).AssemblyQualifiedName}\"");
             return base.CreateDbContext(argsList.ToArray());
         }
+
     }
 }

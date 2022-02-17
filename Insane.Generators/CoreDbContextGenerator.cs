@@ -15,8 +15,10 @@ namespace Insane.Generators
     public class CoreDbContextGenerator : ISourceGenerator
     {
         private static readonly (string DbProviderPreffix, string DbProviderInterfaceName)[] dbContextInterfaces = { ("SqlServer", "ISqlServerDbContext"), ("PostgreSql", "IPostgreSqlDbContext"), ("MySql", "IMySqlDbContext"), ("Oracle", "IOracleDbContext") };
-        private const string classSuffix = "CoreDbContextBase";
-        private const string attributeName = "CoreDbContext";
+        private const string DbContextClassSuffix = "CoreDbContextBase";
+        private const string DbContextFactoryClassSuffix = "CoreDbContextFactoryBase";
+        private const string DbContextAttributeName = "CoreDbContext";
+        private const string DbContextFactoryAttributeName = "CoreDbContextFactory";
 
         public void Initialize(GeneratorInitializationContext context)
         {
@@ -26,7 +28,6 @@ namespace Insane.Generators
                 Debugger.Launch();
             }
 #endif
-            context.RegisterForSyntaxNotifications(() => new CoreDbContextSyntaxReceiver());
         }
 
         public void Execute(GeneratorExecutionContext context)
@@ -34,23 +35,30 @@ namespace Insane.Generators
 
             var contextClasses = context.Compilation.SyntaxTrees
                 .SelectMany(syntaxTree => syntaxTree.GetRoot().DescendantNodes())
-                .Where(x => x is ClassDeclarationSyntax cds && cds.Identifier.ValueText.EndsWith(classSuffix, StringComparison.OrdinalIgnoreCase)
-                && !cds.Identifier.ValueText.Equals(classSuffix)
-                && cds.AttributeLists.SelectMany(al => al.Attributes).Where(at => at.Name.ToString().Equals(attributeName)).Any()
-                )
-                .Cast<ClassDeclarationSyntax>();
+                .Where(x => x is ClassDeclarationSyntax cds && cds.Identifier.ValueText.EndsWith(DbContextClassSuffix, StringComparison.OrdinalIgnoreCase)
+                && !cds.Identifier.ValueText.Equals(DbContextClassSuffix)
+                && cds.AttributeLists.SelectMany(al => al.Attributes).Where(at => at.Name.ToString().Equals(DbContextAttributeName)).Any()
+                ).Cast<ClassDeclarationSyntax>();
 
             foreach (var contextClass in contextClasses)
             {
-                IEnumerable<string>? typeParameters = contextClass?.TypeParameterList?.Parameters.Select(p => p.ToFullString());
-                if (typeParameters.Any() && typeParameters.Count() == 1)
+                IEnumerable<string>? contextClassTypeParameters = contextClass?.TypeParameterList?.Parameters.Select(p => p.ToFullString());
+                if (contextClassTypeParameters.Any() && contextClassTypeParameters.Count() == 1)
                 {
-                    string dbContextRawName = $"{contextClass?.Identifier.ValueText.Replace(classSuffix, string.Empty)}";
+                    var contextFactoryClass = context.Compilation.SyntaxTrees
+                        .SelectMany(syntaxTree => syntaxTree.GetRoot().DescendantNodes())
+                        .Where(x => x is ClassDeclarationSyntax cds && cds.Identifier.ValueText.EndsWith(DbContextFactoryClassSuffix, StringComparison.OrdinalIgnoreCase)
+                        && !cds.Identifier.ValueText.Equals(DbContextFactoryClassSuffix)
+                        && cds.AttributeLists.SelectMany(al => al.Attributes).Where(at => at.Name.ToString().Equals(DbContextFactoryAttributeName)).Any()
+                        ).Cast<ClassDeclarationSyntax>().FirstOrDefault();
+
+                    string dbContextRawName = $"{contextClass?.Identifier.ValueText.Replace(DbContextClassSuffix, string.Empty)}";
                     string? dbContextNamespace = contextClass?.GetNamespaceFrom();
+                    string? dbContextFactoryNamespace = contextFactoryClass?.GetNamespaceFrom();
                     foreach (var value in dbContextInterfaces)
                     {
                         string contextClassName = $"{dbContextRawName}{value.DbProviderPreffix}DbContext";
-                        StringBuilder sourceBuilder = new StringBuilder($@"// DbContext generated from {(dbContextNamespace == null ? $"{contextClass?.Identifier.ValueText}<{string.Join(",", typeParameters)}>": dbContextNamespace + "." + $"{contextClass?.Identifier.ValueText}<{string.Join(",", typeParameters)}>")}  
+                        StringBuilder sourceBuilder = new StringBuilder($@"// DbContext generated from {(dbContextNamespace == null ? $"{contextClass?.Identifier.ValueText}<{string.Join(",", contextClassTypeParameters)}>" : dbContextNamespace + "." + $"{contextClass?.Identifier.ValueText}<{string.Join(",", contextClassTypeParameters)}>")}  
 
 using Microsoft.EntityFrameworkCore;
 using Insane.EntityFrameworkCore;
@@ -75,6 +83,30 @@ public partial class {contextClassName} : {contextClass?.Identifier.ValueText}<{
 ");
                         sourceBuilder.AppendLine(dbContextNamespace == null ? string.Empty : $"}}");
                         context.AddSource($"{contextClassName}.cs", SourceText.From(sourceBuilder.ToString(), Encoding.UTF8));
+
+                        if(contextFactoryClass != null)
+                        {
+                            string contextFactoryClassName = $"{dbContextRawName}{value.DbProviderPreffix}DbContextFactory";
+                            sourceBuilder.Clear();
+                            sourceBuilder.Append(dbContextNamespace == null ? string.Empty : $@"using {dbContextNamespace};
+");
+                            sourceBuilder.Append(dbContextFactoryNamespace == null ? string.Empty : $@"
+namespace {dbContextFactoryNamespace}
+{{");
+                            sourceBuilder.Append(dbContextNamespace == null ? $@"
+public class {contextFactoryClassName} : {contextFactoryClass?.Identifier.ValueText}<{contextFactoryClassName}>
+{{
+}}
+" :
+$@"
+    public class {contextFactoryClassName} : {contextFactoryClass?.Identifier.ValueText}<{contextClassName}>
+    {{
+    }}
+");
+                            sourceBuilder.AppendLine(dbContextFactoryNamespace == null ? string.Empty : $"}}");
+                            var source = sourceBuilder.ToString();
+                            context.AddSource($"{contextFactoryClassName}.cs", SourceText.From(sourceBuilder.ToString(), Encoding.UTF8));
+                        }
                     };
                 }
 
@@ -84,23 +116,5 @@ public partial class {contextClassName} : {contextClass?.Identifier.ValueText}<{
 
         }
 
-
-        public class CoreDbContextSyntaxReceiver : ISyntaxReceiver
-        {
-            public List<ClassDeclarationSyntax> Classes { get; } = new List<ClassDeclarationSyntax>();
-
-            public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
-            {
-                if (syntaxNode is ClassDeclarationSyntax cds)
-                {
-                    //if(cds.Identifier.ValueText.EndsWith("CoreDbContextBase") && cds.HasAnnotation(new SyntaxAnnotation("CoreDbContext")))
-                    {
-                        Classes.Add(cds);
-                    }
-                }
-            }
-
-
-        }
     }
 }
