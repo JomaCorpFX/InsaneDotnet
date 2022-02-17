@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Insane.AspNet.Identity.Model1.Factory
 {
-    public abstract class IdentityDbContextFactoryBase<TContext> : DbContextFactoryBase<TContext>
+    public abstract class IdentityDbContextFactoryBase<TContext> : CoreDbContextFactoryBase<TContext>
         where TContext : CoreDbContextBase<TContext>
     {
         public const string IdentityConfigurationPath = "Insane:AspNet:Identity:Model1:DbContextSettings";

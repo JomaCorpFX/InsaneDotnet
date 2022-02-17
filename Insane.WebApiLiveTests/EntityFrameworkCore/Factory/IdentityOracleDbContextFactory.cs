@@ -2,7 +2,7 @@
 
 namespace Insane.WebApiLiveTests.EntityFrameworkCore.Factory
 {
-    public class IdentityOracleDbContextFactory:IdentityCommonDbContextFactoryBase<IdentityOracleDbContext>
+    public class IdentityOracleDbContextFactory : IdentityCoreDbContextFactoryBase<IdentityOracleDbContext>
     {
     }
 }

@@ -3,7 +3,8 @@ using Insane.EntityFrameworkCore;
 
 namespace Insane.WebApiLiveTests.EntityFrameworkCore.Factory
 {
-    public class IdentityCommonDbContextFactoryBase<TContext> : IdentityDbContextFactoryBase<TContext>
+    [CoreDbContextFactory]
+    public class IdentityCoreDbContextFactoryBase<TContext> : IdentityDbContextFactoryBase<TContext>
         where TContext : CoreDbContextBase<TContext>
     {
         public override TContext CreateDbContext(string[] args)

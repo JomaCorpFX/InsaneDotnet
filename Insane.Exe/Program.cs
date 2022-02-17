@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace Insane.Exe
 {
@@ -7,6 +8,10 @@ namespace Insane.Exe
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
+            Console.WriteLine(Insane.Cryptography.HexEncoder.Instance.Encode(Encoding.UTF8.GetBytes("grape")));
+            Console.ReadLine();
+            
         }
+
     }
 }

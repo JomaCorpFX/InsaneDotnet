@@ -1,11 +1,5 @@
 ﻿using Insane.AspNet.Identity.Model1.Factory;
-using Insane.EntityFrameworkCore;
 using Insane.WebApiLiveTests.EntityFrameworkCore.Context;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Insane.WebApiLiveTests.EntityFrameworkCore.Factory
 {
