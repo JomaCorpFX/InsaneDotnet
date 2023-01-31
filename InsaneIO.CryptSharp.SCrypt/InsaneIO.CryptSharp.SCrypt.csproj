@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<Nullable>disable</Nullable>
+		<TargetFramework>net6.0</TargetFramework>
+		<PackageId>$(AssemblyName)</PackageId>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<BuildNumber>1</BuildNumber>
+	</PropertyGroup>
+</Project>

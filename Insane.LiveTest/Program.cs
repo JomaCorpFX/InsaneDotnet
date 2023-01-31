@@ -16,6 +16,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -145,8 +146,19 @@ namespace Insane.LiveTest
 
         }
 
-        
-        
+
+        public static X509Certificate2? FindCertificate(string thumbprint)
+        {
+            var store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+            store.Open(OpenFlags.ReadOnly);
+
+            //We gets the certificate from store
+            X509Certificate2? certificate = store.Certificates.Cast<X509Certificate2>().FirstOrDefault(c => c.Thumbprint.Equals($"{thumbprint}"));
+
+
+
+            return certificate;
+        }
 
         static void Main(string[] args)
         {
@@ -157,7 +169,8 @@ namespace Insane.LiveTest
                    SetBasePath(Directory.GetCurrentDirectory())
                    .AddJsonFile("appsettings.json", false, true)
                    .Build();
-
+            var cert = FindCertificate("d7941c3e6d128ebfff380fa1b19ffc356537acc0");
+            Console.WriteLine(cert?.FriendlyName);
             //var method = typeof(Program).GetMethod("CallMe");
             //var exCall = Expression.Call(null, method!, Expression.Constant(configuration), Expression.Constant("Joma"), Expression.Constant("Espinoza"));
             //ServiceProvider serviceProvider = new ServiceCollection()
@@ -206,61 +219,62 @@ namespace Insane.LiveTest
 
 
 
-            var sz = System.Security.Cryptography.SHA256.Create().HashSize / 8;
-            byte[] secretBytes = new byte[] { 65 };// "grapes".ToHash(HashAlgorithm.Sha512);
-            string secretHex = secretBytes.ToHex();
-            string secretBase32 = secretBytes.ToBase32();
-            string secretBase64 = secretBytes.ToBase64();
+            //var sz = System.Security.Cryptography.SHA256.Create().HashSize / 8;
+            //byte[] secretBytes = new byte[] { 65 };// "grapes".ToHash(HashAlgorithm.Sha512);
+            //string secretHex = secretBytes.ToHex();
+            //string secretBase32 = secretBytes.ToBase32();
+            //string secretBase64 = secretBytes.ToBase64();
 
-            Console.WriteLine(secretBytes.GenerateTotpUri("Joma", "Insane"));
-            Console.WriteLine();
+            //Console.WriteLine(secretBytes.GenerateTotpUri("Joma", "Insane"));
+            //Console.WriteLine();
 
-            Console.WriteLine(secretHex.GenerateTotpUri(HexEncoder.Instance, "Joma", "Insane"));
-            Console.WriteLine();
+            //Console.WriteLine(secretHex.GenerateTotpUri(HexEncoder.Instance, "Joma", "Insane"));
+            //Console.WriteLine();
 
-            Console.WriteLine(secretBase32.GenerateTotpUri("Joma", "Insane"));
-            Console.WriteLine();
+            //Console.WriteLine(secretBase32.GenerateTotpUri("Joma", "Insane"));
+            //Console.WriteLine();
 
-            Console.WriteLine(secretBase64.GenerateTotpUri(Base64Encoder.Instance, "Joma", "Insane"));
-            Console.WriteLine();
+            //Console.WriteLine(secretBase64.GenerateTotpUri(Base64Encoder.Instance, "Joma", "Insane"));
+            //Console.WriteLine();
 
-            void GenarateTOTP()
-            {
-                var bytes = Base32Encoding.ToBytes("JBSWY3DPEHPK3PXP");
+            //void GenarateTOTP()
+            //{
+            //    var bytes = Base32Encoding.ToBytes("JBSWY3DPEHPK3PXP");
 
-                var totp = new Totp(bytes, step: 300);
+            //    var totp = new Totp(bytes, step: 300);
 
-                var result = totp.ComputeTotp(DateTime.UtcNow);
+            //    var result = totp.ComputeTotp(DateTime.UtcNow);
 
-                Console.WriteLine(result);
+            //    Console.WriteLine(result);
 
-                var input = Console.ReadLine();
-                long timeStepMatched;
-                bool verify = totp.VerifyTotp(input, out timeStepMatched, window: null);
+            //    var input = Console.ReadLine();
+            //    long timeStepMatched;
+            //    bool verify = totp.VerifyTotp(input, out timeStepMatched, window: null);
 
-                Console.WriteLine("{0}-:{1}", "timeStepMatched", timeStepMatched);
-                Console.WriteLine("{0}-:{1}", "Remaining seconds", totp.RemainingSeconds());
-                Console.WriteLine("{0}-:{1}", "verify", verify);
+            //    Console.WriteLine("{0}-:{1}", "timeStepMatched", timeStepMatched);
+            //    Console.WriteLine("{0}-:{1}", "Remaining seconds", totp.RemainingSeconds());
+            //    Console.WriteLine("{0}-:{1}", "verify", verify);
 
-            }
+            //}
 
-            var totp = new Totp(secretBytes, 30, OtpHashMode.Sha1, 6);
-            var totp2 = new TotpGenerator(secretBytes)
-            {
-                Issuer = "Insane",
-                Label = "Joma"
-            };
+            //var totp = new Totp(secretBytes, 30, OtpHashMode.Sha1, 6);
+            //var totp2 = new TotpGenerator(secretBytes)
+            //{
+            //    Issuer = "Insane",
+            //    Label = "Joma"
+            //};
 
-            while(true)
-            {
-                GenarateTOTP();
-                //Console.WriteLine( totp.ComputeTotp());
-                //Console.WriteLine(totp2.ComputeTotpCode());
-                ////Console.WriteLine(DateTimeOffset.UtcNow.ComputeTotpRemainingSeconds(TotpPeriod.ValueOf60Seconds));
-                //Console.WriteLine(totp2.ComputeTotpRemainingSeconds());
-                //string code = Console.ReadLine();
-                //Console.WriteLine(totp2.VerifyTotpCode(code));
-            };
+
+            //while(true)
+            //{
+            //    GenarateTOTP();
+            //    //Console.WriteLine( totp.ComputeTotp());
+            //    //Console.WriteLine(totp2.ComputeTotpCode());
+            //    ////Console.WriteLine(DateTimeOffset.UtcNow.ComputeTotpRemainingSeconds(TotpPeriod.ValueOf60Seconds));
+            //    //Console.WriteLine(totp2.ComputeTotpRemainingSeconds());
+            //    //string code = Console.ReadLine();
+            //    //Console.WriteLine(totp2.VerifyTotpCode(code));
+            //};
 
            
 
