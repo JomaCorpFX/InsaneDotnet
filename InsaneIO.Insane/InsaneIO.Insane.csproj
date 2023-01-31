@@ -1,0 +1,97 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<TargetFramework>net6.0</TargetFramework>
+		<PackageId>$(AssemblyName)</PackageId>
+		<Title>InsaneIO.Insane</Title>
+		<Company>InsaneIO</Company>
+		<Description>Insane for .NET 6</Description>
+		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+		<Copyright>©Joma Espinoza Bone - Satancito. All rights reserved.</Copyright>
+		<Authors>Joma Espinoza Bone</Authors>
+		<PackageIcon>Icon.png</PackageIcon>
+		<PackageTags>Insane InsaneIO InsaneDotnet libInsane</PackageTags>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
+		<RepositoryUrl>https://github.com/Satancito/InsaneDotnet</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageReleaseNotes>.NET 6 compatible.</PackageReleaseNotes>
+		<UserSecretsId>dcead069-ffae-4de4-be81-720ec8ff2ac7</UserSecretsId>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<IncludeContentInPack>true</IncludeContentInPack>
+		<BuildNumber>517</BuildNumber>
+		<VersionPrefix>6.0.0</VersionPrefix>
+		<VersionSuffix>Preview</VersionSuffix>
+		<Version>6.0.0-Preview-Build.403</Version>
+		<LangVersion>latest</LangVersion>
+		<EnablePreviewFeatures>True</EnablePreviewFeatures>
+		<!--<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+		<CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>-->
+
+	</PropertyGroup>
+	<ItemGroup>
+	  <None Remove="Cryptography\Base64Encoder.cs~RF1618d27.TMP" />
+	</ItemGroup>
+	<ItemGroup>
+		<!--<ProjectReference Include="..\Insane.Generators\Insane.Generators.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer"  />-->
+		<PackageReference Include="Konscious.Security.Cryptography.Argon2" Version="1.3.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.1" />
+		<PackageReference Include="Oracle.EntityFrameworkCore" Version="6.21.5" />
+		<PackageReference Include="PolySharp" Version="1.12.1">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.0" NoWarn="NU5104" />
+		<PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.3.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="../Icon.png">
+			<Pack>True</Pack>
+			<PackagePath>./</PackagePath>
+		</None>
+		<Content Include="../LICENSE.md">
+			<Pack>True</Pack>
+			<PackagePath>.</PackagePath>
+		</Content>
+		<None Include="../README.md">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+		<!--<Content Include="Insane.cs">
+			<PackageCopyToOutput>True</PackageCopyToOutput>
+			<PackagePath>contentFiles/cs\net6.0;content</PackagePath>
+			<Visible>True</Visible>
+			<Pack>True</Pack>
+		</Content>-->
+		<!--<Content Include="../Insane.txt">
+			<PackageCopyToOutput>True</PackageCopyToOutput>
+			<PackagePath>contentFiles/cs/net6.0;content</PackagePath>
+			<Visible>True</Visible>
+			<Pack>True</Pack>
+			<CopyToOutputDirectory>False</CopyToOutputDirectory>
+		</Content>-->
+		<!--<Content Include="../Raw/**/*.*">
+			<PackagePath>contentFiles/cs/net6.0/Raw</PackagePath>
+			<Visible>True</Visible>
+			<PackageCopyToOutput>True</PackageCopyToOutput>
+			<PackageFlatten>False</PackageFlatten>
+			<Pack>True</Pack>
+		</Content>-->
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\InsaneIO.CryptSharp.SCrypt\InsaneIO.CryptSharp.SCrypt.csproj" />
+	</ItemGroup>
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+		<Exec Command="pwsh -NoLogo -ExecutionPolicy Bypass -Command &quot;./X-PsCoreFxs-UpdateProjectBuildNumber.ps1 $(ProjectFileName)&quot;" />
+	</Target>
+
+</Project>

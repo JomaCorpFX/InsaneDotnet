@@ -10,6 +10,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="EntityFrameworkCore\Context\IdentityCoreDbContextBase.cs~RF2142fb53.TMP" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="InsaneIO.Insane" Version="6.0.2-preview" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.2">
