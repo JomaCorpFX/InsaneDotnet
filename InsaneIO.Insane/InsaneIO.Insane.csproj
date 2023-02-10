@@ -21,7 +21,7 @@
 		<UserSecretsId>dcead069-ffae-4de4-be81-720ec8ff2ac7</UserSecretsId>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<IncludeContentInPack>true</IncludeContentInPack>
-		<BuildNumber>517</BuildNumber>
+		<BuildNumber>553</BuildNumber>
 		<VersionPrefix>6.0.0</VersionPrefix>
 		<VersionSuffix>Preview</VersionSuffix>
 		<Version>6.0.0-Preview-Build.403</Version>

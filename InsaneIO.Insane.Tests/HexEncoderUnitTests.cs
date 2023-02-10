@@ -38,17 +38,12 @@ namespace InsaneIO.Insane.Tests
         [TestMethod]
         public void TestEncodeUpper()
         {
-            HexEncoder encoder = new HexEncoder
-            {
-                ToUpper = true
-            };
             Assert.AreEqual(hexStringUppercase, encoderToUpper.Encode(testTytes));
         }
 
         [TestMethod]
         public void TestEncodeLower()
         {
-            IEncoder encoder = new HexEncoder();
             Assert.AreEqual(hexStringLowercase, encoderToLower.Encode(testTytes));
         }
 
@@ -67,5 +62,5 @@ namespace InsaneIO.Insane.Tests
 
     }
 
-    
+
 }
