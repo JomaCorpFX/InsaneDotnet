@@ -7,87 +7,64 @@ namespace InsaneIO.Insane.Extensions
     [RequiresPreviewFeatures]
     public static class TotpExtensions
     {
-        private const long InitialCounterTime = 0;
-        public const long TotpDefaultPeriod = 30;
+        private const uint InitialCounterTime = 0;
+        public const uint TotpDefaultPeriod = 30;
 
-        private static long ComputeTotpRemainingSeconds(this DateTimeOffset time, long period)
+        public static string GenerateTotpUri(this byte[] secret, string label, string issuer, HashAlgorithm algorithm = HashAlgorithm.Sha1, TwoFactorCodeLength codeLength = TwoFactorCodeLength.ValueOf6Digits, long timePeriodInSeconds = TotpDefaultPeriod)
         {
-            return period - (time.ToUniversalTime().ToUnixTimeSeconds() - InitialCounterTime) % period;
-        }
-
-        private static string ComputeTotpCode(this byte[] secret, TwoFactorCodeLength length, HashAlgorithm hashAlgorithm, long period)
-        {
-            long timeInterval = (DateTimeOffset.UtcNow.ToUnixTimeSeconds() - InitialCounterTime) / period;
-            timeInterval = BitConverter.IsLittleEndian ? BinaryPrimitives.ReverseEndianness(timeInterval) : timeInterval;
-            byte[] hmac = BitConverter.GetBytes(timeInterval).ToHmac(secret, hashAlgorithm);
-            byte offset = (byte)(hmac[19] & 0xF);
-            var slice = hmac[offset..(offset + 4)];
-            long code = ((BitConverter.IsLittleEndian ? BinaryPrimitives.ReadInt32BigEndian(slice) : BitConverter.ToInt32(slice)) & 0x7FFFFFFF) % (int)(Math.Pow(10, length.IntValue()));
-            return code.ToString().PadLeft(length.IntValue(), '0');
-        }
-
-        private static string GenerateTotpUri(this byte[] secret, string label, string issuer, HashAlgorithm algorithm, TwoFactorCodeLength codeLength, long period)
-        {
-            return $"otpauth://totp/{HttpUtility.UrlEncode(label)}?secret={secret.ToBase32(true)}&issuer={HttpUtility.UrlEncode(issuer)}&algorithm={algorithm.ToString().ToUpper()}&digits={codeLength.IntValue()}&period={period}";
-        }
-
-        public static string GenerateTotpUri(this byte[] secret, string label, string issuer)
-        {
-            return GenerateTotpUri(secret, label, issuer, HashAlgorithm.Sha1, TwoFactorCodeLength.ValueOf6Digits, TotpDefaultPeriod);
+            return $"otpauth://totp/{HttpUtility.UrlEncode(label)}?secret={secret.ToBase32(true)}&issuer={HttpUtility.UrlEncode(issuer)}&algorithm={algorithm.ToString().ToUpper()}&digits={codeLength.IntValue()}&period={timePeriodInSeconds}";
         }
 
         public static string GenerateTotpUri(this string base32EncodedSecret, string label, string issuer)
         {
-            return GenerateTotpUri(base32EncodedSecret.FromBase32(), label, issuer);
+            return GenerateTotpUri(Base32Encoder.DefaultInstance.Decode(base32EncodedSecret), label, issuer);
         }
 
-        public static string GenerateTotpUri(this string encodedSecret, IEncoder secretDecoder, string label, string issuer)
+        public static string ComputeTotpCode(this byte[] secret, DateTimeOffset now, TwoFactorCodeLength length = TwoFactorCodeLength.ValueOf6Digits, HashAlgorithm hashAlgorithm = HashAlgorithm.Sha1, long timePeriodInSeconds = TotpDefaultPeriod)
         {
-            return GenerateTotpUri(secretDecoder.Decode(encodedSecret), label, issuer);
+            hashAlgorithm = hashAlgorithm switch
+            {
+                HashAlgorithm.Md5 => HashAlgorithm.Sha1,
+                _ => hashAlgorithm
+            };
+            long timeInterval = (now.ToUnixTimeSeconds() - DateTimeOffset.UnixEpoch.ToUnixTimeSeconds()) / timePeriodInSeconds;
+            timeInterval = BitConverter.IsLittleEndian ? BinaryPrimitives.ReverseEndianness(timeInterval) : timeInterval;
+            byte[] hmac = BitConverter.GetBytes(timeInterval).ToHmac(secret, hashAlgorithm);
+            byte offset = (byte)(hmac[HashExtensions.Sha1HashSizeInBytes - 1] & 0x0F);
+            var slice = hmac[offset..(offset + 4)];
+            long code = ((BitConverter.IsLittleEndian ? BinaryPrimitives.ReadInt32BigEndian(slice) : BinaryPrimitives.ReadInt32LittleEndian(slice)) & 0x7FFFFFFF) % (int)(Math.Pow(10, length.IntValue()));
+            return code.ToString().PadLeft(length.IntValue(), '0');
         }
 
-
-        private static bool VerifyTotpCode(this string code, byte[] secret, TwoFactorCodeLength length, HashAlgorithm hashAlgorithm, long period)
+        public static string ComputeTotpCode(this byte[] secret, TwoFactorCodeLength length = TwoFactorCodeLength.ValueOf6Digits, HashAlgorithm hashAlgorithm = HashAlgorithm.Sha1, long timePeriodInSeconds = TotpDefaultPeriod)
         {
-            return code == ComputeTotpCode(secret, length, hashAlgorithm, period);
-        }
-
-        public static bool VerifyTotpCode(this string code, byte[] secret)
-        {
-            return VerifyTotpCode(code, secret, TwoFactorCodeLength.ValueOf6Digits, HashAlgorithm.Sha1, TotpDefaultPeriod);
-        }
-
-        public static bool VerifyTotpCode(this string code, string base32EncodedSecret)
-        {
-            return VerifyTotpCode(code, base32EncodedSecret.FromBase32());
-        }
-
-        public static bool VerifyTotpCode(this string code, string encodedSecret, IEncoder secretDecoder)
-        {
-            return VerifyTotpCode(code, secretDecoder.Decode(encodedSecret));
-        }
-
-        public static string ComputeTotpCode(this byte[] secret)
-        {
-            return ComputeTotpCode(secret, TwoFactorCodeLength.ValueOf6Digits, HashAlgorithm.Sha1, TotpDefaultPeriod);
+            return ComputeTotpCode(secret, DateTimeOffset.UtcNow, length, hashAlgorithm, timePeriodInSeconds);
         }
 
         public static string ComputeTotpCode(this string base32EncodedSecret)
         {
-            return ComputeTotpCode(base32EncodedSecret.FromBase32());
+            return ComputeTotpCode(Base32Encoder.DefaultInstance.Decode(base32EncodedSecret));
         }
 
-        public static string ComputeTotpCode(this string encodedSecret, IEncoder secretDecoder)
+        public static bool VerifyTotpCode(this string code, byte[] secret, DateTimeOffset now, TwoFactorCodeLength length = TwoFactorCodeLength.ValueOf6Digits, HashAlgorithm hashAlgorithm = HashAlgorithm.Sha1, long timePeriodInSeconds = TotpDefaultPeriod)
         {
-            return ComputeTotpCode(secretDecoder.Decode(encodedSecret));
+            return ComputeTotpCode(secret, now, length, hashAlgorithm, timePeriodInSeconds).Equals(code);
         }
 
-        public static long ComputeTotpRemainingSeconds(this DateTimeOffset time)
+        public static bool VerifyTotpCode(this string code, byte[] secret, TwoFactorCodeLength length = TwoFactorCodeLength.ValueOf6Digits, HashAlgorithm hashAlgorithm = HashAlgorithm.Sha1, long timePeriodInSeconds = TotpDefaultPeriod)
         {
-            return ComputeTotpRemainingSeconds(time, TotpDefaultPeriod);
+            return VerifyTotpCode(code, secret, DateTimeOffset.UtcNow, length, hashAlgorithm, timePeriodInSeconds);
         }
 
+        public static bool VerifyTotpCode(this string code, string base32EncodedSecret)
+        {
+            return VerifyTotpCode(code, Base32Encoder.DefaultInstance.Decode(base32EncodedSecret));
+        }
 
+        public static long ComputeTotpRemainingSeconds(this DateTimeOffset now, long timePeriodInSeconds = TotpDefaultPeriod)
+        {
+            return timePeriodInSeconds - (now.ToUniversalTime().ToUnixTimeSeconds() - DateTimeOffset.UnixEpoch.ToUnixTimeSeconds()) % timePeriodInSeconds;
+        }
 
     }
 }
