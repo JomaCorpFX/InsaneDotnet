@@ -30,20 +30,20 @@ param (
 
 $ErrorActionPreference = "Stop"
 Import-Module -Name "$(Get-Item "./Z-PsCoreFxs.ps1")" -Force -NoClobber
-
+$verbosePresent = $PSBoundParameters.ContainsKey("Verbose")
 if ($Major.IsPresent) {
-    Update-ProjectVersion -ProjectFilename $ProjectfileName -Major -Force:$Force -Suffix $Suffix -UpdateBuildNumber:$UpdateBuildNumber
+    Update-ProjectVersion -ProjectFilename $ProjectfileName -Major -Force:$Force -Suffix $Suffix -UpdateBuildNumber:$UpdateBuildNumber -Verbose:$verbosePresent
     return
 }
 
 if ($Minor.IsPresent) {
-    Update-ProjectVersion -ProjectFilename $ProjectfileName -Minor -Force:$Force -Suffix $Suffix -UpdateBuildNumber:$UpdateBuildNumber
+    Update-ProjectVersion -ProjectFilename $ProjectfileName -Minor -Force:$Force -Suffix $Suffix -UpdateBuildNumber:$UpdateBuildNumber -Verbose:$verbosePresent
     return
 }
 
 if ($Patch.IsPresent) {
-    Update-ProjectVersion -ProjectFilename $ProjectfileName -Patch -Force:$Force -Suffix $Suffix -UpdateBuildNumber:$UpdateBuildNumber
+    Update-ProjectVersion -ProjectFilename $ProjectfileName -Patch -Force:$Force -Suffix $Suffix -UpdateBuildNumber:$UpdateBuildNumber -Verbose:$verbosePresent
     return
 }
 
-Update-ProjectVersion -ProjectFilename $ProjectfileName -Patch -Force:$Force -Suffix $Suffix -UpdateBuildNumber:$UpdateBuildNumber
+Update-ProjectVersion -ProjectFilename $ProjectfileName -Patch -Force:$Force -Suffix $Suffix -UpdateBuildNumber:$UpdateBuildNumber -Verbose:$verbosePresent

@@ -10,7 +10,7 @@ namespace InsaneIO.Insane.Extensions
         private const uint InitialCounterTime = 0;
         public const uint TotpDefaultPeriod = 30;
 
-        public static string GenerateTotpUri(this byte[] secret, string label, string issuer, HashAlgorithm algorithm = HashAlgorithm.Sha1, TwoFactorCodeLength codeLength = TwoFactorCodeLength.ValueOf6Digits, long timePeriodInSeconds = TotpDefaultPeriod)
+        public static string GenerateTotpUri(this byte[] secret, string label, string issuer, HashAlgorithm algorithm = HashAlgorithm.Sha1, TwoFactorCodeLength codeLength = TwoFactorCodeLength.SixDigits, long timePeriodInSeconds = TotpDefaultPeriod)
         {
             return $"otpauth://totp/{HttpUtility.UrlEncode(label)}?secret={secret.ToBase32(true)}&issuer={HttpUtility.UrlEncode(issuer)}&algorithm={algorithm.ToString().ToUpper()}&digits={codeLength.IntValue()}&period={timePeriodInSeconds}";
         }
@@ -20,7 +20,7 @@ namespace InsaneIO.Insane.Extensions
             return GenerateTotpUri(Base32Encoder.DefaultInstance.Decode(base32EncodedSecret), label, issuer);
         }
 
-        public static string ComputeTotpCode(this byte[] secret, DateTimeOffset now, TwoFactorCodeLength length = TwoFactorCodeLength.ValueOf6Digits, HashAlgorithm hashAlgorithm = HashAlgorithm.Sha1, long timePeriodInSeconds = TotpDefaultPeriod)
+        public static string ComputeTotpCode(this byte[] secret, DateTimeOffset now, TwoFactorCodeLength length = TwoFactorCodeLength.SixDigits, HashAlgorithm hashAlgorithm = HashAlgorithm.Sha1, long timePeriodInSeconds = TotpDefaultPeriod)
         {
             hashAlgorithm = hashAlgorithm switch
             {
@@ -36,7 +36,7 @@ namespace InsaneIO.Insane.Extensions
             return code.ToString().PadLeft(length.IntValue(), '0');
         }
 
-        public static string ComputeTotpCode(this byte[] secret, TwoFactorCodeLength length = TwoFactorCodeLength.ValueOf6Digits, HashAlgorithm hashAlgorithm = HashAlgorithm.Sha1, long timePeriodInSeconds = TotpDefaultPeriod)
+        public static string ComputeTotpCode(this byte[] secret, TwoFactorCodeLength length = TwoFactorCodeLength.SixDigits, HashAlgorithm hashAlgorithm = HashAlgorithm.Sha1, long timePeriodInSeconds = TotpDefaultPeriod)
         {
             return ComputeTotpCode(secret, DateTimeOffset.UtcNow, length, hashAlgorithm, timePeriodInSeconds);
         }
@@ -46,12 +46,12 @@ namespace InsaneIO.Insane.Extensions
             return ComputeTotpCode(Base32Encoder.DefaultInstance.Decode(base32EncodedSecret));
         }
 
-        public static bool VerifyTotpCode(this string code, byte[] secret, DateTimeOffset now, TwoFactorCodeLength length = TwoFactorCodeLength.ValueOf6Digits, HashAlgorithm hashAlgorithm = HashAlgorithm.Sha1, long timePeriodInSeconds = TotpDefaultPeriod)
+        public static bool VerifyTotpCode(this string code, byte[] secret, DateTimeOffset now, TwoFactorCodeLength length = TwoFactorCodeLength.SixDigits, HashAlgorithm hashAlgorithm = HashAlgorithm.Sha1, long timePeriodInSeconds = TotpDefaultPeriod)
         {
             return ComputeTotpCode(secret, now, length, hashAlgorithm, timePeriodInSeconds).Equals(code);
         }
 
-        public static bool VerifyTotpCode(this string code, byte[] secret, TwoFactorCodeLength length = TwoFactorCodeLength.ValueOf6Digits, HashAlgorithm hashAlgorithm = HashAlgorithm.Sha1, long timePeriodInSeconds = TotpDefaultPeriod)
+        public static bool VerifyTotpCode(this string code, byte[] secret, TwoFactorCodeLength length = TwoFactorCodeLength.SixDigits, HashAlgorithm hashAlgorithm = HashAlgorithm.Sha1, long timePeriodInSeconds = TotpDefaultPeriod)
         {
             return VerifyTotpCode(code, secret, DateTimeOffset.UtcNow, length, hashAlgorithm, timePeriodInSeconds);
         }

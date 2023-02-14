@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GithubActions", "GithubActions", "{46B56D40-BAD7-4788-906B-877304D0A24E}"
 	ProjectSection(SolutionItems) = preProject
-		.github\workflows\InsaneIO.Insane-PushToNuget.yml = .github\workflows\InsaneIO.Insane-PushToNuget.yml
+		.github\workflows\InsaneIO.Insane-PushToNuget.yml1 = .github\workflows\InsaneIO.Insane-PushToNuget.yml1
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InsaneIO.Insane", "InsaneIO.Insane\InsaneIO.Insane.csproj", "{AB49D2F1-26A6-451F-ADB6-4773304B11D5}"
@@ -14,7 +14,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InsaneIO.CryptSharp.SCrypt"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InsaneIO.Insane.Tests", "InsaneIO.Insane.Tests\InsaneIO.Insane.Tests.csproj", "{9AE0A522-306A-4EAE-ABAC-7B05CB95366F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InsaneIO.Insane.Console", "InsaneIO.Insane.Console\InsaneIO.Insane.Console.csproj", "{7C106EEB-1B56-4E2B-BF92-35BA4D230E03}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InsaneIO.Insane.Console", "InsaneIO.Insane.Console\InsaneIO.Insane.Console.csproj", "{7C106EEB-1B56-4E2B-BF92-35BA4D230E03}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
