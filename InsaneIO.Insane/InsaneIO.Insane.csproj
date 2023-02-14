@@ -21,19 +21,19 @@
 		<UserSecretsId>dcead069-ffae-4de4-be81-720ec8ff2ac7</UserSecretsId>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<IncludeContentInPack>true</IncludeContentInPack>
-		<BuildNumber>553</BuildNumber>
+		<IsPrerelease>true</IsPrerelease>
+		<PrereleaseName>Preview</PrereleaseName>
+		<BuildPrefix>Build</BuildPrefix>
+		<BuildNumber>578</BuildNumber>
 		<VersionPrefix>6.0.0</VersionPrefix>
 		<VersionSuffix>Preview</VersionSuffix>
-		<Version>6.0.0-Preview-Build.403</Version>
+		<Version>6.0.0-Preview-Build.578</Version>
 		<LangVersion>latest</LangVersion>
 		<EnablePreviewFeatures>True</EnablePreviewFeatures>
 		<!--<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
 		<CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>-->
 
 	</PropertyGroup>
-	<ItemGroup>
-	  <None Remove="Cryptography\Base64Encoder.cs~RF1618d27.TMP" />
-	</ItemGroup>
 	<ItemGroup>
 		<!--<ProjectReference Include="..\Insane.Generators\Insane.Generators.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer"  />-->
 		<PackageReference Include="Konscious.Security.Cryptography.Argon2" Version="1.3.0" />
@@ -43,7 +43,6 @@
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
-		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.1" />
 		<PackageReference Include="Oracle.EntityFrameworkCore" Version="6.21.5" />
 		<PackageReference Include="PolySharp" Version="1.12.1">

@@ -11,15 +11,17 @@ using System.Xml.Linq;
 
 namespace InsaneIO.Insane.Security
 {
+    /// <summary>
+    /// Testing codes in the link - https://totp.danhersam.com/
+    /// </summary>
     [RequiresPreviewFeatures]
     public class TotpManager : IJsonSerialize
     {
-        private const string EncodedSecretJsonKey = "Base32EncodedSecret";
         public required byte[] Secret { get; init; } = null!;
 
         public required string Label { get; init; } = string.Empty;
         public required string Issuer { get; init; } = string.Empty;
-        public TwoFactorCodeLength CodeLength { get; init; } = TwoFactorCodeLength.ValueOf6Digits;
+        public TwoFactorCodeLength CodeLength { get; init; } = TwoFactorCodeLength.SixDigits;
         public HashAlgorithm HashAlgorithm { get; init; } = HashAlgorithm.Sha1;
         public uint TimePeriodInSeconds { get; init; } = TotpExtensions.TotpDefaultPeriod;
 
@@ -50,7 +52,7 @@ namespace InsaneIO.Insane.Security
             return new JsonObject
             {
                 [nameof(Name)] = Name,
-                [EncodedSecretJsonKey] = Base32Encoder.DefaultInstance.Encode(Secret),
+                [nameof(Secret)] = Base32Encoder.DefaultInstance.Encode(Secret),
                 [nameof(Label)] = Label,
                 [nameof(Issuer)] = Issuer,
                 [nameof(CodeLength)] = CodeLength.NumberValue<int>(),
@@ -64,7 +66,7 @@ namespace InsaneIO.Insane.Security
             JsonNode jsonNode = JsonNode.Parse(json)!;
             return new TotpManager
             {
-                Secret = Base32Encoder.DefaultInstance.Decode(jsonNode[EncodedSecretJsonKey]!.GetValue<string>()),
+                Secret = Base32Encoder.DefaultInstance.Decode(jsonNode[nameof(Secret)]!.GetValue<string>()),
                 Label = jsonNode[nameof(Label)]!.GetValue<string>(),
                 Issuer = jsonNode[nameof(Issuer)]!.GetValue<string>(),
                 CodeLength = Enum.Parse<TwoFactorCodeLength>(jsonNode[nameof(CodeLength)]!.GetValue<uint>().ToString()),

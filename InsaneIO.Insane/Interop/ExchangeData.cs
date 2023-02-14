@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿
 
 namespace InsaneIO.Insane.Interop
 {
@@ -13,7 +13,8 @@ namespace InsaneIO.Insane.Interop
 
         public static ExchangeData Create(String json)
         {
-            return JsonConvert.DeserializeObject<ExchangeData>(json);
+            throw new NotImplementedException();
+            //return JsonConvert.DeserializeObject<ExchangeData>(json);
         }
 
         public override string ToString()

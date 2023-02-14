@@ -2,8 +2,8 @@
 {
     public enum TwoFactorCodeLength
     {
-        ValueOf6Digits = 6,
-        ValueOf7Digits = 7,
-        ValueOf8Digits = 8,
+        SixDigits = 6,
+        SevenDigits = 7,
+        EightDigits = 8,
     }
 }

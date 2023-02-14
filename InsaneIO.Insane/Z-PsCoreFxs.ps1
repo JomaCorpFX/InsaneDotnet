@@ -882,8 +882,6 @@ function Get-NextVersion {
         $majorValue = $match.Groups[1].Value.Trim()
         $minorValue = $match.Groups[2].Value.Trim()
         $patchValue = $match.Groups[3].Value.Trim()
-        $prereleaseValue = $match.Groups[4].Value.Trim() 
-        $buildmetadataValue = $match.Groups[5].Value.Trim()
 
         $configured = $false
         if ($Major.IsPresent) {
@@ -908,9 +906,8 @@ function Get-NextVersion {
             $patchValue = "$([Convert]::ToInt32($patchValue, 10) + 1)";
         }
 
-        $prereleaseValue = [string]::IsNullOrWhiteSpace($prereleaseValue) ? [string]::Empty : "-$prereleaseValue"
-        $buildmetadataValue = [string]::IsNullOrWhiteSpace($prereleaseValue) ? [string]::Empty : "+$buildmetadataValue"
-        $Version = "$majorValue.$minorValue.$patchValue$prereleaseValue$buildmetadataValue".Trim()
+       
+        $Version = "$majorValue.$minorValue.$patchValue".Trim()
         $match = [System.Text.RegularExpressions.Regex]::Match($Version, $pattern, [System.Text.RegularExpressions.RegexOptions]::Multiline, [System.TimeSpan]::FromSeconds(1))
         if ($match.Success) {
             return $Version
@@ -924,6 +921,7 @@ function Get-NextVersion {
 }
 
 function Update-ProjectVersion {
+    [CmdletBinding()]
     param (
         [Parameter(Position = 0, ParameterSetName = "Default")]
         [Parameter(Position = 0, ParameterSetName = "Major")]
@@ -945,7 +943,13 @@ function Update-ProjectVersion {
         $Patch,
 
         [System.String]
-        $Suffix = [string]::Empty,
+        $Prerelease = [string]::Empty,
+
+        [System.String]
+        $Build = [string]::Empty,
+
+        [Switch]
+        $IsPrerelease,
 
         [Switch]
         $Force,
@@ -954,15 +958,16 @@ function Update-ProjectVersion {
         $UpdateBuildNumber
     )
 
-    if($PSBoundParameters.Verbose.IsPresent){
+    if ($PSBoundParameters.Verbose.IsPresent) {
         Write-PrettyKeyValue "$(Get-VariableName $ProjectFileName)" "$ProjectFileName"
-        Write-PrettyKeyValue "$(Get-VariableName $Suffix)" "$Suffix"
         Write-PrettyKeyValue "$(Get-VariableName $Major)" "$($Major.IsPresent)"
         Write-PrettyKeyValue "$(Get-VariableName $Minor)" "$($Minor.IsPresent)"
         Write-PrettyKeyValue "$(Get-VariableName $Patch)" "$($Patch.IsPresent)"
         Write-PrettyKeyValue "$(Get-VariableName $Force)" "$($Force.IsPresent)"
+        Write-PrettyKeyValue "$(Get-VariableName $Prerelease)" $(Get-StringCoalesce $Prerelease "<empty/null value>")
+        Write-PrettyKeyValue "$(Get-VariableName $Build)" $(Get-StringCoalesce $Build "<empty/null value>")
     }
-
+    return
     $ProjectFileName = Get-Item $ProjectFileName
     if (!(Test-Path $ProjectFileName -PathType Leaf) -or (!"$ProjectFileName".EndsWith(".csproj"))) {
         throw "Invalid file `"$ProjectFileName`"."
@@ -974,44 +979,71 @@ function Update-ProjectVersion {
 
     $basePath = "//Project/PropertyGroup"
 
+    $isPrereleaseLabel = "IsPrerelease"
+    $prereleaseNameLabel = "PrereleaseName"
+    $buildSuffixLabel = "BuildSuffix"
     $versionPrefixLabel = "VersionPrefix"
     $versionSuffixLabel = "VersionSuffix"
-    $buildNumberLabel = "BuildNumber"
     $versionLabel = "Version"
+    $buildNumberLabel = "BuildNumber"
     $defaultPrefix = "0.1.0"
-    $defaultBuildNumber = "1"
+    $defaultBuildNumber = "0"
+    $defaultPrereleaseName = "Preview"
+    $defaultBuildSuffix = "Build"
 
+
+    $isPrereleaseSwitch = $doc.DocumentElement.SelectSingleNode("$basePath/$isPrereleaseLabel") 
+    $prereleaseName = $doc.DocumentElement.SelectSingleNode("$basePath/$prereleaseLabel") 
+    $buildSuffix = $doc.DocumentElement.SelectSingleNode("$basePath/$buildLabel") 
+    $buildNumber = $doc.DocumentElement.SelectSingleNode("$basePath/$buildNumberLabel")
     $versionPrefix = $doc.DocumentElement.SelectSingleNode("$basePath/$versionPrefixLabel") 
     $versionSuffix = $doc.DocumentElement.SelectSingleNode("$basePath/$versionSuffixLabel") 
-    $buildNumber = $doc.DocumentElement.SelectSingleNode("$basePath/$buildNumberLabel")
     $version = $doc.DocumentElement.SelectSingleNode("$basePath/$versionLabel")
 
     if ($null -eq $versionPrefix) {
         [System.Xml.XmlElement]$versionPrefix = $doc.CreateElement($versionPrefixLabel)
         $versionPrefix.InnerText = $defaultPrefix
         $doc.DocumentElement.SelectSingleNode($basePath).AppendChild($versionPrefix);
-        #$doc.Save($ProjectFileName)
     }
 
     if ($null -eq $versionSuffix) {
         [System.Xml.XmlElement]$versionSuffix = $doc.CreateElement($versionSuffixLabel)
         $versionSuffix.InnerText = $Suffix
         $doc.DocumentElement.SelectSingleNode($basePath).AppendChild($versionSuffix);
-        #$doc.Save($ProjectFileName)
     }
     
     if ($null -eq $buildNumber) {
         [System.Xml.XmlElement]$buildNumber = $doc.CreateElement($buildNumberLabel)
         $buildNumber.InnerText = $defaultBuildNumber
         $doc.DocumentElement.SelectSingleNode($basePath).AppendChild($buildNumber);
-        #$doc.Save($ProjectFileName)
     }
 
-    if($UpdateBuildNumber.IsPresent)
+    if ($null -eq $prereleaseName) {
+        [System.Xml.XmlElement]$prereleaseName = $doc.CreateElement($prereleaseNameLabel)
+        $prereleaseName.InnerText = $defaultPrereleaseName
+        $doc.DocumentElement.SelectSingleNode($basePath).AppendChild($prereleaseName);
+    }
+    $prereleaseName.InnerText = Get-StringCoalesce $Prerelease $defaultPrereleaseName
+
+    if ($null -eq $buildSuffix) {
+        [System.Xml.XmlElement]$buildSuffix = $doc.CreateElement($buildSuffixLabel)
+        $buildSuffix.InnerText = $defaultBuildSuffix
+        $doc.DocumentElement.SelectSingleNode($basePath).AppendChild($buildSuffix);
+    }
+    $buildSuffix.InnerText = Get-StringCoalesce $Build $defaultBuildSuffix
+
+    if ($null -eq $isPrereleaseSwitch) {
+        [System.Xml.XmlElement]$isPrereleaseSwitch = $doc.CreateElement($isPrereleaseLabel)
+        $isPrereleaseSwitch.InnerText = "false"
+        $doc.DocumentElement.SelectSingleNode($basePath).AppendChild($isPrereleaseSwitch);
+    }
+
+    if($IsPrerelease.IsPresent)
     {
-        if ([String]::IsNullOrWhiteSpace($buildNumber.InnerText)) {
-            $buildNumber.InnerText = "1" 
-        }
+        $isPrereleaseSwitch.InnerText = "true"
+    }
+
+    if ($UpdateBuildNumber.IsPresent) {
         $buildNumber.InnerText = [int]::Parse($buildNumber.InnerText) + 1
     }
 
@@ -1022,45 +1054,29 @@ function Update-ProjectVersion {
         $doc.Save($ProjectFileName)
     }
 
-    $versionPrefix.InnerText = [string]::IsNullOrWhiteSpace($versionPrefix.InnerText) ? $defaultPrefix : $versionPrefix.InnerText
-    $buildNumber.InnerText = [string]::IsNullOrWhiteSpace($buildNumber.InnerText) ? $defaultBuildNumber : $buildNumber.InnerText
-    $update = $false
+
+    $configured = $false
+    if ($Major.IsPresent -and !$configured) {
+        $versionPrefix.InnerText = Get-NextVersion -Version $versionPrefix.InnerText -Major 
+        $configured = $true
+    }
+
+    if ($Minor.IsPresent -and !$configured) {
+        $versionPrefix.InnerText = Get-NextVersion -Version $versionPrefix.InnerText -Minor 
+        $configured = $true
+    }
+
+    if ($Patch.IsPresent -and !$configured) {
+        $versionPrefix.InnerText = Get-NextVersion -Version $versionPrefix.InnerText -Patch
+        $configured = $true
+    }
+
+    if (!$configured) {
+        $versionPrefix.InnerText = Get-NextVersion -Version $versionPrefix.InnerText -Patch
+    }
+
     
-    if ($Force.IsPresent) {
-        $versionSuffix.InnerText = [string]::Empty
-    }
-    else {
-        if (![string]::IsNullOrWhiteSpace($Suffix) -and ($Suffix -ne $versionSuffix.InnerText)) {
-            $versionSuffix.InnerText = $Suffix
-            $update = $true
-        }
-    }
-
-    $fullSuffix = [string]::IsNullOrWhiteSpace($versionSuffix.InnerText) ? [string]::Empty : "-$($versionSuffix.InnerText)-Build.$($buildNumber.InnerText)"
-    if ([string]::IsNullOrWhiteSpace($fullSuffix) -or $update) {
-        $configured = $false
-        if ($Major.IsPresent -and !$configured) {
-            $versionPrefix.InnerText = Get-NextVersion -Version $versionPrefix.InnerText -Major 
-            $configured = $true
-        }
-
-        if ($Minor.IsPresent -and !$configured) {
-            $versionPrefix.InnerText = Get-NextVersion -Version $versionPrefix.InnerText -Minor 
-            $configured = $true
-        }
-
-        if ($Patch.IsPresent -and !$configured) {
-            $versionPrefix.InnerText = Get-NextVersion -Version $versionPrefix.InnerText -Patch
-            $configured = $true
-        }
-
-        if (!$configured) {
-            $versionPrefix.InnerText = Get-NextVersion -Version $versionPrefix.InnerText -Patch
-        }
-
-    }
-   
-    $version.InnerText = "$($versionPrefix.InnerText)$fullSuffix"
+    $version.InnerText = "$($versionPrefix.InnerText)$($isPrereleaseSwitch.InnerText.Equals("true") ? "-$($prereleaseName.InnerText)-$($buildSuffix.InnerText).$(BuildNumber.InnerText)" : [string]::Empty )"
    
     $doc.Save($ProjectFileName)
     
@@ -1177,8 +1193,8 @@ function Set-LocalEnvironmentVariable {
             [System.String]
             $VarName
         )
-            Write-Host "Local Environment variable " -ForegroundColor DarkYellow -NoNewline
-            Write-Host "`"env:$VarName`" ➡  `"$((Get-Item env:$VarName).Value)`"" -ForegroundColor Yellow
+        Write-Host "Local Environment variable " -ForegroundColor DarkYellow -NoNewline
+        Write-Host "`"env:$VarName`" ➡  `"$((Get-Item env:$VarName).Value)`"" -ForegroundColor Yellow
     }
 
     if ($Append.IsPresent) {
@@ -1212,8 +1228,8 @@ function Set-PersistentEnvironmentVariable {
             [System.String]
             $VarName
         )
-            Write-Host "Persistent Environment variable " -ForegroundColor DarkYellow -NoNewline
-            Write-Host "`"env:$VarName`" ➡  `"$((Get-Item env:$VarName).Value)`"" -ForegroundColor Yellow
+        Write-Host "Persistent Environment variable " -ForegroundColor DarkYellow -NoNewline
+        Write-Host "`"env:$VarName`" ➡  `"$((Get-Item env:$VarName).Value)`"" -ForegroundColor Yellow
     }
 
     Set-LocalEnvironmentVariable -Name $Name -Value $Value -Append:$Append
