@@ -6,6 +6,7 @@ using HashAlgorithm = InsaneIO.Insane.Cryptography.HashAlgorithm;
 
 namespace InsaneIO.Insane.Extensions
 {
+
     [RequiresPreviewFeatures]
     public static class HashExtensions
     {

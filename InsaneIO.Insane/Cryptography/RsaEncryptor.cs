@@ -1,8 +1,8 @@
 ﻿using InsaneIO.Insane.Extensions;
-using InsaneIO.Insane.Cryptography;
 using System.Runtime.Versioning;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using InsaneIO.Insane.Serialization;
 
 namespace InsaneIO.Insane.Cryptography
 {

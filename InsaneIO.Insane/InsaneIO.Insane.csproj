@@ -1,5 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
+		<PackageContentPath>contentFiles/any/any/</PackageContentPath>
+		<LibraryContentPath>$(PackageContentPath)_Lib/InsaneIO.Insane/</LibraryContentPath>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<TargetFramework>net6.0</TargetFramework>
@@ -7,10 +9,8 @@
 		<Title>InsaneIO.Insane</Title>
 		<Company>InsaneIO</Company>
 		<Description>Insane for .NET 6</Description>
-		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<Copyright>©Joma Espinoza Bone - Satancito. All rights reserved.</Copyright>
 		<Authors>Joma Espinoza Bone</Authors>
-		<PackageIcon>Icon.png</PackageIcon>
 		<PackageTags>Insane InsaneIO InsaneDotnet libInsane</PackageTags>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -19,76 +19,51 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageReleaseNotes>.NET 6 compatible.</PackageReleaseNotes>
 		<UserSecretsId>dcead069-ffae-4de4-be81-720ec8ff2ac7</UserSecretsId>
+		<PackageIcon>Icon.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<IncludeContentInPack>true</IncludeContentInPack>
-		<IsPrerelease>true</IsPrerelease>
-		<PrereleaseName>Preview</PrereleaseName>
-		<BuildPrefix>Build</BuildPrefix>
-		<BuildNumber>578</BuildNumber>
+		<IsPrerelease>false</IsPrerelease>
+		<PrereleaseName>Alpha</PrereleaseName>
+		<BuildSuffix>Build</BuildSuffix>
+		<BuildNumber>670</BuildNumber>
 		<VersionPrefix>6.0.0</VersionPrefix>
-		<VersionSuffix>Preview</VersionSuffix>
-		<Version>6.0.0-Preview-Build.578</Version>
+		<VersionSuffix></VersionSuffix>
+		<Version>27.0.0-x.org</Version>
 		<LangVersion>latest</LangVersion>
-		<EnablePreviewFeatures>True</EnablePreviewFeatures>
-		<!--<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
-		<CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>-->
-
+		<EnablePreviewFeatures>true</EnablePreviewFeatures>
+		<!--<UseBlazorWebAssembly>true</UseBlazorWebAssembly>-->
+		<!--<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>-->
+		<!--<CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>-->
 	</PropertyGroup>
+
 	<ItemGroup>
 		<!--<ProjectReference Include="..\Insane.Generators\Insane.Generators.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer"  />-->
+		<PackageReference Include="InsaneIO.CryptSharp.SCrypt" Version="1.0.0" />
 		<PackageReference Include="Konscious.Security.Cryptography.Argon2" Version="1.3.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.1" />
 		<PackageReference Include="Oracle.EntityFrameworkCore" Version="6.21.5" />
 		<PackageReference Include="PolySharp" Version="1.12.1">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.0" NoWarn="NU5104" />
 		<PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.3.0" />
 	</ItemGroup>
+
 	<ItemGroup>
-		<None Include="../Icon.png">
-			<Pack>True</Pack>
-			<PackagePath>./</PackagePath>
-		</None>
-		<Content Include="../LICENSE.md">
-			<Pack>True</Pack>
-			<PackagePath>.</PackagePath>
-		</Content>
-		<None Include="../README.md">
-			<Pack>True</Pack>
-			<PackagePath></PackagePath>
-		</None>
-		<!--<Content Include="Insane.cs">
-			<PackageCopyToOutput>True</PackageCopyToOutput>
-			<PackagePath>contentFiles/cs\net6.0;content</PackagePath>
-			<Visible>True</Visible>
-			<Pack>True</Pack>
-		</Content>-->
-		<!--<Content Include="../Insane.txt">
-			<PackageCopyToOutput>True</PackageCopyToOutput>
-			<PackagePath>contentFiles/cs/net6.0;content</PackagePath>
-			<Visible>True</Visible>
-			<Pack>True</Pack>
-			<CopyToOutputDirectory>False</CopyToOutputDirectory>
-		</Content>-->
-		<!--<Content Include="../Raw/**/*.*">
-			<PackagePath>contentFiles/cs/net6.0/Raw</PackagePath>
-			<Visible>True</Visible>
-			<PackageCopyToOutput>True</PackageCopyToOutput>
-			<PackageFlatten>False</PackageFlatten>
-			<Pack>True</Pack>
-		</Content>-->
+		<None Include="$(SolutionDir)Icon.png" Pack="true" Visible="true" PackagePath="$(PackageIcon)" />
+		<None Include="$(SolutionDir)README.md" Pack="true" Visible="true" PackagePath="$(PackageReadmeFile)" />
+		<None Include="$(SolutionDir)LICENSE.md" Pack="true" Visible="true" PackagePath="$(PackageContentPath)_Licenses/InsaneIO.Insane.License.md;$(PackageLicenseFile)" PackageCopyToOutput="true" />
 	</ItemGroup>
-	<ItemGroup>
-	  <ProjectReference Include="..\InsaneIO.CryptSharp.SCrypt\InsaneIO.CryptSharp.SCrypt.csproj" />
-	</ItemGroup>
+	
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
 		<Exec Command="pwsh -NoLogo -ExecutionPolicy Bypass -Command &quot;./X-PsCoreFxs-UpdateProjectBuildNumber.ps1 $(ProjectFileName)&quot;" />
 	</Target>

@@ -34,6 +34,7 @@ namespace InsaneIO.Insane.AspNet.Identity.Model1.Entity
         public string ClientFriendlyName { get; set; } = null!;
         public string ClientOS { get; set; } = null!;
         public string ClientIP { get; set; } = null!;
+        //TODO. Agregar cuota de consumo
         public int ClientTimezone { get; set; }
         public decimal? ClientLatitude { get; set; }
         public decimal? ClientLongitude { get; set; }

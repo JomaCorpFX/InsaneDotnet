@@ -10,11 +10,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GithubActions", "GithubActi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InsaneIO.Insane", "InsaneIO.Insane\InsaneIO.Insane.csproj", "{AB49D2F1-26A6-451F-ADB6-4773304B11D5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InsaneIO.CryptSharp.SCrypt", "InsaneIO.CryptSharp.SCrypt\InsaneIO.CryptSharp.SCrypt.csproj", "{ED161D50-14E4-486C-A938-0A94840BC810}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InsaneIO.Insane.Tests", "InsaneIO.Insane.Tests\InsaneIO.Insane.Tests.csproj", "{9AE0A522-306A-4EAE-ABAC-7B05CB95366F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InsaneIO.Insane.Console", "InsaneIO.Insane.Console\InsaneIO.Insane.Console.csproj", "{7C106EEB-1B56-4E2B-BF92-35BA4D230E03}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InsaneIO.BlazorWebAssembly", "InsaneIO.BlazorWebAssembly\InsaneIO.BlazorWebAssembly.csproj", "{200D6C85-E9A8-4092-9DD4-62030ABAE4F9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InsaneIO.Insane.AspNetCore", "InsaneIO.Insane.AspNetCore\InsaneIO.Insane.AspNetCore.csproj", "{D14714BD-7A37-4D8A-8A24-2B03F52E7F73}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InsaneIO.Insane.WebApi", "InsaneIO.Insane.WebApi\InsaneIO.Insane.WebApi.csproj", "{F3F4B163-6A43-44A8-9BD3-666B846F0EC9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,10 +30,6 @@ Global
 		{AB49D2F1-26A6-451F-ADB6-4773304B11D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB49D2F1-26A6-451F-ADB6-4773304B11D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB49D2F1-26A6-451F-ADB6-4773304B11D5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ED161D50-14E4-486C-A938-0A94840BC810}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ED161D50-14E4-486C-A938-0A94840BC810}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ED161D50-14E4-486C-A938-0A94840BC810}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ED161D50-14E4-486C-A938-0A94840BC810}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9AE0A522-306A-4EAE-ABAC-7B05CB95366F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9AE0A522-306A-4EAE-ABAC-7B05CB95366F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9AE0A522-306A-4EAE-ABAC-7B05CB95366F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -38,6 +38,18 @@ Global
 		{7C106EEB-1B56-4E2B-BF92-35BA4D230E03}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C106EEB-1B56-4E2B-BF92-35BA4D230E03}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C106EEB-1B56-4E2B-BF92-35BA4D230E03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{200D6C85-E9A8-4092-9DD4-62030ABAE4F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{200D6C85-E9A8-4092-9DD4-62030ABAE4F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{200D6C85-E9A8-4092-9DD4-62030ABAE4F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{200D6C85-E9A8-4092-9DD4-62030ABAE4F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D14714BD-7A37-4D8A-8A24-2B03F52E7F73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D14714BD-7A37-4D8A-8A24-2B03F52E7F73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D14714BD-7A37-4D8A-8A24-2B03F52E7F73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D14714BD-7A37-4D8A-8A24-2B03F52E7F73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3F4B163-6A43-44A8-9BD3-666B846F0EC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3F4B163-6A43-44A8-9BD3-666B846F0EC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3F4B163-6A43-44A8-9BD3-666B846F0EC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3F4B163-6A43-44A8-9BD3-666B846F0EC9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

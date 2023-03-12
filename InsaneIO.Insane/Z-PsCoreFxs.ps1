@@ -856,10 +856,10 @@ function Update-ProjectBuildNumber {
 
 function Get-NextVersion {
     param (
-        [Parameter(Position = 0, Mandatory = $true, ParameterSetName = "Default")]
-        [Parameter(Position = 0, Mandatory = $true, ParameterSetName = "Major")]
-        [Parameter(Position = 0, Mandatory = $true, ParameterSetName = "Minor")]
-        [Parameter(Position = 0, Mandatory = $true, ParameterSetName = "Patch")]
+        [Parameter(Position = 0, Mandatory = $false, ParameterSetName = "Default")]
+        [Parameter(Position = 0, Mandatory = $false, ParameterSetName = "Major")]
+        [Parameter(Position = 0, Mandatory = $false, ParameterSetName = "Minor")]
+        [Parameter(Position = 0, Mandatory = $false, ParameterSetName = "Patch")]
         [System.String]
         $Version,
 
@@ -875,6 +875,9 @@ function Get-NextVersion {
         [Switch]
         $Patch
     )
+    if ([string]::IsNullOrWhiteSpace($Version)) {
+        $Version = "0.0.0"
+    }
     # check https://semver.org/
     $pattern = "^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$";
     $match = [System.Text.RegularExpressions.Regex]::Match($Version, $pattern, [System.Text.RegularExpressions.RegexOptions]::Multiline, [System.TimeSpan]::FromSeconds(1))
@@ -921,58 +924,71 @@ function Get-NextVersion {
 }
 
 function Update-ProjectVersion {
-    [CmdletBinding()]
     param (
-        [Parameter(Position = 0, ParameterSetName = "Default")]
-        [Parameter(Position = 0, ParameterSetName = "Major")]
-        [Parameter(Position = 0, ParameterSetName = "Minor")]
-        [Parameter(Position = 0, ParameterSetName = "Patch")]
+        [Parameter(ParameterSetName = "Major")]
+        [Parameter(ParameterSetName = "Minor")]
+        [Parameter(ParameterSetName = "Patch")]
+        [Parameter(ParameterSetName = "MajorR")]
+        [Parameter(ParameterSetName = "MinorR")]
+        [Parameter(ParameterSetName = "PatchR")]
+        [Parameter(ParameterSetName = "MajorP")]
+        [Parameter(ParameterSetName = "MinorP")]
+        [Parameter(ParameterSetName = "PatchP")]
         [System.String]
         $ProjectFileName = "*.csproj",
-
+    
         [Parameter(ParameterSetName = "Major", Mandatory = $true)]
+        [Parameter(ParameterSetName = "MajorR", Mandatory = $true)]
+        [Parameter(ParameterSetName = "MajorP", Mandatory = $true)]
         [Switch]
         $Major,
-
+    
         [Parameter(ParameterSetName = "Minor", Mandatory = $true)]
+        [Parameter(ParameterSetName = "MinorR", Mandatory = $true)]
+        [Parameter(ParameterSetName = "MinorP", Mandatory = $true)]
         [Switch]
         $Minor,
-
+    
         [Parameter(ParameterSetName = "Patch", Mandatory = $true)]
+        [Parameter(ParameterSetName = "PatchR", Mandatory = $true)]
+        [Parameter(ParameterSetName = "PatchP", Mandatory = $true)]
         [Switch]
         $Patch,
-
-        [System.String]
-        $Prerelease = [string]::Empty,
-
-        [System.String]
-        $Build = [string]::Empty,
-
+    
+        [Parameter(ParameterSetName = "ZeroP", Mandatory = $true)]
+        [Parameter(ParameterSetName = "MajorP", Mandatory = $true)]
+        [Parameter(ParameterSetName = "MinorP", Mandatory = $true)]
+        [Parameter(ParameterSetName = "PatchP", Mandatory = $true)]
         [Switch]
         $IsPrerelease,
-
+        
+        [Parameter(ParameterSetName = "ZeroR", Mandatory = $true)]
+        [Parameter(ParameterSetName = "MajorR", Mandatory = $true)]
+        [Parameter(ParameterSetName = "MinorR", Mandatory = $true)]
+        [Parameter(ParameterSetName = "PatchR", Mandatory = $true)]
         [Switch]
-        $Force,
-
+        $IsRelease,
+    
+        [System.String]
+        $Prerelease = [string]::Empty,
+        
+        [System.String]
+        $Build = [string]::Empty,
+    
         [Switch]
         $UpdateBuildNumber
     )
 
-    if ($PSBoundParameters.Verbose.IsPresent) {
-        Write-PrettyKeyValue "$(Get-VariableName $ProjectFileName)" "$ProjectFileName"
-        Write-PrettyKeyValue "$(Get-VariableName $Major)" "$($Major.IsPresent)"
-        Write-PrettyKeyValue "$(Get-VariableName $Minor)" "$($Minor.IsPresent)"
-        Write-PrettyKeyValue "$(Get-VariableName $Patch)" "$($Patch.IsPresent)"
-        Write-PrettyKeyValue "$(Get-VariableName $Force)" "$($Force.IsPresent)"
-        Write-PrettyKeyValue "$(Get-VariableName $Prerelease)" $(Get-StringCoalesce $Prerelease "<empty/null value>")
-        Write-PrettyKeyValue "$(Get-VariableName $Build)" $(Get-StringCoalesce $Build "<empty/null value>")
+    if ($PSBoundParameters.ContainsKey("Verbose") -and $PSBoundParameters["Verbose"]) {
+        Write-PrettyKeyValue "PSBoundParameters" $PSCmdlet.MyInvocation.InvocationName -NoNewLine
+        $PSBoundParameters | Format-Table
     }
-    return
     $ProjectFileName = Get-Item $ProjectFileName
     if (!(Test-Path $ProjectFileName -PathType Leaf) -or (!"$ProjectFileName".EndsWith(".csproj"))) {
         throw "Invalid file `"$ProjectFileName`"."
     }
 
+    
     [System.Xml.XmlDocument] $doc = [System.Xml.XmlDocument]::new()
     $doc.PreserveWhitespace = $true
     $doc.Load($ProjectFileName)
@@ -982,19 +998,19 @@ function Update-ProjectVersion {
     $isPrereleaseLabel = "IsPrerelease"
     $prereleaseNameLabel = "PrereleaseName"
     $buildSuffixLabel = "BuildSuffix"
+    $buildNumberLabel = "BuildNumber"
     $versionPrefixLabel = "VersionPrefix"
     $versionSuffixLabel = "VersionSuffix"
     $versionLabel = "Version"
-    $buildNumberLabel = "BuildNumber"
-    $defaultPrefix = "0.1.0"
+    $defaultPrefix = "0.0.1"
     $defaultBuildNumber = "0"
     $defaultPrereleaseName = "Preview"
     $defaultBuildSuffix = "Build"
 
 
     $isPrereleaseSwitch = $doc.DocumentElement.SelectSingleNode("$basePath/$isPrereleaseLabel") 
-    $prereleaseName = $doc.DocumentElement.SelectSingleNode("$basePath/$prereleaseLabel") 
-    $buildSuffix = $doc.DocumentElement.SelectSingleNode("$basePath/$buildLabel") 
+    $prereleaseName = $doc.DocumentElement.SelectSingleNode("$basePath/$prereleaseNameLabel") 
+    $buildSuffix = $doc.DocumentElement.SelectSingleNode("$basePath/$buildSuffixLabel") 
     $buildNumber = $doc.DocumentElement.SelectSingleNode("$basePath/$buildNumberLabel")
     $versionPrefix = $doc.DocumentElement.SelectSingleNode("$basePath/$versionPrefixLabel") 
     $versionSuffix = $doc.DocumentElement.SelectSingleNode("$basePath/$versionSuffixLabel") 
@@ -1023,14 +1039,15 @@ function Update-ProjectVersion {
         $prereleaseName.InnerText = $defaultPrereleaseName
         $doc.DocumentElement.SelectSingleNode($basePath).AppendChild($prereleaseName);
     }
-    $prereleaseName.InnerText = Get-StringCoalesce $Prerelease $defaultPrereleaseName
-
+    
     if ($null -eq $buildSuffix) {
         [System.Xml.XmlElement]$buildSuffix = $doc.CreateElement($buildSuffixLabel)
         $buildSuffix.InnerText = $defaultBuildSuffix
         $doc.DocumentElement.SelectSingleNode($basePath).AppendChild($buildSuffix);
     }
-    $buildSuffix.InnerText = Get-StringCoalesce $Build $defaultBuildSuffix
+
+    $prereleaseName.InnerText = $(Get-StringCoalesce $Prerelease $(Get-StringCoalesce $prereleaseName.InnerText $defaultPrereleaseName))
+    $buildSuffix.InnerText = $(Get-StringCoalesce $Build $(Get-StringCoalesce $buildSuffix.InnerText $defaultBuildSuffix))
 
     if ($null -eq $isPrereleaseSwitch) {
         [System.Xml.XmlElement]$isPrereleaseSwitch = $doc.CreateElement($isPrereleaseLabel)
@@ -1038,10 +1055,15 @@ function Update-ProjectVersion {
         $doc.DocumentElement.SelectSingleNode($basePath).AppendChild($isPrereleaseSwitch);
     }
 
-    if($IsPrerelease.IsPresent)
-    {
+    if ($IsPrerelease.IsPresent) {
         $isPrereleaseSwitch.InnerText = "true"
     }
+
+    if ($IsRelease.IsPresent) {
+        $isPrereleaseSwitch.InnerText = "false"
+    }
+
+    $isPrereleaseConfirmed = [bool]::Parse($isPrereleaseSwitch.InnerText)
 
     if ($UpdateBuildNumber.IsPresent) {
         $buildNumber.InnerText = [int]::Parse($buildNumber.InnerText) + 1
@@ -1053,8 +1075,7 @@ function Update-ProjectVersion {
         $doc.DocumentElement.SelectSingleNode($basePath).AppendChild($version);
         $doc.Save($ProjectFileName)
     }
-
-
+    
     $configured = $false
     if ($Major.IsPresent -and !$configured) {
         $versionPrefix.InnerText = Get-NextVersion -Version $versionPrefix.InnerText -Major 
@@ -1070,16 +1091,14 @@ function Update-ProjectVersion {
         $versionPrefix.InnerText = Get-NextVersion -Version $versionPrefix.InnerText -Patch
         $configured = $true
     }
-
     if (!$configured) {
         $versionPrefix.InnerText = Get-NextVersion -Version $versionPrefix.InnerText -Patch
     }
 
-    
-    $version.InnerText = "$($versionPrefix.InnerText)$($isPrereleaseSwitch.InnerText.Equals("true") ? "-$($prereleaseName.InnerText)-$($buildSuffix.InnerText).$(BuildNumber.InnerText)" : [string]::Empty )"
-   
+    $suffix = "$($prereleaseName.InnerText)-$($buildSuffix.InnerText).$($BuildNumber.InnerText)"
+    $versionSuffix.InnerText = $isPrereleaseConfirmed ? $suffix : [string]::Empty
+    $version.InnerText = "$($versionPrefix.InnerText)$($isPrereleaseConfirmed ? "-$suffix" : [string]::Empty)"
     $doc.Save($ProjectFileName)
-    
     return $version.InnerText
 }
 
@@ -1193,8 +1212,10 @@ function Set-LocalEnvironmentVariable {
             [System.String]
             $VarName
         )
-        Write-Host "Local Environment variable " -ForegroundColor DarkYellow -NoNewline
-        Write-Host "`"env:$VarName`" ➡  `"$((Get-Item env:$VarName).Value)`"" -ForegroundColor Yellow
+        WWrite-Host "Local Environment variable " -ForegroundColor DarkYellow -NoNewline
+        Write-Host "`"$VarName`"" -NoNewline -ForegroundColor Yellow
+        Write-Host "  ➡  " -ForegroundColor DarkYellow -NoNewline
+        Write-Host "`"$((Get-Item env:$VarName).Value)`"" -ForegroundColor Yellow
     }
 
     if ($Append.IsPresent) {
@@ -1228,8 +1249,10 @@ function Set-PersistentEnvironmentVariable {
             [System.String]
             $VarName
         )
-        Write-Host "Persistent Environment variable " -ForegroundColor DarkYellow -NoNewline
-        Write-Host "`"env:$VarName`" ➡  `"$((Get-Item env:$VarName).Value)`"" -ForegroundColor Yellow
+        Write-Host "Persistent Environment variable " -NoNewline -ForegroundColor DarkYellow
+        Write-Host "`"$VarName`"" -NoNewline -ForegroundColor Yellow
+        Write-Host "  ➡  " -NoNewline -ForegroundColor DarkYellow
+        Write-Host "`"$((Get-Item env:$VarName).Value)`"" -ForegroundColor Yellow
     }
 
     Set-LocalEnvironmentVariable -Name $Name -Value $Value -Append:$Append
@@ -1299,6 +1322,7 @@ function Set-JsonObject {
 }
 
 function Get-ItemTree() {
+    [CmdletBinding()]
     param (
         [Parameter()]
         [System.String]
@@ -1331,20 +1355,17 @@ function Get-ItemTree() {
     return  $result
 }
 
-function Remove-ItemTree {
+function Remove-ItemTree() {
+    [CmdletBinding()]
     param (
         [Parameter()]
         [System.String]
-        $Path, 
-
-        [Parameter()]
-        [switch]
-        $ForceDebug
+        $Path
     )
     (Get-ItemTree -Path $Path -Force -IncludePath) | ForEach-Object {
         Remove-Item "$($_.PSPath)" -Force
-        if ($PSBoundParameters.Debug.IsPresent) {
-            Write-Debug -Message "Deleted: $($_.PSPath)" -Debug:$ForceDebug
+        if ($PSBoundParameters.Verbose.IsPresent) {
+            Write-InfoYellow -Information "Deleted: $($_.PSPath)"
         }
     }
 }
@@ -1442,6 +1463,7 @@ function Get-TextEditor {
 
     throw "No text editor was found."
 }
+
 function Get-ProjectUserSecretsFilename {
     param (
         [string]
@@ -1512,6 +1534,32 @@ function Show-ProjectUserSecrets {
 
 }
 
+# █████ Extras █████
+
+class BotanVersionSet : System.Management.Automation.IValidateSetValuesGenerator {
+    [String[]] GetValidValues() {
+        return @("2.19.3")
+    }
+}
+
+
+function Install-BotanLibrary {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [ValidateSet([BotanVersionSet], IgnoreCase = $false, ErrorMessage = "Value `"{0}`" is invalid. Try one of: `"{1}`"")]
+        [string]
+        $Version
+    )
+    $folder = "Botan-$Version"
+    $filename = "$folder.tar.xz"
+    $botanUri = "https://botan.randombit.net/releases/$fileName"
+    Invoke-WebRequest -Uri "$botanUri" -OutFile $filename -Headers @{"Cache-Control" = "no-cache" } | Out-Null
+    Write-Host "$Version"
+    #& "$(Select-ValueByPlatform -WindowsValue "tar -xvf $filename" -LinuxValue "" -MacOSValue "")"
+}
+
+
 Set-GlobalConstant -Name "X_TEMP_DIR_NAME" -Value ".X-TEMP"
 Set-GlobalConstant -Name "X_TEMP_DIR" -Value "$(Get-UserHome)/$X_TEMP_DIR_NAME"
 
@@ -1520,3 +1568,5 @@ Set-GlobalConstant -Name "POSTGRESQL_PROVIDER" -Value "PostgreSql"
 Set-GlobalConstant -Name "MYSQL_PROVIDER" -Value "MySql"
 Set-GlobalConstant -Name "ORACLE_PROVIDER" -Value "Oracle"
 Set-GlobalConstant -Name "ALL_PROVIDER" -Value "All"
+
+Set-GlobalConstant -Name "7ZIP_URI" -Value "https://www.7-zip.org/a/7z2201-x64.exe"

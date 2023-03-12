@@ -1,4 +1,4 @@
-﻿using InsaneIO.Insane.Cryptography;
+﻿using InsaneIO.Insane.Serialization;
 using System.Runtime.Versioning;
 using System.Text.Json.Nodes;
 

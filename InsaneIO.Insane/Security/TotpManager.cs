@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using InsaneIO.Insane.Serialization;
 
 namespace InsaneIO.Insane.Security
 {

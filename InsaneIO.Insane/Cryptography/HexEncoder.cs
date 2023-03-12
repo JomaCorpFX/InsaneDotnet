@@ -1,4 +1,4 @@
-﻿using InsaneIO.Insane.Cryptography;
+﻿using InsaneIO.Insane.Serialization;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
@@ -30,7 +30,7 @@ namespace InsaneIO.Insane.Cryptography
             }
         }
 
-        public static readonly HexEncoder DefaultInstance = new HexEncoder();
+        public static readonly HexEncoder DefaultInstance = new();
         public bool ToUpper { get; init; } = false;
 
 

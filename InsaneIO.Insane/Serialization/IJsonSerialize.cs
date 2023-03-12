@@ -6,10 +6,10 @@ using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
-namespace InsaneIO.Insane.Cryptography
+namespace InsaneIO.Insane.Serialization
 {
     [RequiresPreviewFeatures]
-    public interface IJsonSerialize: IBaseSerialize
+    public interface IJsonSerialize : IBaseSerialize
     {
         public JsonObject ToJsonObject();
         public string Serialize();
