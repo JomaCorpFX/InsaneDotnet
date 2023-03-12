@@ -25,6 +25,7 @@ internal class Program
             Issuer = "InsaneIO",
             Label = "insane@insaneio.com"
         };
+
         var serialized = manager.Serialize();
         manager = TotpManager.Deserialize(serialized);
         Console.WriteLine(manager.ToOtpUri());

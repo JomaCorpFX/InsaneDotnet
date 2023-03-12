@@ -67,7 +67,7 @@ namespace InsaneIO.Insane.EntityFrameworkCore
 
         public virtual TContext CreateDbContext(string[] args)
         {
-            ConfigureSettingsParameters parameters = new ConfigureSettingsParameters()
+            ConfigureSettingsParameters parameters = new()
             {
                 SecretTypes = new List<Type> { }
             };
@@ -84,7 +84,7 @@ namespace InsaneIO.Insane.EntityFrameworkCore
                                                       && !a.StartsWith($"{nameof(ConfigureSettingsParameters.ConfigurationPath)}=")
                                                       && !a.StartsWith($"{nameof(ConfigureSettingsParameters.SecretTypes)}=")).ToList();
 
-            DbContextSettings dbContextSettings = new DbContextSettings();
+            DbContextSettings dbContextSettings = new();
             SettingsConfigureAction.Invoke(dbContextSettings, parameters);
 
             DbContextOptionsBuilder<TContext> builder = dbContextSettings.ConfigureDbContextProviderOptions(DbContextOptionsBuilderAction, DbContextOptionsBuilderActionFlavors);

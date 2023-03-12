@@ -1,4 +1,5 @@
 ﻿using InsaneIO.Insane.Extensions;
+using InsaneIO.Insane.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;

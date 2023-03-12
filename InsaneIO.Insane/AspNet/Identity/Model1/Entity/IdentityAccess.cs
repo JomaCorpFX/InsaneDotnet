@@ -19,12 +19,12 @@ namespace InsaneIO.Insane.AspNet.Identity.Model1.Entity
         where TRecoveryCode : IdentityUserRecoveryCodeBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TRecoveryCode, TLog>
         where TLog : IdentityLogBase<TKey, TUser, TRole, TAccess, TUserClaim, TPlatform, TSession, TRecoveryCode, TLog>
     {
-        public TKey Id { get; set; } = default(TKey)!;
+        public TKey Id { get; set; } = default!;
 
         [NotMapped]
         public string UniqueId { get; set; } = null!;
-        public TKey UserId { get; set; } = default(TKey)!;
-        public TKey RoleId { get; set; } = default(TKey)!;
+        public TKey UserId { get; set; } = default!;
+        public TKey RoleId { get; set; } = default!;
         public DateTimeOffset CreatedAt { get; set; }
         public bool Active { get; set; }
         public bool Enabled { get; set; }

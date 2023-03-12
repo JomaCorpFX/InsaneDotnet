@@ -1,28 +1,57 @@
+[CmdletBinding()]
 param (
-    [Parameter(Position = 0, ParameterSetName = "Default")]
-    [Parameter(Position = 0, ParameterSetName = "Major")]
-    [Parameter(Position = 0, ParameterSetName = "Minor")]
-    [Parameter(Position = 0, ParameterSetName = "Patch")]
+    [Parameter(ParameterSetName = "Zero")]
+    [Parameter(ParameterSetName = "ZeroR")]
+    [Parameter(ParameterSetName = "ZeroP")]
+    [Parameter( ParameterSetName = "Major")]
+    [Parameter( ParameterSetName = "Minor")]
+    [Parameter( ParameterSetName = "Patch")]
+    [Parameter( ParameterSetName = "MajorR")]
+    [Parameter( ParameterSetName = "MinorR")]
+    [Parameter( ParameterSetName = "PatchR")]
+    [Parameter( ParameterSetName = "MajorP")]
+    [Parameter( ParameterSetName = "MinorP")]
+    [Parameter( ParameterSetName = "PatchP")]
     [System.String]
     $ProjectFileName = "*.csproj",
 
     [Parameter(ParameterSetName = "Major", Mandatory = $true)]
+    [Parameter(ParameterSetName = "MajorR", Mandatory = $true)]
+    [Parameter(ParameterSetName = "MajorP", Mandatory = $true)]
     [Switch]
     $Major,
 
     [Parameter(ParameterSetName = "Minor", Mandatory = $true)]
+    [Parameter(ParameterSetName = "MinorR", Mandatory = $true)]
+    [Parameter(ParameterSetName = "MinorP", Mandatory = $true)]
     [Switch]
     $Minor,
 
     [Parameter(ParameterSetName = "Patch", Mandatory = $true)]
+    [Parameter(ParameterSetName = "PatchR", Mandatory = $true)]
+    [Parameter(ParameterSetName = "PatchP", Mandatory = $true)]
     [Switch]
     $Patch,
 
-    [System.String]
-    $Suffix = [string]::Empty,
-
+    [Parameter(ParameterSetName = "ZeroP", Mandatory = $true)]
+    [Parameter(ParameterSetName = "MajorP", Mandatory = $true)]
+    [Parameter(ParameterSetName = "MinorP", Mandatory = $true)]
+    [Parameter(ParameterSetName = "PatchP", Mandatory = $true)]
     [Switch]
-    $Force,
+    $IsPrerelease,
+    
+    [Parameter(ParameterSetName = "ZeroR", Mandatory = $true)]
+    [Parameter(ParameterSetName = "MajorR", Mandatory = $true)]
+    [Parameter(ParameterSetName = "MinorR", Mandatory = $true)]
+    [Parameter(ParameterSetName = "PatchR", Mandatory = $true)]
+    [Switch]
+    $IsRelease,
+
+    [System.String]
+    $Prerelease = [string]::Empty,
+    
+    [System.String]
+    $Build = [string]::Empty,
 
     [Switch]
     $UpdateBuildNumber
@@ -30,20 +59,36 @@ param (
 
 $ErrorActionPreference = "Stop"
 Import-Module -Name "$(Get-Item "./Z-PsCoreFxs.ps1")" -Force -NoClobber
-$verbosePresent = $PSBoundParameters.ContainsKey("Verbose")
+
+[System.Collections.Hashtable]$params = new-object System.Collections.Hashtable
+$params.Add( $(Get-VariableName $ProjectFileName) , $ProjectFileName)
+if ($PSBoundParameters.ContainsKey($(Get-VariableName $Verbose))) {
+    $params.Add($(Get-VariableName $Verbose) , $true)
+}
+$params.Add( $(Get-VariableName $Build) , $Build)
+$params.Add( $(Get-VariableName $Prerelease) , $Prerelease)
+$params.Add($(Get-VariableName $UpdateBuildNumber) , $UpdateBuildNumber.IsPresent)
+
+if ($IsRelease.IsPresent) {
+    $params.Add($(Get-VariableName $IsRelease) , $true)
+}
+
+if ($IsPrerelease.IsPresent) {
+    $params.Add($(Get-VariableName $IsPrerelease) , $true)
+}
+
 if ($Major.IsPresent) {
-    Update-ProjectVersion -ProjectFilename $ProjectfileName -Major -Force:$Force -Suffix $Suffix -UpdateBuildNumber:$UpdateBuildNumber -Verbose:$verbosePresent
-    return
+    $params.Add($(Get-VariableName $Major) , $true)
 }
 
 if ($Minor.IsPresent) {
-    Update-ProjectVersion -ProjectFilename $ProjectfileName -Minor -Force:$Force -Suffix $Suffix -UpdateBuildNumber:$UpdateBuildNumber -Verbose:$verbosePresent
-    return
+    $params.Add($(Get-VariableName $Minor) , $true)
 }
 
-if ($Patch.IsPresent) {
-    Update-ProjectVersion -ProjectFilename $ProjectfileName -Patch -Force:$Force -Suffix $Suffix -UpdateBuildNumber:$UpdateBuildNumber -Verbose:$verbosePresent
-    return
+if ($Patch.IsPresent -or (!$Major.IsPresent -and !$Minor.IsPresent)) {
+    $params.Add($(Get-VariableName $Patch) , $true)
 }
 
-Update-ProjectVersion -ProjectFilename $ProjectfileName -Patch -Force:$Force -Suffix $Suffix -UpdateBuildNumber:$UpdateBuildNumber -Verbose:$verbosePresent
+Update-ProjectVersion @params
+
+

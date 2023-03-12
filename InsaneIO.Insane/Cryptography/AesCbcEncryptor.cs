@@ -1,4 +1,4 @@
-﻿using InsaneIO.Insane.Cryptography;
+﻿using InsaneIO.Insane.Serialization;
 using System.Runtime.Versioning;
 using System.Security.Cryptography;
 using System.Text.Json;
@@ -6,7 +6,7 @@ using System.Text.Json.Nodes;
 
 namespace InsaneIO.Insane.Cryptography
 {
-     
+
 
     [RequiresPreviewFeatures]
     public class AesCbcEncryptor : IEncryptor, IEncryptorJsonSerialize

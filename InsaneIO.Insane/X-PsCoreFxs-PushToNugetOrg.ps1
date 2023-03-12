@@ -28,4 +28,14 @@ dotnet pack $ProjectFileName --configuration $Configuration
 
 $nupkg = Get-Item "$($ProjectFileName | Split-Path)/bin/$Configuration/*.nupkg"
 Write-Host "Package: $nupkg"
-dotnet nuget push "$nupkg" --api-key "$([string]::IsNullOrWhiteSpace($NugetPushApiKey)? ([string]::IsNullOrWhiteSpace($ApiKeyEnvVariableName)? $env:NUGETORG_PUSH_API_KEY : (Get-Item "env:$ApiKeyEnvVariableName").Value) : $NugetPushApiKey)" --source "https://api.nuget.org/v3/index.json" --no-symbols
+
+$ApiKeyEnvVariableName = Get-StringCoalesce $ApiKeyEnvVariableName "Unknown-$([Guid]::NewGuid())"
+$ApiKeyEnvVariableValue = "$(Get-Item "env:$ApiKeyEnvVariableName" -ErrorAction Ignore)"
+$DefaultValue = "$($env:NUGETORG_PUSH_API_KEY)"
+
+$NugetPushApiKey = Get-StringCoalesce $NugetPushApiKey (Get-StringCoalesce  $ApiKeyEnvVariableValue (Get-StringCoalesce $DefaultValue))
+
+Write-Host $NugetPushApiKey
+#$NugetPushApiKey = Get-StringCoalesce $NugetPushApiKey (Get-Item "env:")
+
+#dotnet nuget push "$nupkg" --api-key "$([string]::IsNullOrWhiteSpace($NugetPushApiKey)? ([string]::IsNullOrWhiteSpace($ApiKeyEnvVariableName)? ($env:NUGETORG_PUSH_API_KEY ?? [string]::Empty ) : (Get-Item "env:$ApiKeyEnvVariableName").Value) : $NugetPushApiKey)" --source "https://api.nuget.org/v3/index.json" --no-symbols
