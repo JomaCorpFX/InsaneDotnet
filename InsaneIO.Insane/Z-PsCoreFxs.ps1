@@ -58,9 +58,15 @@ function Get-StringCoalesce {
         $Value,
 
         [string]
-        [Parameter(Mandatory = $true)]
-        $Value2
+        [Parameter()]
+        $Value2,
+
+        [switch]
+        $Force
     )
+    if (!$Force.IsPresent -and [string]::IsNullOrWhiteSpace($Value2)) {
+        throw [System.ArgumentException]::new("$(Get-VariableName $Value2) value can't be null or whitespace.")
+    }
     return [string]::IsNullOrWhiteSpace($value) ? $Value2 : $Value
 }
 
@@ -856,12 +862,12 @@ function Update-ProjectBuildNumber {
 
 function Get-NextVersion {
     param (
-        [Parameter(Position = 0, Mandatory = $false, ParameterSetName = "Default")]
-        [Parameter(Position = 0, Mandatory = $false, ParameterSetName = "Major")]
-        [Parameter(Position = 0, Mandatory = $false, ParameterSetName = "Minor")]
-        [Parameter(Position = 0, Mandatory = $false, ParameterSetName = "Patch")]
+        [Parameter(Position = 0, ParameterSetName = "Default")]
+        [Parameter(Position = 0, ParameterSetName = "Major")]
+        [Parameter(Position = 0, ParameterSetName = "Minor")]
+        [Parameter(Position = 0, ParameterSetName = "Patch")]
         [System.String]
-        $Version,
+        $Version = [string]::Empty,
 
         [Parameter(Mandatory = $True, ParameterSetName = "Major")]
         [Switch]
@@ -885,6 +891,8 @@ function Get-NextVersion {
         $majorValue = $match.Groups[1].Value.Trim()
         $minorValue = $match.Groups[2].Value.Trim()
         $patchValue = $match.Groups[3].Value.Trim()
+        $OldVersionValue = "$majorValue.$minorValue.$patchValue"
+        
 
         $configured = $false
         if ($Major.IsPresent) {
@@ -910,14 +918,9 @@ function Get-NextVersion {
         }
 
        
-        $Version = "$majorValue.$minorValue.$patchValue".Trim()
-        $match = [System.Text.RegularExpressions.Regex]::Match($Version, $pattern, [System.Text.RegularExpressions.RegexOptions]::Multiline, [System.TimeSpan]::FromSeconds(1))
-        if ($match.Success) {
-            return $Version
-        }
-        else {
-            throw "Invalid resulting version format. ""$Version"". Check format in https://semver.org/"
-        }
+        $NewVersionValue = "$majorValue.$minorValue.$patchValue".Trim()
+
+        return $version.Replace($OldVersionValue, $NewVersionValue)
     }
 
     throw "Invalid version format. Check format in https://semver.org/"
@@ -973,19 +976,20 @@ function Update-ProjectVersion {
         $Prerelease = [string]::Empty,
         
         [System.String]
-        $Build = [string]::Empty,
-    
+        $Build = [string]::Empty, 
+
         [Switch]
-        $UpdateBuildNumber
+        $Force
     )
 
     if ($PSBoundParameters.ContainsKey("Verbose") -and $PSBoundParameters["Verbose"]) {
         Write-PrettyKeyValue "PSBoundParameters" $PSCmdlet.MyInvocation.InvocationName -NoNewLine
         $PSBoundParameters | Format-Table
     }
+
     $ProjectFileName = Get-Item $ProjectFileName
-    if (!(Test-Path $ProjectFileName -PathType Leaf) -or (!"$ProjectFileName".EndsWith(".csproj"))) {
-        throw "Invalid file `"$ProjectFileName`"."
+    if (($null -eq $ProjectFileName) -or !(Test-Path $ProjectFileName -PathType Leaf) -or (!"$ProjectFileName".EndsWith(".csproj"))) {
+        throw "Invalid project filename `"$ProjectFileName`". Not found."
     }
 
     
@@ -1002,72 +1006,70 @@ function Update-ProjectVersion {
     $versionPrefixLabel = "VersionPrefix"
     $versionSuffixLabel = "VersionSuffix"
     $versionLabel = "Version"
-    $defaultPrefix = "0.0.1"
+
+    $defaultPrefix = "0.0.0"
     $defaultBuildNumber = "0"
     $defaultPrereleaseName = "Preview"
     $defaultBuildSuffix = "Build"
 
-
-    $isPrereleaseSwitch = $doc.DocumentElement.SelectSingleNode("$basePath/$isPrereleaseLabel") 
-    $prereleaseName = $doc.DocumentElement.SelectSingleNode("$basePath/$prereleaseNameLabel") 
-    $buildSuffix = $doc.DocumentElement.SelectSingleNode("$basePath/$buildSuffixLabel") 
-    $buildNumber = $doc.DocumentElement.SelectSingleNode("$basePath/$buildNumberLabel")
-    $versionPrefix = $doc.DocumentElement.SelectSingleNode("$basePath/$versionPrefixLabel") 
-    $versionSuffix = $doc.DocumentElement.SelectSingleNode("$basePath/$versionSuffixLabel") 
+    $isPrereleaseNode = $doc.DocumentElement.SelectSingleNode("$basePath/$isPrereleaseLabel") 
+    $prereleaseNameNode = $doc.DocumentElement.SelectSingleNode("$basePath/$prereleaseNameLabel") 
+    $buildSuffixNode = $doc.DocumentElement.SelectSingleNode("$basePath/$buildSuffixLabel") 
+    $buildNumberNode = $doc.DocumentElement.SelectSingleNode("$basePath/$buildNumberLabel")
+    $versionPrefixNode = $doc.DocumentElement.SelectSingleNode("$basePath/$versionPrefixLabel") 
+    $versionSuffixNode = $doc.DocumentElement.SelectSingleNode("$basePath/$versionSuffixLabel") 
     $version = $doc.DocumentElement.SelectSingleNode("$basePath/$versionLabel")
 
-    if ($null -eq $versionPrefix) {
-        [System.Xml.XmlElement]$versionPrefix = $doc.CreateElement($versionPrefixLabel)
-        $versionPrefix.InnerText = $defaultPrefix
-        $doc.DocumentElement.SelectSingleNode($basePath).AppendChild($versionPrefix);
+    if ($null -eq $versionSuffixNode) {
+        [System.Xml.XmlElement]$versionSuffixNode = $doc.CreateElement($versionSuffixLabel)
+        $versionSuffixNode.InnerText = [string]::Empty
+        $doc.DocumentElement.SelectSingleNode($basePath).AppendChild($versionSuffixNode);
     }
 
-    if ($null -eq $versionSuffix) {
-        [System.Xml.XmlElement]$versionSuffix = $doc.CreateElement($versionSuffixLabel)
-        $versionSuffix.InnerText = $Suffix
-        $doc.DocumentElement.SelectSingleNode($basePath).AppendChild($versionSuffix);
+    if ($null -eq $versionPrefixNode) {
+        [System.Xml.XmlElement]$versionPrefixNode = $doc.CreateElement($versionPrefixLabel)
+        $versionPrefixNode.InnerText = $defaultPrefix
+        $doc.DocumentElement.SelectSingleNode($basePath).AppendChild($versionPrefixNode);
     }
     
-    if ($null -eq $buildNumber) {
-        [System.Xml.XmlElement]$buildNumber = $doc.CreateElement($buildNumberLabel)
-        $buildNumber.InnerText = $defaultBuildNumber
-        $doc.DocumentElement.SelectSingleNode($basePath).AppendChild($buildNumber);
+    if ($null -eq $buildNumberNode) {
+        [System.Xml.XmlElement]$buildNumberNode = $doc.CreateElement($buildNumberLabel)
+        $buildNumberNode.InnerText = $defaultBuildNumber
+        $doc.DocumentElement.SelectSingleNode($basePath).AppendChild($buildNumberNode);
     }
 
-    if ($null -eq $prereleaseName) {
-        [System.Xml.XmlElement]$prereleaseName = $doc.CreateElement($prereleaseNameLabel)
-        $prereleaseName.InnerText = $defaultPrereleaseName
-        $doc.DocumentElement.SelectSingleNode($basePath).AppendChild($prereleaseName);
+    if ($null -eq $prereleaseNameNode) {
+        [System.Xml.XmlElement]$prereleaseNameNode = $doc.CreateElement($prereleaseNameLabel)
+        $prereleaseNameNode.InnerText = $defaultPrereleaseName
+        $doc.DocumentElement.SelectSingleNode($basePath).AppendChild($prereleaseNameNode);
     }
     
-    if ($null -eq $buildSuffix) {
-        [System.Xml.XmlElement]$buildSuffix = $doc.CreateElement($buildSuffixLabel)
-        $buildSuffix.InnerText = $defaultBuildSuffix
-        $doc.DocumentElement.SelectSingleNode($basePath).AppendChild($buildSuffix);
+    if ($null -eq $buildSuffixNode) {
+        [System.Xml.XmlElement]$buildSuffixNode = $doc.CreateElement($buildSuffixLabel)
+        $buildSuffixNode.InnerText = $defaultBuildSuffix
+        $doc.DocumentElement.SelectSingleNode($basePath).AppendChild($buildSuffixNode);
     }
 
-    $prereleaseName.InnerText = $(Get-StringCoalesce $Prerelease $(Get-StringCoalesce $prereleaseName.InnerText $defaultPrereleaseName))
-    $buildSuffix.InnerText = $(Get-StringCoalesce $Build $(Get-StringCoalesce $buildSuffix.InnerText $defaultBuildSuffix))
-
-    if ($null -eq $isPrereleaseSwitch) {
-        [System.Xml.XmlElement]$isPrereleaseSwitch = $doc.CreateElement($isPrereleaseLabel)
-        $isPrereleaseSwitch.InnerText = "false"
-        $doc.DocumentElement.SelectSingleNode($basePath).AppendChild($isPrereleaseSwitch);
+    if ($null -eq $isPrereleaseNode) {
+        [System.Xml.XmlElement]$isPrereleaseNode = $doc.CreateElement($isPrereleaseLabel)
+        $isPrereleaseNode.InnerText = "false"
+        $doc.DocumentElement.SelectSingleNode($basePath).AppendChild($isPrereleaseNode);
     }
 
+    $prereleaseNameNode.InnerText = $(Get-StringCoalesce $Prerelease $(Get-StringCoalesce $prereleaseNameNode.InnerText $defaultPrereleaseName))
+    $buildSuffixNode.InnerText = $(Get-StringCoalesce $Build $(Get-StringCoalesce $buildSuffixNode.InnerText $defaultBuildSuffix))
+
+    $isPrereleaseConfirmed = $false
     if ($IsPrerelease.IsPresent) {
-        $isPrereleaseSwitch.InnerText = "true"
+        $isPrereleaseNode.InnerText = "true"
+        $isPrereleaseConfirmed = $true
     }
 
     if ($IsRelease.IsPresent) {
-        $isPrereleaseSwitch.InnerText = "false"
+        $prereleaseNameNode.InnerText = $defaultPrereleaseName
+        $isPrereleaseNode.InnerText = "false"
     }
 
-    $isPrereleaseConfirmed = [bool]::Parse($isPrereleaseSwitch.InnerText)
-
-    if ($UpdateBuildNumber.IsPresent) {
-        $buildNumber.InnerText = [int]::Parse($buildNumber.InnerText) + 1
-    }
 
     if ($null -eq $version) {
         [System.Xml.XmlElement]$version = $doc.CreateElement($versionLabel)
@@ -1075,29 +1077,30 @@ function Update-ProjectVersion {
         $doc.DocumentElement.SelectSingleNode($basePath).AppendChild($version);
         $doc.Save($ProjectFileName)
     }
-    
-    $configured = $false
-    if ($Major.IsPresent -and !$configured) {
-        $versionPrefix.InnerText = Get-NextVersion -Version $versionPrefix.InnerText -Major 
-        $configured = $true
+    if ($Force.IsPresent -or (!$isPrereleaseConfirmed) ) {
+        $configured = $false
+        if ($Major.IsPresent -and !$configured) {
+            $versionPrefixNode.InnerText = Get-NextVersion -Version $versionPrefixNode.InnerText -Major 
+            $configured = $true
+        }
+
+        if ($Minor.IsPresent -and !$configured) {
+            $versionPrefixNode.InnerText = Get-NextVersion -Version $versionPrefixNode.InnerText -Minor 
+            $configured = $true
+        }
+
+        if ($Patch.IsPresent -and !$configured) {
+            $versionPrefixNode.InnerText = Get-NextVersion -Version $versionPrefixNode.InnerText -Patch
+            $configured = $true
+        }
+        if (!$configured) {
+            $versionPrefixNode.InnerText = Get-NextVersion -Version $versionPrefixNode.InnerText -Patch
+        }
     }
 
-    if ($Minor.IsPresent -and !$configured) {
-        $versionPrefix.InnerText = Get-NextVersion -Version $versionPrefix.InnerText -Minor 
-        $configured = $true
-    }
-
-    if ($Patch.IsPresent -and !$configured) {
-        $versionPrefix.InnerText = Get-NextVersion -Version $versionPrefix.InnerText -Patch
-        $configured = $true
-    }
-    if (!$configured) {
-        $versionPrefix.InnerText = Get-NextVersion -Version $versionPrefix.InnerText -Patch
-    }
-
-    $suffix = "$($prereleaseName.InnerText)-$($buildSuffix.InnerText).$($BuildNumber.InnerText)"
-    $versionSuffix.InnerText = $isPrereleaseConfirmed ? $suffix : [string]::Empty
-    $version.InnerText = "$($versionPrefix.InnerText)$($isPrereleaseConfirmed ? "-$suffix" : [string]::Empty)"
+    $suffix = "$($prereleaseNameNode.InnerText)-$([System.DateTimeOffset]::Now.ToString("yyyyMMddHHmmssfff"))-$($buildSuffixNode.InnerText).$($buildNumberNode.InnerText)"
+    $versionSuffixNode.InnerText = $isPrereleaseConfirmed ? $suffix : [string]::Empty
+    $version.InnerText = "$($versionPrefixNode.InnerText)$($isPrereleaseConfirmed ? "-$suffix" : [string]::Empty)"
     $doc.Save($ProjectFileName)
     return $version.InnerText
 }
@@ -1157,7 +1160,6 @@ function Test-LastExitCode {
     if ($NoThrowError.IsPresent) {
         return $true
     }
-
 }
     
 function Select-ValueByPlatform {
@@ -1364,7 +1366,7 @@ function Remove-ItemTree() {
     )
     (Get-ItemTree -Path $Path -Force -IncludePath) | ForEach-Object {
         Remove-Item "$($_.PSPath)" -Force
-        if ($PSBoundParameters.Verbose.IsPresent) {
+        if ($PSBoundParameters.ContainsKey("Verbose")) {
             Write-InfoYellow -Information "Deleted: $($_.PSPath)"
         }
     }
@@ -1411,8 +1413,7 @@ function Set-GitRepository {
     }
     finally {
         Pop-Location
-    }
-    
+    } 
 }
 
 function Get-ProjectSecretsId {
@@ -1534,6 +1535,29 @@ function Show-ProjectUserSecrets {
 
 }
 
+function Get-GitRepositoryRemoteUrl {
+    param (
+        [string]
+        $Path = [string]::Empty
+    )
+
+    if([string]::IsNullOrWhiteSpace($Path))
+    {
+        $Path = "$(Get-Location)"
+    }
+    $result = [string]::Empty
+    try {
+        Push-Location $Path
+        return "$(Split-Path -Path (git remote get-url origin) -Leaf -ErrorAction Ignore)"
+    }
+    catch{
+        return $result
+    }
+    finally {
+        Pop-Location
+    }
+}
+
 # █████ Extras █████
 
 class BotanVersionSet : System.Management.Automation.IValidateSetValuesGenerator {
@@ -1560,7 +1584,7 @@ function Install-BotanLibrary {
 }
 
 
-Set-GlobalConstant -Name "X_TEMP_DIR_NAME" -Value ".X-TEMP"
+Set-GlobalConstant -Name "X_TEMP_DIR_NAME" -Value ".PsCoreFxsTemp"
 Set-GlobalConstant -Name "X_TEMP_DIR" -Value "$(Get-UserHome)/$X_TEMP_DIR_NAME"
 
 Set-GlobalConstant -Name "SQLSERVER_PROVIDER" -Value "SqlServer"
@@ -1570,3 +1594,4 @@ Set-GlobalConstant -Name "ORACLE_PROVIDER" -Value "Oracle"
 Set-GlobalConstant -Name "ALL_PROVIDER" -Value "All"
 
 Set-GlobalConstant -Name "7ZIP_URI" -Value "https://www.7-zip.org/a/7z2201-x64.exe"
+Set-GlobalConstant -Name "NUGET_ORG_URI" -Value "https://api.nuget.org/v3/index.json"

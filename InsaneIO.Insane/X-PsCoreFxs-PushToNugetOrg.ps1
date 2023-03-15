@@ -6,11 +6,15 @@ param (
     [ValidateSet("Release", "Debug")]
     $Configuration = "Release",
 
+    [System.String]
+    [ValidateSet("Default", "EnvironmentVariable", "ApiKeyValue")]
+    $ApiKeyType = "Default",
+
     [string]
     $NugetPushApiKey = [string]::Empty,
 
-    [string]
-    $ApiKeyEnvVariableName = [string]::Empty
+    [switch]
+    $NoSymbols
 )
 
 $ErrorActionPreference = "Stop"
@@ -21,21 +25,42 @@ if (!(Test-Path $ProjectFilename -PathType Leaf) -or (!"$ProjectFilename".EndsWi
     throw "Invalid file `"$ProjectFilename`"."
 }
 
-Remove-ItemTree -Path "$($ProjectFileName | Split-Path)/bin/$Configuration" -ForceDebug -ErrorAction Ignore
-
+Remove-ItemTree -Path "$($ProjectFileName | Split-Path)/bin/$Configuration" -ErrorAction Ignore
 dotnet build $ProjectFileName --configuration $Configuration
+Test-LastExitCode
 dotnet pack $ProjectFileName --configuration $Configuration
+Test-LastExitCode
 
 $nupkg = Get-Item "$($ProjectFileName | Split-Path)/bin/$Configuration/*.nupkg"
 Write-Host "Package: $nupkg"
 
-$ApiKeyEnvVariableName = Get-StringCoalesce $ApiKeyEnvVariableName "Unknown-$([Guid]::NewGuid())"
-$ApiKeyEnvVariableValue = "$(Get-Item "env:$ApiKeyEnvVariableName" -ErrorAction Ignore)"
-$DefaultValue = "$($env:NUGETORG_PUSH_API_KEY)"
+switch ($ApiKeyType) {
+    ("EnvironmentVariable") {  
+        $NugetPushApiKey = Get-StringCoalesce $NugetPushApiKey "Unknown-$([Guid]::NewGuid())"
+        $NugetPushApiKey = "$(Get-Item "env:$NugetPushApiKey" -ErrorAction Ignore)"
+    }
 
-$NugetPushApiKey = Get-StringCoalesce $NugetPushApiKey (Get-StringCoalesce  $ApiKeyEnvVariableValue (Get-StringCoalesce $DefaultValue))
+    ("ApiKeyValue") {  
 
-Write-Host $NugetPushApiKey
-#$NugetPushApiKey = Get-StringCoalesce $NugetPushApiKey (Get-Item "env:")
+    }
 
-#dotnet nuget push "$nupkg" --api-key "$([string]::IsNullOrWhiteSpace($NugetPushApiKey)? ([string]::IsNullOrWhiteSpace($ApiKeyEnvVariableName)? ($env:NUGETORG_PUSH_API_KEY ?? [string]::Empty ) : (Get-Item "env:$ApiKeyEnvVariableName").Value) : $NugetPushApiKey)" --source "https://api.nuget.org/v3/index.json" --no-symbols
+    ("Default")
+    {
+        $NugetPushApiKey = "$($env:NUGETORG_PUSH_API_KEY)"
+    }
+
+    Default {
+        $NugetPushApiKey = [System.Environment]::Empty
+    }
+}
+
+
+if (![string]::IsNullOrWhiteSpace($NugetPushApiKey)) {
+    [string] $symbols = $NoSymbols.IsPresent ? "--no-symbols" : [string]::Empty
+    Write-Host $symbols
+    dotnet nuget push "$nupkg" --api-key "$NugetPushApiKey" --source "$NUGET_ORG_URI" $symbols
+    Test-LastExitCode
+    return
+}
+
+throw "No ""$NUGET_ORG_URI"" api key found."
