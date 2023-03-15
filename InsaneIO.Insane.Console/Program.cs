@@ -19,21 +19,22 @@ internal class Program
     {
         Console.WriteLine("Hello, World!");
 
-        TotpManager manager = new()
-        {
-            Secret = "insaneiosecret".ToByteArrayUtf8(),
-            Issuer = "InsaneIO",
-            Label = "insane@insaneio.com"
-        };
+        //TotpManager manager = new()
+        //{
+        //    Secret = "insaneiosecret".ToByteArrayUtf8(),
+        //    Issuer = "InsaneIO",
+        //    Label = "insane@insaneio.com"
+        //};
 
-        var serialized = manager.Serialize();
-        manager = TotpManager.Deserialize(serialized);
-        Console.WriteLine(manager.ToOtpUri());
-        while (true)
-        {
-            Console.WriteLine(manager.ComputeCode() + "- Remaining: " + DateTimeOffset.Now.ComputeTotpRemainingSeconds(manager.TimePeriodInSeconds));
-            await Task.Delay(1000);
-        }
+        //var serialized = manager.Serialize();
+        //manager = TotpManager.Deserialize(serialized);
+        //Console.WriteLine(manager.ToOtpUri());
+        //while (true)
+        //{
+        //    Console.WriteLine(manager.ComputeCode() + "- Remaining: " + DateTimeOffset.Now.ComputeTotpRemainingSeconds(manager.TimePeriodInSeconds));
+        //    await Task.Delay(1000);
+        //}
+        Console.WriteLine("    ".ToHash(Base64Encoder.DefaultInstance));
         Console.ReadLine();
     }
 }

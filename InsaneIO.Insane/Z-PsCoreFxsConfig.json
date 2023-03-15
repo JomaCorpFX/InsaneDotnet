@@ -1,5 +1,7 @@
 {
+  "UpdateScript": "X-PsCoreUpdate.ps1",
   "Files": [
+    "X-PsCoreFxs-PublishProjectPackage.ps1",
     "X-PsCoreFxs-PushProjectToRemote.ps1",
     "X-PsCoreFxs-ManageProjectUserSecrets.ps1",
     "X-PsCoreFxs-UpdateProjectBuildNumber.ps1",
@@ -16,13 +18,14 @@
     "X-PowerShellCoreFxs-Update.ps1",
     "Z-CoreFxs.ps1",
     "Z-Config.json",
-    "Z-Config.Last.json"
+    "Z-Config.Last.json",
+    "X-UPDATE.ps1"
   ],
   "CoreFiles": [
     "Z-PsCoreFxs.ps1",
     "Z-PsCoreFxsConfig.json"
   ],
-  "Build": 76,
+  "Build": 110,
   "LastSupportedFiles": [
     "X-PsCoreFxs-PublishProjectPackage.ps1",
     "X-PsCoreFxs-PushProjectToRemote.ps1",

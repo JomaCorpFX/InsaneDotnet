@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<PackageContentPath>contentFiles/any/any/</PackageContentPath>
-		<LibraryContentPath>$(PackageContentPath)_Lib/InsaneIO.Insane/</LibraryContentPath>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<TargetFramework>net6.0</TargetFramework>
@@ -15,21 +14,30 @@
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<GenerateDocumentationFile>false</GenerateDocumentationFile>
-		<RepositoryUrl>https://github.com/Satancito/InsaneDotnet</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageReleaseNotes>.NET 6 compatible.</PackageReleaseNotes>
+		<RepositoryUrl>https://github.com/Satancito/InsaneDotnet</RepositoryUrl>
+		
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<DebugType>portable</DebugType>
+		<IncludeSymbols>True</IncludeSymbols>
+		<!--<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>-->
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+		
 		<UserSecretsId>dcead069-ffae-4de4-be81-720ec8ff2ac7</UserSecretsId>
+		<PackageReleaseNotes>.NET 6 compatible. Uses preview features of C#11.</PackageReleaseNotes>
 		<PackageIcon>Icon.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<IncludeContentInPack>true</IncludeContentInPack>
 		<IsPrerelease>false</IsPrerelease>
-		<PrereleaseName>Alpha</PrereleaseName>
+		<PrereleaseName>Preview</PrereleaseName>
 		<BuildSuffix>Build</BuildSuffix>
-		<BuildNumber>670</BuildNumber>
-		<VersionPrefix>6.0.0</VersionPrefix>
+		<BuildNumber>728</BuildNumber>
+		<VersionPrefix>6.0.8</VersionPrefix>
 		<VersionSuffix></VersionSuffix>
-		<Version>27.0.0-x.org</Version>
+		<Version>6.0.8</Version>
 		<LangVersion>latest</LangVersion>
 		<EnablePreviewFeatures>true</EnablePreviewFeatures>
 		<!--<UseBlazorWebAssembly>true</UseBlazorWebAssembly>-->
@@ -48,6 +56,10 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.1" />
 		<PackageReference Include="Oracle.EntityFrameworkCore" Version="6.21.5" />
 		<PackageReference Include="PolySharp" Version="1.12.1">
@@ -59,9 +71,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="$(SolutionDir)Icon.png" Pack="true" Visible="true" PackagePath="$(PackageIcon)" />
-		<None Include="$(SolutionDir)README.md" Pack="true" Visible="true" PackagePath="$(PackageReadmeFile)" />
-		<None Include="$(SolutionDir)LICENSE.md" Pack="true" Visible="true" PackagePath="$(PackageContentPath)_Licenses/InsaneIO.Insane.License.md;$(PackageLicenseFile)" PackageCopyToOutput="true" />
+		<None Include="../Icon.png" Pack="true" Visible="true" PackagePath="$(PackageIcon)" />
+		<None Include="../README.md" Pack="true" Visible="true" PackagePath="$(PackageReadmeFile)" />
+		<None Include="../LICENSE.md" Pack="true" Visible="true" PackagePath="$(PackageContentPath)_Licenses/InsaneIO.Insane.License.md;$(PackageLicenseFile)" PackageCopyToOutput="true" />
 	</ItemGroup>
 	
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">

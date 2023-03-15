@@ -53,8 +53,8 @@ param (
     [System.String]
     $Build = [string]::Empty,
 
-    [Switch]
-    $UpdateBuildNumber
+    [switch]
+    $Force
 )
 
 $ErrorActionPreference = "Stop"
@@ -67,7 +67,6 @@ if ($PSBoundParameters.ContainsKey($(Get-VariableName $Verbose))) {
 }
 $params.Add( $(Get-VariableName $Build) , $Build)
 $params.Add( $(Get-VariableName $Prerelease) , $Prerelease)
-$params.Add($(Get-VariableName $UpdateBuildNumber) , $UpdateBuildNumber.IsPresent)
 
 if ($IsRelease.IsPresent) {
     $params.Add($(Get-VariableName $IsRelease) , $true)
@@ -87,6 +86,11 @@ if ($Minor.IsPresent) {
 
 if ($Patch.IsPresent -or (!$Major.IsPresent -and !$Minor.IsPresent)) {
     $params.Add($(Get-VariableName $Patch) , $true)
+}
+
+if($Force.IsPresent)
+{
+    $params.Add($(Get-VariableName $Force) , $true)
 }
 
 Update-ProjectVersion @params
