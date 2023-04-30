@@ -23,7 +23,7 @@
                 _ => throw new ArgumentException("Byte is not a value Base32 value.")
             };
         }
-
+        
         public static string ToBase32(this byte[] data, bool removePadding = false, bool toLower = false)
         {
             data.ThrowIfNull();

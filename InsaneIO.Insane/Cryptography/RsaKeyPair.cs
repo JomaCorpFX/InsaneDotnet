@@ -1,12 +1,16 @@
-﻿using System.Text.Json;
+﻿using InsaneIO.Insane.Serialization;
+using System.Runtime.Versioning;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace InsaneIO.Insane.Cryptography
 {
-    public class RsaKeyPair
+    [RequiresPreviewFeatures]
+    public class RsaKeyPair:IJsonSerialize
     {
         public string PublicKey { get; init; } = null!;
         public string PrivateKey { get; init; } = null!;
-
+        public string Name { get => throw new NotImplementedException(); init => throw new NotImplementedException(); }
 
         public static RsaKeyPair? Deserialize(string json)
         {
@@ -15,8 +19,17 @@ namespace InsaneIO.Insane.Cryptography
 
         public string Serialize()
         {
-            return JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = false, IgnoreReadOnlyProperties = true });
+            return ToJsonObject().ToJsonString(new JsonSerializerOptions { WriteIndented = false, IgnoreReadOnlyProperties = true });
         }
 
+        public JsonObject ToJsonObject()
+        {
+            return new JsonObject()
+            {
+                [nameof(Name)] = Name,
+                [nameof(PublicKey)] = PublicKey,
+                [nameof(PrivateKey)] = PrivateKey
+            };
+        }
     }
 }

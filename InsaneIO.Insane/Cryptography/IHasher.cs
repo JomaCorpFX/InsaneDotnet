@@ -13,9 +13,9 @@ namespace InsaneIO.Insane.Cryptography
         public static abstract Type HasherType { get; }
 
         public byte[] Compute(byte[] data);
-        public string Compute(string data);
+        public string ComputeEncoded(string data);
 
         public bool Verify(byte[] data, byte[] expected);
-        public bool Verify(string data, string expected);
+        public bool VerifyEncoded(string data, string expected);
     }
 }

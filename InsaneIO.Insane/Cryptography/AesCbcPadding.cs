@@ -9,6 +9,7 @@ namespace InsaneIO.Insane.Cryptography
     public enum AesCbcPadding
     {
         None,
+        Zeros,
         Pkcs7,
         AnsiX923
     }

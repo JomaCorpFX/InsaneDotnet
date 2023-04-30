@@ -25,6 +25,9 @@ namespace InsaneIO.Insane.AspNet.Identity.Model1.Entity
         [NotMapped]
         public string UniqueId { get; set; } = null!;
         public LogLevel Level { get; set; }
+
+        public ulong EntityId { get; set; }//Cualquier entidad
+
         public EventType Type { get; set; }
         public string? Message { get; set; }
         public string? RelatedData { get; set; }

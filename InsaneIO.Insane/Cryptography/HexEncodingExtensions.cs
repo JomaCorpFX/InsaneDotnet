@@ -2,20 +2,20 @@
 {
     public static class HexEncodingExtensions
     {
-        public static string ToHex(this byte[] data)
+        public static string ToHex(this byte[] data, bool toUpper = false)
         {
             data.ThrowIfNull();
-            StringBuilder ret = new StringBuilder(string.Empty);
-            foreach (byte Value in data)
+            StringBuilder ret = new(string.Empty);
+            foreach (byte value in data)
             {
-                ret.Append(Value.ToString("x2"));
+                ret.Append(value.ToString(toUpper? "X2": "x2"));
             }
             return ret.ToString();
         }
 
-        public static string ToHex(this string data)
+        public static string ToHex(this string data, bool toUpper = false)
         {
-            return ToHex(data.ToByteArrayUtf8());
+            return ToHex(data.ToByteArrayUtf8(), toUpper);
         }
 
         public static byte[] FromHex(this string data)

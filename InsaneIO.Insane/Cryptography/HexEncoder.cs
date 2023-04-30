@@ -45,7 +45,7 @@ namespace InsaneIO.Insane.Cryptography
 
         public string Encode(byte[] data)
         {
-            return ToUpper ? data.ToHex().ToUpper() : data.ToHex();
+            return data.ToHex(ToUpper);
         }
 
         public JsonObject ToJsonObject()

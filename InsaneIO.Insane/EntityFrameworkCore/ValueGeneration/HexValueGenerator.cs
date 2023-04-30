@@ -19,7 +19,7 @@ namespace InsaneIO.Insane.EntityFrameworkCore.ValueGeneration
 
         public override string Next(EntityEntry entry)
         {
-            return HexEncoder.DefaultInstance.Encode(RandomManager.Next(maxLength)).Substring(0, (int)maxLength);
+            return HexEncoder.DefaultInstance.Encode(RandomExtensions.Next(maxLength)).Substring(0, (int)maxLength);
         }
     }
 }

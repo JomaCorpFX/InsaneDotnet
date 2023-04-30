@@ -19,12 +19,12 @@ namespace InsaneIO.Insane.Extensions
         private const string RsaPemPrivateKeyFinalString = "-----END PRIVATE KEY-----";
         private const string RsaPemPublicKeyInitialString = "-----BEGIN PUBLIC KEY-----";
         private const string RsaPemPublicKeyFinalString = "-----END PUBLIC KEY-----";
-        private const string PemPublicAndPrivateKeyPattern = "(-----BEGIN PUBLIC KEY-----(\\n|\\r|\\r\\n)([0-9a-zA-Z\\+\\/=]{64}(\\n|\\r|\\r\\n))*([0-9a-zA-Z\\+\\/=]{1,63}(\\n|\\r|\\r\\n))?-----END PUBLIC KEY-----)|(-----BEGIN PRIVATE KEY-----(\\n|\\r|\\r\\n)([0-9a-zA-Z\\+\\/=]{64}(\\n|\\r|\\r\\n))*([0-9a-zA-Z\\+\\/=]{1,63}(\\n|\\r|\\r\\n))?-----END PRIVATE KEY-----)"; //https://regex101.com/r/mGnr7I/1  (-----BEGIN PUBLIC KEY-----(\n|\r|\r\n)([0-9a-zA-Z\+\/=]{64}(\n|\r|\r\n))*([0-9a-zA-Z\+\/=]{1,63}(\n|\r|\r\n))?-----END PUBLIC KEY-----)|(-----BEGIN PRIVATE KEY-----(\n|\r|\r\n)([0-9a-zA-Z\+\/=]{64}(\n|\r|\r\n))*([0-9a-zA-Z\+\/=]{1,63}(\n|\r|\r\n))?-----END PRIVATE KEY-----)
-        private const string JsonPublicAndPrivateKeyPattern = "(\\s*\\{(?:\\s*\"Modulus\"\\s*:\\s*\"[a-zA-Z\\d\\+\\/\\\\]+={0,2}\"\\s*(?(3)(?(4)(?(5)(?(6)(?(7)(?(8)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\\s*\"Exponent\"\\s*:\\s*\"[a-zA-Z\\d\\+\\/\\\\]+={0,2}\"\\s*(?(2)(?(4)(?(5)(?(6)(?(7)(?(8)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\\s*\"P\"\\s*:\\s*\"[a-zA-Z\\d\\+\\/\\\\]+={0,2}\"\\s*(?(2)(?(3)(?(5)(?(6)(?(7)(?(8)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\\s*\"Q\"\\s*:\\s*\"[a-zA-Z\\d\\+\\/\\\\]+={0,2}\"\\s*(?(2)(?(3)(?(4)(?(6)(?(7)(?(8)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\\s*\"DP\"\\s*:\\s*\"[a-zA-Z\\d\\+\\/\\\\]+={0,2}\"\\s*(?(2)(?(3)(?(4)(?(5)(?(7)(?(8)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\\s*\"DQ\"\\s*:\\s*\"[a-zA-Z\\d\\+\\/\\\\]+={0,2}\"\\s*(?(2)(?(3)(?(4)(?(5)(?(6)(?(8)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\\s*\"InverseQ\"\\s*:\\s*\"[a-zA-Z\\d\\+\\/\\\\]+={0,2}\"\\s*(?(2)(?(3)(?(4)(?(5)(?(6)(?(7)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\\s*\"D\"\\s*:\\s*\"[a-zA-Z\\d\\+\\/\\\\]+={0,2}\"\\s*(?(2)(?(3)(?(4)(?(5)(?(6)(?(7)(?(8)|,)|,)|,)|,)|,)|,)|,)()){8}\\s*\\}\\s*\\2\\3\\4\\5\\6\\7\\8\\9)|(\\s*\\{(?:\\s*\"Modulus\"\\s*:\\s*\"[a-zA-Z\\d\\+\\/\\\\]+={0,2}\"\\s*(?(12)|,)()|\\s*\"Exponent\"\\s*:\\s*\"[a-zA-Z\\d\\+\\/\\\\]+={0,2}\"\\s*(?(11)|,)()){2}\\s*\\}\\s*\\11\\12)"; //https://regex101.com/r/FNRFqV/2  (\s*\{(?:\s*"Modulus"\s*:\s*"[a-zA-Z\d\+\/\\]+={0,2}"\s*(?(3)(?(4)(?(5)(?(6)(?(7)(?(8)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\s*"Exponent"\s*:\s*"[a-zA-Z\d\+\/\\]+={0,2}"\s*(?(2)(?(4)(?(5)(?(6)(?(7)(?(8)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\s*"P"\s*:\s*"[a-zA-Z\d\+\/\\]+={0,2}"\s*(?(2)(?(3)(?(5)(?(6)(?(7)(?(8)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\s*"Q"\s*:\s*"[a-zA-Z\d\+\/\\]+={0,2}"\s*(?(2)(?(3)(?(4)(?(6)(?(7)(?(8)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\s*"DP"\s*:\s*"[a-zA-Z\d\+\/\\]+={0,2}"\s*(?(2)(?(3)(?(4)(?(5)(?(7)(?(8)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\s*"DQ"\s*:\s*"[a-zA-Z\d\+\/\\]+={0,2}"\s*(?(2)(?(3)(?(4)(?(5)(?(6)(?(8)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\s*"InverseQ"\s*:\s*"[a-zA-Z\d\+\/\\]+={0,2}"\s*(?(2)(?(3)(?(4)(?(5)(?(6)(?(7)(?(9)|,)|,)|,)|,)|,)|,)|,)()|\s*"D"\s*:\s*"[a-zA-Z\d\+\/\\]+={0,2}"\s*(?(2)(?(3)(?(4)(?(5)(?(6)(?(7)(?(8)|,)|,)|,)|,)|,)|,)|,)()){8}\s*\}\s*\2\3\4\5\6\7\8\9)|(\s*\{(?:\s*"Modulus"\s*:\s*"[a-zA-Z\d\+\/\\]+={0,2}"\s*(?(12)|,)()|\s*"Exponent"\s*:\s*"[a-zA-Z\d\+\/\\]+={0,2}"\s*(?(11)|,)()){2}\s*\}\s*\11\12)
+        private const string PemPublicAndPrivateKeyPattern = "^(?:(-----BEGIN PUBLIC KEY-----)(?:\\r|\\n|\\r\\n)((?:(?:(?:[A-Za-z0-9+\\/]{4}){16}(?:\\r|\\n|\\r\\n))+)(?:(?:[A-Za-z0-9+\\/]{4}){0,15})(?:(?:[A-Za-z0-9+\\/]{4}|[A-Za-z0-9+\\/]{2}==|[A-Za-z0-9+\\/]{3}=)))(?:\\r|\\n|\\r\\n)(-----END PUBLIC KEY-----)|(-----BEGIN PRIVATE KEY-----)(?:\\r|\\n|\\r\\n)((?:(?:(?:[A-Za-z0-9+\\/]{4}){16}(?:\\r|\\n|\\r\\n))+)(?:(?:[A-Za-z0-9+\\/]{4}){0,15})(?:(?:[A-Za-z0-9+\\/]{4}|[A-Za-z0-9+\\/]{2}==|[A-Za-z0-9+\\/]{3}=)))(?:\\r|\\n|\\r\\n)(-----END PRIVATE KEY-----))$"; // public https://regex101.com/r/tdV9cC/1 private https://regex101.com/r/tdV9cC/2
         private const string XmlPublicAndPrivateKeyPattern = "(\\s*<\\s*RSAKeyValue\\s*>\\s*(?:\\s*<\\s*Modulus\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*Modulus\\s*>()|\\s*<\\s*Exponent\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*Exponent\\s*>()|\\s*<\\s*P\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*P\\s*>()|\\s*<\\s*Q\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*Q\\s*>()|\\s*<\\s*DP\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*DP\\s*>()|\\s*<\\s*DQ\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*DQ\\s*>()|\\s*<\\s*InverseQ\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*InverseQ\\s*>()|\\s*<\\s*D\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*D\\s*>()){8}\\s*<\\/\\s*RSAKeyValue\\s*>\\s*\\2\\3\\4\\5\\6\\7\\8\\9)|(\\s*<\\s*RSAKeyValue\\s*>\\s*(?:\\s*<\\s*Modulus\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*Modulus\\s*>()|\\s*<\\s*Exponent\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*Exponent\\s*>()){2}\\s*<\\/\\s*RSAKeyValue\\s*>\\s*\\11\\12)"; //https://regex101.com/r/fQV2VN/4  (\s*<\s*RSAKeyValue\s*>\s*(?:\s*<\s*Modulus\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*Modulus\s*>()|\s*<\s*Exponent\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*Exponent\s*>()|\s*<\s*P\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*P\s*>()|\s*<\s*Q\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*Q\s*>()|\s*<\s*DP\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*DP\s*>()|\s*<\s*DQ\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*DQ\s*>()|\s*<\s*InverseQ\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*InverseQ\s*>()|\s*<\s*D\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*D\s*>()){8}\s*<\/\s*RSAKeyValue\s*>\s*\2\3\4\5\6\7\8\9)|(\s*<\s*RSAKeyValue\s*>\s*(?:\s*<\s*Modulus\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*Modulus\s*>()|\s*<\s*Exponent\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*Exponent\s*>()){2}\s*<\/\s*RSAKeyValue\s*>\s*\11\12)
+        private const string Base64ValuePattern = "^(?:(?:[A-Za-z0-9+\\/]{4})*)(?:[A-Za-z0-9+\\/]{2}==|[A-Za-z0-9+\\/]{3}=)?$";
 
 
-        public static RsaKeyPair CreateRsaKeyPair(this uint keySize, RsaKeyEncoding encoding = RsaKeyEncoding.Ber, bool indent = true)
+        public static RsaKeyPair CreateRsaKeyPair(this uint keySize, RsaKeyEncoding encoding = RsaKeyEncoding.Ber)
         {
             RsaKeyPair result;
             using RSA Csp = RSA.Create((int)keySize);
@@ -33,36 +33,8 @@ namespace InsaneIO.Insane.Extensions
                 case RsaKeyEncoding.Xml:
                     result = new RsaKeyPair
                     {
-                        PublicKey = XDocument.Parse(Csp.ToXmlString(false)).ToString(indent ? SaveOptions.None : SaveOptions.DisableFormatting),
-                        PrivateKey = XDocument.Parse(Csp.ToXmlString(true)).ToString(indent ? SaveOptions.None : SaveOptions.DisableFormatting)
-                    };
-                    break;
-                case RsaKeyEncoding.Json:
-                    RSAParameters parameters = Csp.ExportParameters(true);
-                    var pubKey = new
-                    {
-                        Modulus = parameters.Modulus!.ToBase64(),
-                        Exponent = parameters.Exponent!.ToBase64(),
-                    };
-                    var privKey = new
-                    {
-                        Modulus = parameters.Modulus!.ToBase64(),
-                        Exponent = parameters.Exponent!.ToBase64(),
-                        P = parameters.P!.ToBase64(),
-                        Q = parameters.Q!.ToBase64(),
-                        DP = parameters.DP!.ToBase64(),
-                        DQ = parameters.DQ!.ToBase64(),
-                        InverseQ = parameters.InverseQ!.ToBase64(),
-                        D = parameters.D!.ToBase64()
-                    };
-                    var options = new JsonSerializerOptions
-                    {
-                        WriteIndented = indent
-                    };
-                    result = new RsaKeyPair
-                    {
-                        PublicKey = JsonSerializer.Serialize(pubKey, options),
-                        PrivateKey = JsonSerializer.Serialize(privKey, options)
+                        PublicKey = XDocument.Parse(Csp.ToXmlString(false)).ToString(),
+                        PrivateKey = XDocument.Parse(Csp.ToXmlString(true)).ToString()
                     };
                     break;
                 case RsaKeyEncoding.Pem:
@@ -80,32 +52,46 @@ namespace InsaneIO.Insane.Extensions
                     };
                     break;
             }
-            ValidateRsaPublicKey(result.PublicKey);
-            ValidateRsaPrivateKey(result.PrivateKey);
             return result;
         }
 
-        public static void ValidateRsaPublicKey(this string publicKey)
+        public static bool ValidateRsaPublicKey(this string publicKey)
         {
-            if (string.IsNullOrWhiteSpace(publicKey)) throw new ArgumentException("Invalid null or empty public key.");
-            using RSA csp = RSA.Create();
-            ParsePublicKey(csp, publicKey);
-        }
-
-        public static void ValidateRsaPrivateKey(this string privateKey)
-        {
-            if (string.IsNullOrWhiteSpace(privateKey)) throw new ArgumentException("Invalid null or empty private key.");
-            using RSA csp = RSA.Create();
-            ParsePrivateKey(csp, privateKey);
-        }
-
-        public static RsaKeyEncoding GetKeyEncoding(string key)
-        {
-            if (Regex.IsMatch(key, JsonPublicAndPrivateKeyPattern, RegexOptions.Multiline, TimeSpan.FromSeconds(2)))
+            try
             {
-                return RsaKeyEncoding.Json;
+                if (string.IsNullOrWhiteSpace(publicKey)) return false;
+                using RSA csp = RSA.Create();
+                ParsePublicKey(csp, publicKey);
+                return true;
             }
-            if (Regex.IsMatch(key, XmlPublicAndPrivateKeyPattern))
+            catch
+            {
+                return false;
+            }
+        }
+
+        public static bool ValidateRsaPrivateKey(this string privateKey)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(privateKey)) return false;
+                using RSA csp = RSA.Create();
+                ParsePrivateKey(csp, privateKey);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public static RsaKeyEncoding GetRsaKeyEncoding(string key)
+        {
+            if (Regex.IsMatch(key, Base64ValuePattern, RegexOptions.Multiline, TimeSpan.FromSeconds(2)))
+            {
+                return RsaKeyEncoding.Ber;
+            }
+            if (Regex.IsMatch(key, XmlPublicAndPrivateKeyPattern, RegexOptions.Multiline, TimeSpan.FromSeconds(2)))
             {
                 return RsaKeyEncoding.Xml;
             }
@@ -113,8 +99,7 @@ namespace InsaneIO.Insane.Extensions
             {
                 return RsaKeyEncoding.Pem;
             }
-
-            return RsaKeyEncoding.Ber;
+            throw new ArgumentException("Invalid key encoding.");
         }
 
         private static void ParsePublicKey(RSA rsa, string publicKey)
@@ -123,17 +108,8 @@ namespace InsaneIO.Insane.Extensions
             if (string.IsNullOrWhiteSpace(publicKey)) throw new ArgumentException("Invalid null or empty private key.");
             try
             {
-                switch (GetKeyEncoding(publicKey))
+                switch (GetRsaKeyEncoding(publicKey))
                 {
-                    case RsaKeyEncoding.Json:
-                        JsonNode jsonNode = JsonNode.Parse(publicKey)!;
-                        var parameters = new RSAParameters
-                        {
-                            Modulus = jsonNode[nameof(RSAParameters.Modulus)]!.GetValue<string>().FromBase64(),
-                            Exponent = jsonNode[nameof(RSAParameters.Exponent)]!.GetValue<string>().FromBase64()
-                        };
-                        rsa.ImportParameters(parameters);
-                        break;
                     case RsaKeyEncoding.Xml:
                         rsa.FromXmlString(publicKey);
                         break;
@@ -159,23 +135,8 @@ namespace InsaneIO.Insane.Extensions
             if (string.IsNullOrWhiteSpace(privateKey)) throw new ArgumentException("Invalid null or empty private key.");
             try
             {
-                switch (GetKeyEncoding(privateKey))
+                switch (GetRsaKeyEncoding(privateKey))
                 {
-                    case RsaKeyEncoding.Json:
-                        JsonNode jsonNode = JsonNode.Parse(privateKey)!;
-                        var parameters = new RSAParameters
-                        {
-                            Modulus = jsonNode[nameof(RSAParameters.Modulus)]!.GetValue<string>().FromBase64(),
-                            Exponent = jsonNode[nameof(RSAParameters.Exponent)]!.GetValue<string>().FromBase64(),
-                            P = jsonNode[nameof(RSAParameters.P)]!.GetValue<string>().FromBase64(),
-                            Q = jsonNode[nameof(RSAParameters.Q)]!.GetValue<string>().FromBase64(),
-                            DP = jsonNode[nameof(RSAParameters.DP)]!.GetValue<string>().FromBase64(),
-                            DQ = jsonNode[nameof(RSAParameters.DQ)]!.GetValue<string>().FromBase64(),
-                            InverseQ = jsonNode[nameof(RSAParameters.InverseQ)]!.GetValue<string>().FromBase64(),
-                            D = jsonNode[nameof(RSAParameters.D)]!.GetValue<string>().FromBase64()
-                        };
-                        rsa.ImportParameters(parameters);
-                        break;
                     case RsaKeyEncoding.Xml:
                         rsa.FromXmlString(privateKey);
                         break;
@@ -195,40 +156,46 @@ namespace InsaneIO.Insane.Extensions
             }
         }
 
-        public static byte[] EncryptRsa(this byte[] data, string publicKey, RsaPadding padding = RsaPadding.Oaep256)
+        public static byte[] EncryptRsa(this byte[] data, string publicKey, RsaPadding padding = RsaPadding.OaepSha256)
         {
             using RSA rsa = RSA.Create();
             ParsePublicKey(rsa, publicKey);
             RSAEncryptionPadding rsaPadding = padding switch
             {
                 RsaPadding.Pkcs1 => RSAEncryptionPadding.Pkcs1,
-                RsaPadding.Oaep256 => RSAEncryptionPadding.OaepSHA256,
+                RsaPadding.OaepSha1 => RSAEncryptionPadding.OaepSHA1,
+                RsaPadding.OaepSha256 => RSAEncryptionPadding.OaepSHA256,
+                RsaPadding.OaepSha384 => RSAEncryptionPadding.OaepSHA384,
+                RsaPadding.OaepSha512 => RSAEncryptionPadding.OaepSHA512,
                 _ => throw new NotImplementedException(padding.ToString()),
             };
             return rsa.Encrypt(data, rsaPadding);
         }
 
-        public static string EncryptRsa(this string data, string publicKey, IEncoder encoder, RsaPadding padding = RsaPadding.Oaep256)
+        public static string EncryptRsa(this string data, string publicKey, IEncoder encoder, RsaPadding padding = RsaPadding.OaepSha256)
         {
             return encoder.Encode(EncryptRsa(data.ToByteArrayUtf8(), publicKey, padding));
         }
 
-        public static byte[] DecryptRsa(this byte[] data, string privateKey, RsaPadding padding = RsaPadding.Oaep256)
+        public static byte[] DecryptRsa(this byte[] data, string privateKey, RsaPadding padding = RsaPadding.OaepSha256)
         {
             using RSA rsa = RSA.Create();
             ParsePrivateKey(rsa, privateKey);
             RSAEncryptionPadding rsaPadding = padding switch
             {
                 RsaPadding.Pkcs1 => RSAEncryptionPadding.Pkcs1,
-                RsaPadding.Oaep256 => RSAEncryptionPadding.OaepSHA256,
+                RsaPadding.OaepSha1 => RSAEncryptionPadding.OaepSHA1,
+                RsaPadding.OaepSha256 => RSAEncryptionPadding.OaepSHA256,
+                RsaPadding.OaepSha384 => RSAEncryptionPadding.OaepSHA384,
+                RsaPadding.OaepSha512 => RSAEncryptionPadding.OaepSHA512,
                 _ => throw new NotImplementedException(padding.ToString()),
             };
             return rsa.Decrypt(data, rsaPadding);
         }
 
-        public static string DecryptRsa(this string data, string privateKey, IEncoder encoder, RsaPadding padding = RsaPadding.Oaep256)
+        public static string DecryptRsa(this string data, string privateKey, IEncoder encoder, RsaPadding padding = RsaPadding.OaepSha256)
         {
-            return DecryptRsa(encoder.Decode(data), privateKey, padding).ToStringUtf8();
+            return DecryptRsa(encoder.Decode(data), privateKey, padding).ToStringFromUtf8();
         }
     }
 }

@@ -49,8 +49,8 @@ namespace InsaneIO.Insane.Cryptography
             return new JsonObject()
             {
                 [nameof(Name)] = Name,
+                [nameof(RemovePadding)] = RemovePadding,
                 [nameof(ToLower)] = ToLower,
-                [nameof(RemovePadding)] = RemovePadding
             };
         }
 

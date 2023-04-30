@@ -1,4 +1,5 @@
-﻿using System;
+﻿using InsaneIO.Insane.Serialization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Versioning;
@@ -14,7 +15,12 @@ namespace InsaneIO.Insane.Cryptography
     {
         public static Type HasherType => typeof(Argon2Hasher);
 
-        public string Salt { get; init; } = Base64Encoder.DefaultInstance.Encode(RandomManager.Next(HashExtensions.Argon2SaltSize));
+        public string SaltString { get => Encoder.Encode(Salt); init => Salt = value.ToByteArrayUtf8(); }
+
+        public byte[] SaltBytes { get => Salt; init => Salt = value; }
+
+        private byte[] Salt = RandomExtensions.Next(HashExtensions.Argon2SaltSize);
+
         public IEncoder Encoder { get; init; } = Base64Encoder.DefaultInstance;
         public uint Iterations { get; init; } = HashExtensions.Argon2Iterations;
         public uint MemorySizeKiB { get; init; } = HashExtensions.Argon2MemorySizeInKiB;
@@ -22,7 +28,7 @@ namespace InsaneIO.Insane.Cryptography
         public uint DerivedKeyLength { get; init; } = HashExtensions.Argon2DerivedKeyLength;
         public Argon2Variant Argon2Variant { get; init; } = Argon2Variant.Argon2id;
 
-        private string _name = IHasher.GetName(HasherType);
+        private string _name = IBaseSerialize.GetName(HasherType);
         public string Name
         {
             get
@@ -47,9 +53,10 @@ namespace InsaneIO.Insane.Cryptography
         {
             JsonNode jsonNode = JsonNode.Parse(json)!;
             Type encoderType = Type.GetType(jsonNode[nameof(Encoder)]![nameof(IEncoder.Name)]!.GetValue<string>())!;
+            IEncoder encoder = (IEncoder)JsonSerializer.Deserialize(jsonNode[nameof(Encoder)], encoderType)!;
             return new Argon2Hasher
             {
-                Salt = jsonNode[nameof(Salt)]!.GetValue<string>(),
+                Salt = encoder.Decode(jsonNode[nameof(Salt)]!.GetValue<string>()),
                 Encoder = (IEncoder)JsonSerializer.Deserialize(jsonNode[nameof(Encoder)], encoderType)!,
                 Iterations = jsonNode[nameof(Iterations)]!.GetValue<uint>(),
                 MemorySizeKiB = jsonNode[nameof(MemorySizeKiB)]!.GetValue<uint>(),
@@ -61,17 +68,20 @@ namespace InsaneIO.Insane.Cryptography
 
         public byte[] Compute(byte[] data)
         {
-            return data.ToArgon2(Salt.ToByteArrayUtf8(), Iterations, MemorySizeKiB, DegreeOfParallelism, Argon2Variant, DerivedKeyLength);
+            return data.ToArgon2(Salt, Iterations, MemorySizeKiB, DegreeOfParallelism, Argon2Variant, DerivedKeyLength);
         }
 
-        public string Compute(string data)
+        public string ComputeEncoded(string data)
         {
             return Encoder.Encode(Compute(data.ToByteArrayUtf8()));
         }
 
         public string Serialize()
         {
-            return ToJsonObject().ToJsonString();
+            return ToJsonObject().ToJsonString(new JsonSerializerOptions()
+            {
+                WriteIndented = true
+            });
         }
 
         public JsonObject ToJsonObject()
@@ -79,13 +89,13 @@ namespace InsaneIO.Insane.Cryptography
             return new JsonObject
             {
                 [nameof(Name)] = Name,
-                [nameof(Salt)] = Salt,
-                [nameof(Encoder)] = Encoder.ToJsonObject(),
+                [nameof(Salt)] = Encoder.Encode(Salt),
                 [nameof(Iterations)] = Iterations,
                 [nameof(MemorySizeKiB)] = MemorySizeKiB,
                 [nameof(DegreeOfParallelism)] = DegreeOfParallelism,
+                [nameof(Argon2Variant)] = Argon2Variant.NumberValue<int>(),
                 [nameof(DerivedKeyLength)] = DerivedKeyLength,
-                [nameof(Argon2Variant)] = Argon2Variant.NumberValue<int>()
+                [nameof(Encoder)] = Encoder.ToJsonObject(),
             };
         }
 
@@ -94,9 +104,9 @@ namespace InsaneIO.Insane.Cryptography
             return Enumerable.SequenceEqual(Compute(data), expected);
         }
 
-        public bool Verify(string data, string expected)
+        public bool VerifyEncoded(string data, string expected)
         {
-            return Compute(data).Equals(expected);
+            return ComputeEncoded(data).Equals(expected);
         }
     }
 }

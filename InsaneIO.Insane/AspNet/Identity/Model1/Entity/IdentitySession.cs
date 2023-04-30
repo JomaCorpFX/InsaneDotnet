@@ -40,6 +40,7 @@ namespace InsaneIO.Insane.AspNet.Identity.Model1.Entity
         public decimal? ClientLongitude { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset ExpiresAt { get; set; }
+        public DateTimeOffset LoggedOutAt { get; set; }
         public bool Revoked { get; set; }
         public bool Confirmed { get; set; }
         public DateTimeOffset? ActiveUntil { get; set; }

@@ -9,7 +9,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="InsaneIO.Insane" Version="6.0.5" />
+	  <ProjectReference Include="..\InsaneIO.Insane\InsaneIO.Insane.csproj" />
 	</ItemGroup>
 
 </Project>
