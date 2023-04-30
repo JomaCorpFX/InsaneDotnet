@@ -47,7 +47,7 @@ namespace InsaneIO.Insane.Cryptography
 
         public string Decrypt(string data)
         {
-            return Decrypt(Encoder.Decode(data)).ToStringUtf8();
+            return Decrypt(Encoder.Decode(data)).ToStringFromUtf8();
         }
         public byte[] Encrypt(byte[] data)
         {
@@ -65,7 +65,7 @@ namespace InsaneIO.Insane.Cryptography
             Type encoderType = Type.GetType(jsonNode[nameof(Encoder)]![nameof(IEncoder.Name)]!.GetValue<string>())!;
             IEncoder encoder = (IEncoder)JsonSerializer.Deserialize(jsonNode[nameof(Encoder)], encoderType)!;
             return new AesCbcEncryptor {
-                Key = encoder.Decode(jsonNode[nameof(Key)]!.GetValue<string>()).DecryptAesCbc(serializeKey).ToStringUtf8(),
+                Key = encoder.Decode(jsonNode[nameof(Key)]!.GetValue<string>()).DecryptAesCbc(serializeKey).ToStringFromUtf8(),
                 Encoder = encoder,
                 Padding = Enum.Parse<AesCbcPadding>(jsonNode[nameof(Padding)]!.GetValue<uint>().ToString())
             };

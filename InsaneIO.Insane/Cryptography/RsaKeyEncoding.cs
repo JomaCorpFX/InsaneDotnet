@@ -4,7 +4,6 @@
     {
         Ber,
         Pem,
-        Xml,
-        Json
+        Xml
     }
 }

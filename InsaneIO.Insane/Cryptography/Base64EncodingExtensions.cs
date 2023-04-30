@@ -85,7 +85,7 @@ namespace InsaneIO.Insane.Extensions
 
         public static string Base64ToFilenameSafeBase64(this string base64)
         {
-            return Base64ToUrlSafeBase64(base64);
+            return ToFilenameSafeBase64(FromBase64(base64));
         }
 
         public static string Base64ToUrlEncodedBase64(this string base64)

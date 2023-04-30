@@ -9,6 +9,9 @@ namespace InsaneIO.Insane.Cryptography
     public enum RsaPadding
     {
         Pkcs1,
-        Oaep256
+        OaepSha1,
+        OaepSha256,
+        OaepSha384,
+        OaepSha512
     }
 }

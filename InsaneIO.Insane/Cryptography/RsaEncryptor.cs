@@ -13,7 +13,7 @@ namespace InsaneIO.Insane.Cryptography
 
         public required RsaKeyPair KeyPair { get; init; }
         public IEncoder Encoder { get; init; } = Base64Encoder.DefaultInstance;
-        public RsaPadding Padding { get; init; } = RsaPadding.Oaep256;
+        public RsaPadding Padding { get; init; } = RsaPadding.OaepSha256;
 
         private string _name = IBaseSerialize.GetName(EncryptorType);
         public string Name
@@ -53,7 +53,7 @@ namespace InsaneIO.Insane.Cryptography
 
         public string Decrypt(string data)
         {
-            return Decrypt(Encoder.Decode(data)).ToStringUtf8();
+            return Decrypt(Encoder.Decode(data)).ToStringFromUtf8();
         }
 
         public static IEncryptor Deserialize(string json, byte[] serializeKey)
@@ -65,8 +65,8 @@ namespace InsaneIO.Insane.Cryptography
             string privatekey = jsonNode[nameof(KeyPair)]![nameof(RsaKeyPair.PrivateKey)]!.GetValue<string?>()!;
             RsaKeyPair keyPair = new RsaKeyPair
             {
-                PublicKey = string.IsNullOrWhiteSpace(publickey) ? publickey! : encoder.Decode(publickey).DecryptAesCbc(serializeKey).ToStringUtf8(),
-                PrivateKey = string.IsNullOrWhiteSpace(privatekey) ? privatekey! : encoder.Decode(privatekey).DecryptAesCbc(serializeKey).ToStringUtf8()
+                PublicKey = string.IsNullOrWhiteSpace(publickey) ? publickey! : encoder.Decode(publickey).DecryptAesCbc(serializeKey).ToStringFromUtf8(),
+                PrivateKey = string.IsNullOrWhiteSpace(privatekey) ? privatekey! : encoder.Decode(privatekey).DecryptAesCbc(serializeKey).ToStringFromUtf8()
             };
             return new RsaEncryptor {
                 KeyPair = keyPair,
@@ -98,8 +98,8 @@ namespace InsaneIO.Insane.Cryptography
                 [nameof(Encoder)] = Encoder.ToJsonObject(),
                 [nameof(KeyPair)] = JsonSerializer.Serialize(new RsaKeyPair
                 {
-                    PublicKey = string.IsNullOrWhiteSpace(KeyPair.PublicKey) ? KeyPair.PublicKey! :  KeyPair.PublicKey.EncryptAesCbc(serializeKey.ToStringUtf8(), Encoder),
-                    PrivateKey = string.IsNullOrWhiteSpace(KeyPair.PrivateKey) ? KeyPair.PrivateKey! : KeyPair.PrivateKey.EncryptAesCbc(serializeKey.ToStringUtf8(), Encoder)
+                    PublicKey = string.IsNullOrWhiteSpace(KeyPair.PublicKey) ? KeyPair.PublicKey! :  KeyPair.PublicKey.EncryptAesCbc(serializeKey.ToStringFromUtf8(), Encoder),
+                    PrivateKey = string.IsNullOrWhiteSpace(KeyPair.PrivateKey) ? KeyPair.PrivateKey! : KeyPair.PrivateKey.EncryptAesCbc(serializeKey.ToStringFromUtf8(), Encoder)
                 })
             };
         }

@@ -56,7 +56,7 @@ namespace InsaneIO.Insane.Cryptography
             return HashExtensions.ToHash(data, HashAlgorithm);
         }
 
-        public string Compute(string data)
+        public string ComputeEncoded(string data)
         {
             return Encoder.Encode(Compute(data.ToByteArrayUtf8()));
         }
@@ -81,9 +81,9 @@ namespace InsaneIO.Insane.Cryptography
             return Enumerable.SequenceEqual(Compute(data), expected);
         }
 
-        public bool Verify(string data, string expected)
+        public bool VerifyEncoded(string data, string expected)
         {
-            return Compute(data).Equals(expected);
+            return ComputeEncoded(data).Equals(expected);
         }
     }
 }

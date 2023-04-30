@@ -18,10 +18,10 @@ namespace InsaneIO.Insane.Tests
     public class HexEncoderUnitTests
     {
         private readonly byte[] testTytes = new byte[] { 0xff, 0xa, 1, 0x22 };
-        private string hexStringUppercase = "FF0A0122";
-        private string hexStringLowercase = "ff0a0122";
-        private static readonly HexEncoder encoderToUpper = new HexEncoder { ToUpper = true };
-        private static readonly HexEncoder encoderToLower = new HexEncoder { ToUpper = false };
+        private const string hexStringUppercase = "FF0A0122";
+        private const string hexStringLowercase = "ff0a0122";
+        private static readonly HexEncoder encoderToUpper = new() { ToUpper = true };
+        private static readonly HexEncoder encoderToLower = new() { ToUpper = false };
 
         [TestMethod]
         public void TestDecodeUppercase()

@@ -48,6 +48,8 @@ namespace InsaneIO.Insane.Cryptography
         {
             switch (EncodingType)
             {
+                case Base64Encoding.Base64:
+                    return data.ToBase64(LineBreaksLength, RemovePadding);
                 case Base64Encoding.UrlSafeBase64:
                     return data.ToUrlSafeBase64();
                 case Base64Encoding.FileNameSafeBase64:
@@ -55,7 +57,7 @@ namespace InsaneIO.Insane.Cryptography
                 case Base64Encoding.UrlEncodedBase64:
                     return data.ToUrlEncodedBase64();
                 default:
-                    return data.ToBase64(LineBreaksLength, RemovePadding);
+                    throw new NotImplementedException(EncodingType.ToString());
             }
         }
 
@@ -80,9 +82,12 @@ namespace InsaneIO.Insane.Cryptography
             JsonNode jsonNode = JsonNode.Parse(json)!;
             return new Base64Encoder
             {
+                EncodingType = Enum.Parse<Base64Encoding>(jsonNode[nameof(LineBreaksLength)]!.GetValue<int>().ToString()),
                 LineBreaksLength = jsonNode[nameof(LineBreaksLength)]!.GetValue<uint>(),
                 RemovePadding = jsonNode[nameof(RemovePadding)]!.GetValue<bool>()
             };
         }
+
+   
     }
 }

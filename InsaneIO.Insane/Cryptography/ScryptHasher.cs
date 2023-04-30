@@ -17,7 +17,7 @@ namespace InsaneIO.Insane.Cryptography
     {
         public static Type HasherType => typeof(ScryptHasher);
 
-        public string Salt { get; init; } = Base64Encoder.DefaultInstance.Encode(RandomManager.Next(HashExtensions.ScryptSaltSize));
+        public string Salt { get; init; } = Base64Encoder.DefaultInstance.Encode(RandomExtensions.Next(HashExtensions.ScryptSaltSize));
         public IEncoder Encoder { get; init; } = Base64Encoder.DefaultInstance;
         public uint Iterations { get; init; } = HashExtensions.ScryptIterations;
         public uint BlockSize { get; init; } = HashExtensions.ScryptBlockSize;
@@ -65,7 +65,7 @@ namespace InsaneIO.Insane.Cryptography
             return data.ToScrypt(Salt.ToByteArrayUtf8(), Iterations, BlockSize, Parallelism, DerivedKeyLength);
         }
 
-        public string Compute(string data)
+        public string ComputeEncoded(string data)
         {
             return data.ToScrypt(Salt, Encoder, Iterations, BlockSize, Parallelism, DerivedKeyLength);
         }
@@ -94,9 +94,9 @@ namespace InsaneIO.Insane.Cryptography
             return Enumerable.SequenceEqual(Compute(data), expected);
         }
 
-        public bool Verify(string data, string expected)
+        public bool VerifyEncoded(string data, string expected)
         {
-            return Compute(data).Equals(expected);
+            return ComputeEncoded(data).Equals(expected);
         }
     }
 }

@@ -6,7 +6,7 @@ namespace InsaneIO.Insane.Cryptography
     /// <summary>
     /// 
     /// </summary>
-    public static class RandomManager
+    public static class RandomExtensions
     {
         /// <summary>
         /// 

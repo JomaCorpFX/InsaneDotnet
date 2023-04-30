@@ -1,4 +1,5 @@
 ﻿using InsaneIO.Insane.Cryptography;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,12 @@ namespace InsaneIO.Insane.Cryptography
 
         public HashAlgorithm HashAlgorithm { get; init; } = HashAlgorithm.Sha512;
         public IEncoder Encoder { get; init; } = Base64Encoder.DefaultInstance;
-        public string Key { get; set; } = Base64Encoder.DefaultInstance.Encode(RandomManager.Next(HashExtensions.Sha512HashSizeInBytes));
+
+        public string KeyString { get => Encoder.Encode(Key); init => Key =  value.ToByteArrayUtf8(); }
+
+        public byte[] KeyBytes { get => Key; init => Key = value; }
+
+        private byte[] Key = RandomExtensions.Next(HashExtensions.HmacKeySize);
 
         private string _name = IHasher.GetName(HasherType);
         public string Name
@@ -45,20 +51,21 @@ namespace InsaneIO.Insane.Cryptography
         {
             JsonNode jsonNode = JsonNode.Parse(json)!;
             Type encoderType = Type.GetType(jsonNode[nameof(Encoder)]![nameof(IEncoder.Name)]!.GetValue<string>())!;
+            IEncoder encoder = (IEncoder)JsonSerializer.Deserialize(jsonNode[nameof(Encoder)], encoderType)!;
             return new HmacHasher
             {
                 HashAlgorithm = Enum.Parse<HashAlgorithm>(jsonNode[nameof(HashAlgorithm)]!.GetValue<int>().ToString()),
-                Encoder = (IEncoder)JsonSerializer.Deserialize(jsonNode[nameof(Encoder)], encoderType)!,
-                Key = jsonNode[nameof(Key)]!.GetValue<string>()
+                Encoder = encoder,
+                Key = encoder.Decode( jsonNode[nameof(Key)]!.GetValue<string>())
             };
         }
 
         public byte[] Compute(byte[] data)
         {
-            return data.ToHmac(Key.ToByteArrayUtf8(), HashAlgorithm);
+            return data.ToHmac(KeyBytes, HashAlgorithm);
         }
 
-        public string Compute(string data)
+        public string ComputeEncoded(string data)
         {
             return Encoder.Encode(Compute(data.ToByteArrayUtf8()));
         }
@@ -66,7 +73,10 @@ namespace InsaneIO.Insane.Cryptography
 
         public string Serialize()
         {
-            return ToJsonObject().ToJsonString();
+            return ToJsonObject().ToJsonString(new JsonSerializerOptions()
+            {
+                WriteIndented = true
+            }) ;
         }
 
         public JsonObject ToJsonObject()
@@ -74,9 +84,9 @@ namespace InsaneIO.Insane.Cryptography
             return new JsonObject()
             {
                 [nameof(Name)] = Name,
+                [nameof(Key)] = Encoder.Encode(Key),
                 [nameof(HashAlgorithm)] = HashAlgorithm.NumberValue<int>(),
                 [nameof(Encoder)] = Encoder.ToJsonObject(),
-                [nameof(Key)] = Key
             };
         }
 
@@ -85,9 +95,9 @@ namespace InsaneIO.Insane.Cryptography
             return Enumerable.SequenceEqual(Compute(data), expected);
         }
 
-        public bool Verify(string data, string expected)
+        public bool VerifyEncoded(string data, string expected)
         {
-            return Compute(data).Equals(expected);
+            return ComputeEncoded(data).Equals(expected);
         }
     }
 }

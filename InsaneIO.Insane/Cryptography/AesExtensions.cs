@@ -1,6 +1,7 @@
 ﻿using InsaneIO.Insane.Cryptography;
 using System.Runtime.Versioning;
 using System.Security.Cryptography;
+using HashAlgorithm = InsaneIO.Insane.Cryptography.HashAlgorithm;
 
 namespace InsaneIO.Insane.Extensions
 {
@@ -12,7 +13,7 @@ namespace InsaneIO.Insane.Extensions
 
         private static byte[] GenerateNormalizedKey(byte[] keyBytes)
         {
-            return keyBytes.ToHash().Take(MaxKeyLength).ToArray();
+            return keyBytes.ToHash(HashAlgorithm.Sha512).Take(MaxKeyLength).ToArray();
         }
 
         private static void ValidateKey(byte[] key)
@@ -28,6 +29,7 @@ namespace InsaneIO.Insane.Extensions
             aes.Padding = padding switch
             {
                 AesCbcPadding.None => PaddingMode.None,
+                AesCbcPadding.Zeros => PaddingMode.Zeros,
                 AesCbcPadding.AnsiX923 => PaddingMode.ANSIX923,
                 AesCbcPadding.Pkcs7 => PaddingMode.PKCS7,
                 _ => throw new NotImplementedException(padding.ToString()),
@@ -46,6 +48,7 @@ namespace InsaneIO.Insane.Extensions
             aes.Padding = padding switch
             {
                 AesCbcPadding.None => PaddingMode.None,
+                AesCbcPadding.Zeros => PaddingMode.Zeros,
                 AesCbcPadding.AnsiX923 => PaddingMode.ANSIX923,
                 AesCbcPadding.Pkcs7 => PaddingMode.PKCS7,
                 _ => throw new NotImplementedException(padding.ToString()),
@@ -63,7 +66,7 @@ namespace InsaneIO.Insane.Extensions
 
         public static string DecryptAesCbc(this string data, string key, IEncoder encoder, AesCbcPadding padding = AesCbcPadding.Pkcs7)
         {
-            return DecryptAesCbc(encoder.Decode(data), key.ToByteArrayUtf8(), padding).ToStringUtf8();
+            return DecryptAesCbc(encoder.Decode(data), key.ToByteArrayUtf8(), padding).ToStringFromUtf8();
         }
 
 

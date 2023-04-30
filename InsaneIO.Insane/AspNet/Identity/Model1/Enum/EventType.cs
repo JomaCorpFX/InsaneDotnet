@@ -1,4 +1,6 @@
-﻿namespace InsaneIO.Insane.AspNet.Identity.Model1.Enum
+﻿using System.Reflection.Metadata.Ecma335;
+
+namespace InsaneIO.Insane.AspNet.Identity.Model1.Enum
 {
     public enum EventType
     {
@@ -16,6 +18,13 @@
         UserTwoFactorAuthenticationActivated = 3001,
         UserTwoFactorAuthenticationFailed = 3002,
 
+        ApplicationValidation = 4000,
 
+        
+    }
+
+    public class EventypesSets
+    {
+        List<EventType> UserAuthenticationEvents => new List<EventType> { EventType.UserAuthenticationStarted, EventType.UserAuthenticationSuccessful, EventType.UserAuthenticationFailed };
     }
 }
