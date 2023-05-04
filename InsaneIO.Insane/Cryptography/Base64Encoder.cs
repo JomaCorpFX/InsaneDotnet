@@ -10,28 +10,13 @@ namespace InsaneIO.Insane.Cryptography
         public const uint NoLineBreaks = 0;
         public const uint MimeLineBreaksLength = 76;
         public const uint PemLineBreaksLength = 64;
-        public static Type EncoderType => typeof(Base64Encoder);
+        public static Type SelfType => typeof(Base64Encoder);
+        public string Name { get => IBaseSerialize.GetName(SelfType); }
 
         public uint LineBreaksLength { get; init; } = NoLineBreaks;
         public bool RemovePadding { get; init; } = false;
         public Base64Encoding EncodingType { get; init; } = Base64Encoding.Base64;
 
-        private string _name = IBaseSerialize.GetName(EncoderType);
-        public string Name
-        {
-            get
-            {
-                return _name;
-            }
-            init
-            {
-                if (_name is not null)
-                {
-                    return;
-                }
-                _name = value;
-            }
-        }
 
         public static readonly Base64Encoder DefaultInstance = new Base64Encoder();
 
@@ -72,9 +57,9 @@ namespace InsaneIO.Insane.Cryptography
             };
         }
 
-        public string Serialize()
+        public string Serialize(bool indented)
         {
-            return ToJsonObject().ToJsonString();
+            return ToJsonObject().ToJsonString(IJsonSerialize.GetIndentOptions(indented));
         }
 
         public static IEncoder Deserialize(string json)

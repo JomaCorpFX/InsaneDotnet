@@ -18,6 +18,9 @@ namespace InsaneIO.Insane.Security
     [RequiresPreviewFeatures]
     public class TotpManager : IJsonSerialize
     {
+        public static Type SelfType => typeof(TotpManager);
+        public string Name { get => IBaseSerialize.GetName(SelfType); }
+
         public required byte[] Secret { get; init; } = null!;
 
         public required string Label { get; init; } = string.Empty;
@@ -26,26 +29,9 @@ namespace InsaneIO.Insane.Security
         public HashAlgorithm HashAlgorithm { get; init; } = HashAlgorithm.Sha1;
         public uint TimePeriodInSeconds { get; init; } = TotpExtensions.TotpDefaultPeriod;
 
-        private string _name = IBaseSerialize.GetName(typeof(TotpManager));
-        public string Name
+        public string Serialize(bool indented)
         {
-            get
-            {
-                return _name;
-            }
-            init
-            {
-                if (_name is not null)
-                {
-                    return;
-                }
-                _name = value;
-            }
-        }
-
-        public string Serialize()
-        {
-            return ToJsonObject().ToJsonString();
+            return ToJsonObject().ToJsonString(IJsonSerialize.GetIndentOptions(indented));
         }
 
         public JsonObject ToJsonObject()

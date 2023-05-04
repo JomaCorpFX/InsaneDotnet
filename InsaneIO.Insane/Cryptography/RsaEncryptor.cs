@@ -9,28 +9,12 @@ namespace InsaneIO.Insane.Cryptography
     [RequiresPreviewFeatures]
     public class RsaEncryptor : IEncryptor
     {
-        public static Type EncryptorType => typeof(RsaEncryptor);
+        public static Type SelfType => typeof(RsaEncryptor);
+        public string Name { get => IBaseSerialize.GetName(SelfType); }
 
         public required RsaKeyPair KeyPair { get; init; }
-        public IEncoder Encoder { get; init; } = Base64Encoder.DefaultInstance;
         public RsaPadding Padding { get; init; } = RsaPadding.OaepSha256;
-
-        private string _name = IBaseSerialize.GetName(EncryptorType);
-        public string Name
-        {
-            get
-            {
-                return _name;
-            }
-            init
-            {
-                if (_name is not null)
-                {
-                    return;
-                }
-                _name = value;
-            }
-        }
+        public IEncoder Encoder { get; init; } = Base64Encoder.DefaultInstance;
 
         public RsaEncryptor()
         {
@@ -41,7 +25,7 @@ namespace InsaneIO.Insane.Cryptography
             return data.EncryptRsa(KeyPair.PublicKey, Padding);
         }
 
-        public string Encrypt(string data)
+        public string EncryptEncoded(string data)
         {
             return Encoder.Encode(Encrypt(data.ToByteArrayUtf8()));
         }
@@ -51,7 +35,7 @@ namespace InsaneIO.Insane.Cryptography
             return data.DecryptRsa(KeyPair.PrivateKey, Padding);
         }
 
-        public string Decrypt(string data)
+        public string DecryptEncoded(string data)
         {
             return Decrypt(Encoder.Decode(data)).ToStringFromUtf8();
         }
@@ -61,52 +45,59 @@ namespace InsaneIO.Insane.Cryptography
             JsonNode jsonNode = JsonNode.Parse(json)!;
             Type encoderType = Type.GetType(jsonNode[nameof(Encoder)]![nameof(IEncoder.Name)]!.GetValue<string>())!;
             IEncoder encoder = (IEncoder)JsonSerializer.Deserialize(jsonNode[nameof(Encoder)], encoderType)!;
+            Type protectorType = Type.GetType(jsonNode["Protector"]!.GetValue<string>())!;
+            ISecretProtector protector = (ISecretProtector)Activator.CreateInstance(protectorType)!;
             string publickey = jsonNode[nameof(KeyPair)]![nameof(RsaKeyPair.PublicKey)]!.GetValue<string?>()!;
             string privatekey = jsonNode[nameof(KeyPair)]![nameof(RsaKeyPair.PrivateKey)]!.GetValue<string?>()!;
             RsaKeyPair keyPair = new RsaKeyPair
             {
-                PublicKey = string.IsNullOrWhiteSpace(publickey) ? publickey! : encoder.Decode(publickey).DecryptAesCbc(serializeKey).ToStringFromUtf8(),
-                PrivateKey = string.IsNullOrWhiteSpace(privatekey) ? privatekey! : encoder.Decode(privatekey).DecryptAesCbc(serializeKey).ToStringFromUtf8()
+                PublicKey = protector.Unprotect(encoder.Decode(publickey), serializeKey).ToStringFromUtf8(),
+                PrivateKey = protector.Unprotect(encoder.Decode(privatekey), serializeKey).ToStringFromUtf8()
             };
-            return new RsaEncryptor {
+            return new RsaEncryptor
+            {
                 KeyPair = keyPair,
                 Encoder = encoder,
-                Padding = Enum.Parse<RsaPadding>(jsonNode[nameof(KeyPair)]!.GetValue<uint>().ToString())
+                Padding = Enum.Parse<RsaPadding>(jsonNode[nameof(Padding)]!.GetValue<int>().ToString())
             };
         }
 
         public static IEncryptor Deserialize(string json, string serializeKey)
         {
-            throw new NotImplementedException();
+            return Deserialize(json, serializeKey.ToByteArrayUtf8());
         }
 
-        public string Serialize(byte[] serializeKey)
+        public string Serialize(byte[] serializeKey, bool indented = false, ISecretProtector? protector = null)
         {
-            return ToJsonObject(serializeKey).ToJsonString();
+            return ToJsonObject(serializeKey, protector).ToJsonString(IJsonSerialize.GetIndentOptions(indented));
         }
 
-        public string Serialize(string serializeKey)
+        public string Serialize(string serializeKey, bool indented = false, ISecretProtector? protector = null)
         {
-            return ToJsonObject(serializeKey).ToJsonString();
+            return ToJsonObject(serializeKey, protector).ToJsonString(IJsonSerialize.GetIndentOptions(indented));
         }
 
-        public JsonObject ToJsonObject(byte[] serializeKey)
+        public JsonObject ToJsonObject(byte[] serializeKey, ISecretProtector? protector = null)
         {
+            protector ??= new AesCbcProtector();
             return new JsonObject
             {
                 [nameof(Name)] = Name,
-                [nameof(Encoder)] = Encoder.ToJsonObject(),
-                [nameof(KeyPair)] = JsonSerializer.Serialize(new RsaKeyPair
+                ["Protector"] = protector.Name,
+                [nameof(KeyPair)] = (new RsaKeyPair
                 {
-                    PublicKey = string.IsNullOrWhiteSpace(KeyPair.PublicKey) ? KeyPair.PublicKey! :  KeyPair.PublicKey.EncryptAesCbc(serializeKey.ToStringFromUtf8(), Encoder),
-                    PrivateKey = string.IsNullOrWhiteSpace(KeyPair.PrivateKey) ? KeyPair.PrivateKey! : KeyPair.PrivateKey.EncryptAesCbc(serializeKey.ToStringFromUtf8(), Encoder)
-                })
+                    PublicKey = Encoder.Encode(protector.Protect(KeyPair.PublicKey.ToByteArrayUtf8(), serializeKey)),
+                    PrivateKey = Encoder.Encode(protector.Protect(KeyPair.PrivateKey.ToByteArrayUtf8(), serializeKey))
+                }).ToJsonObject(),
+                [nameof(Padding)] = Padding.NumberValue<int>(),
+                [nameof(Encoder)] = Encoder.ToJsonObject(),
+
             };
         }
 
-        public JsonObject ToJsonObject(string serializeKey)
+        public JsonObject ToJsonObject(string serializeKey, ISecretProtector? protector = null)
         {
-            return ToJsonObject(serializeKey.ToByteArrayUtf8());
+            return ToJsonObject(serializeKey.ToByteArrayUtf8(), protector);
         }
     }
 }

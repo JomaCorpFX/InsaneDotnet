@@ -8,18 +8,19 @@ namespace InsaneIO.Insane.Cryptography
     [RequiresPreviewFeatures]
     public class RsaKeyPair:IJsonSerialize
     {
+        public static Type SelfType => typeof(RsaKeyPair);
+        public string Name { get => IBaseSerialize.GetName(SelfType); }
         public string PublicKey { get; init; } = null!;
         public string PrivateKey { get; init; } = null!;
-        public string Name { get => throw new NotImplementedException(); init => throw new NotImplementedException(); }
 
         public static RsaKeyPair? Deserialize(string json)
         {
             return JsonSerializer.Deserialize<RsaKeyPair>(json);
         }
 
-        public string Serialize()
+        public string Serialize(bool indented = false)
         {
-            return ToJsonObject().ToJsonString(new JsonSerializerOptions { WriteIndented = false, IgnoreReadOnlyProperties = true });
+            return ToJsonObject().ToJsonString(IJsonSerialize.GetIndentOptions(indented));
         }
 
         public JsonObject ToJsonObject()

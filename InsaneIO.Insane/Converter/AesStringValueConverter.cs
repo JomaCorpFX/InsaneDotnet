@@ -14,12 +14,12 @@ namespace InsaneIO.Insane.Converter
 
         public string Convert(string value)
         {
-            return encryptor.Encrypt(value);
+            return encryptor.EncryptEncoded(value);
         }
 
         public string Deconvert(string value)
         {
-            return encryptor.Decrypt(value);
+            return encryptor.DecryptEncoded(value);
         }
     }
 }

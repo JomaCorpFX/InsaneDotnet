@@ -13,7 +13,8 @@ namespace InsaneIO.Insane.Cryptography
     [RequiresPreviewFeatures]
     public class Argon2Hasher : IHasher
     {
-        public static Type HasherType => typeof(Argon2Hasher);
+        public static Type SelfType => typeof(Argon2Hasher);
+        public string Name { get => IBaseSerialize.GetName(SelfType); }
 
         public string SaltString { get => Encoder.Encode(Salt); init => Salt = value.ToByteArrayUtf8(); }
 
@@ -27,23 +28,6 @@ namespace InsaneIO.Insane.Cryptography
         public uint DegreeOfParallelism { get; init; } = HashExtensions.Argon2DegreeOfParallelism;
         public uint DerivedKeyLength { get; init; } = HashExtensions.Argon2DerivedKeyLength;
         public Argon2Variant Argon2Variant { get; init; } = Argon2Variant.Argon2id;
-
-        private string _name = IBaseSerialize.GetName(HasherType);
-        public string Name
-        {
-            get
-            {
-                return _name;
-            }
-            init
-            {
-                if (_name is not null)
-                {
-                    return;
-                }
-                _name = value;
-            }
-        }
 
         public Argon2Hasher()
         {
@@ -76,12 +60,9 @@ namespace InsaneIO.Insane.Cryptography
             return Encoder.Encode(Compute(data.ToByteArrayUtf8()));
         }
 
-        public string Serialize()
+        public string Serialize(bool indented = false)
         {
-            return ToJsonObject().ToJsonString(new JsonSerializerOptions()
-            {
-                WriteIndented = true
-            });
+            return ToJsonObject().ToJsonString(IJsonSerialize.GetIndentOptions(indented));
         }
 
         public JsonObject ToJsonObject()

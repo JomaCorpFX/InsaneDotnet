@@ -11,8 +11,12 @@ namespace InsaneIO.Insane.Serialization
     [RequiresPreviewFeatures]
     public interface IJsonSerialize : IBaseSerialize
     {
+        private static JsonSerializerOptions Indented = new JsonSerializerOptions { WriteIndented = true };
+        private static JsonSerializerOptions NotIndented = new JsonSerializerOptions { WriteIndented = false };
+        
+        public static JsonSerializerOptions GetIndentOptions(bool indented) { return indented? Indented: NotIndented; }
         public JsonObject ToJsonObject();
-        public string Serialize();
+        public string Serialize(bool indented = false);
 
     }
 }

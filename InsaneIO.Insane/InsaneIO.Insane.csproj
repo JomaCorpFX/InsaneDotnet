@@ -34,7 +34,7 @@
 		<IsPrerelease>false</IsPrerelease>
 		<PrereleaseName>Preview</PrereleaseName>
 		<BuildSuffix>Build</BuildSuffix>
-		<BuildNumber>811</BuildNumber>
+		<BuildNumber>852</BuildNumber>
 		<VersionPrefix>6.0.8</VersionPrefix>
 		<VersionSuffix></VersionSuffix>
 		<Version>6.0.8</Version>
