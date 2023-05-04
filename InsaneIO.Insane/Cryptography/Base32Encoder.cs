@@ -7,28 +7,13 @@ namespace InsaneIO.Insane.Cryptography
     [RequiresPreviewFeatures]
     public class Base32Encoder : IEncoder
     {
-        public static Type EncoderType => typeof(Base32Encoder);
+        public static Type SelfType => typeof(Base32Encoder);
+        public string Name { get => IBaseSerialize.GetName(SelfType); }
 
         public static readonly Base32Encoder DefaultInstance = new Base32Encoder();
         public bool ToLower { get; set; } = false;
         public bool RemovePadding { get; set; } = false;
 
-        private string _name = IBaseSerialize.GetName(EncoderType);
-        public string Name
-        {
-            get
-            {
-                return _name;
-            }
-            init
-            {
-                if (_name is not null)
-                {
-                    return;
-                }
-                _name = value;
-            }
-        }
 
         public Base32Encoder()
         {
@@ -54,9 +39,9 @@ namespace InsaneIO.Insane.Cryptography
             };
         }
 
-        public string Serialize()
+        public string Serialize(bool indented = false)
         {
-            return ToJsonObject().ToJsonString();
+            return ToJsonObject().ToJsonString(IJsonSerialize.GetIndentOptions(indented));
         }
 
         public static IEncoder Deserialize(string json)

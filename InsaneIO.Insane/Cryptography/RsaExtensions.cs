@@ -87,15 +87,15 @@ namespace InsaneIO.Insane.Extensions
 
         public static RsaKeyEncoding GetRsaKeyEncoding(string key)
         {
-            if (Regex.IsMatch(key, Base64ValuePattern, RegexOptions.Multiline, TimeSpan.FromSeconds(2)))
+            if (Regex.IsMatch(key, Base64ValuePattern, RegexOptions.None, TimeSpan.FromSeconds(2)))
             {
                 return RsaKeyEncoding.Ber;
             }
-            if (Regex.IsMatch(key, XmlPublicAndPrivateKeyPattern, RegexOptions.Multiline, TimeSpan.FromSeconds(2)))
+            if (Regex.IsMatch(key, XmlPublicAndPrivateKeyPattern, RegexOptions.None, TimeSpan.FromSeconds(2)))
             {
                 return RsaKeyEncoding.Xml;
             }
-            if (Regex.IsMatch(key, PemPublicAndPrivateKeyPattern, RegexOptions.Multiline, TimeSpan.FromSeconds(2)))
+            if (Regex.IsMatch(key, PemPublicAndPrivateKeyPattern, RegexOptions.None, TimeSpan.FromSeconds(2)))
             {
                 return RsaKeyEncoding.Pem;
             }

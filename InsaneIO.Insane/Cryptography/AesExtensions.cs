@@ -59,12 +59,12 @@ namespace InsaneIO.Insane.Extensions
             return decryptor.TransformFinalBlock(bytes, 0, bytes.Length); ;
         }
 
-        public static string EncryptAesCbc(this string data, string key, IEncoder encoder, AesCbcPadding padding = AesCbcPadding.Pkcs7)
+        public static string EncryptEncodedAesCbc(this string data, string key, IEncoder encoder, AesCbcPadding padding = AesCbcPadding.Pkcs7)
         {
             return encoder.Encode(EncryptAesCbc(data.ToByteArrayUtf8(), key.ToByteArrayUtf8(), padding));
         }
 
-        public static string DecryptAesCbc(this string data, string key, IEncoder encoder, AesCbcPadding padding = AesCbcPadding.Pkcs7)
+        public static string DecryptEncodedAesCbc(this string data, string key, IEncoder encoder, AesCbcPadding padding = AesCbcPadding.Pkcs7)
         {
             return DecryptAesCbc(encoder.Decode(data), key.ToByteArrayUtf8(), padding).ToStringFromUtf8();
         }

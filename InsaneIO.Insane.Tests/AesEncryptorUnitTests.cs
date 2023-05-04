@@ -37,8 +37,8 @@ namespace InsaneIO.Insane.Tests
         [TestMethod]
         public void TestEncryptDecryptAesNoPaddingHexEncoder()
         {
-            string encrypted = encryptorNoPaddingHexEncoder.Encrypt(Data256bitsBlocksSizeOk);
-            encryptorNoPaddingHexEncoder.Decrypt(encrypted).Should().BeEquivalentTo(Data256bitsBlocksSizeOk);
+            string encrypted = encryptorNoPaddingHexEncoder.EncryptEncoded(Data256bitsBlocksSizeOk);
+            encryptorNoPaddingHexEncoder.DecryptEncoded(encrypted).Should().BeEquivalentTo(Data256bitsBlocksSizeOk);
         }
 
         [TestMethod]
@@ -46,16 +46,16 @@ namespace InsaneIO.Insane.Tests
         {
             FluentActions.Invoking(() =>
             {
-                string encrypted = encryptorNoPaddingHexEncoder.Encrypt(Data);
-                string decrypted = encryptorNoPaddingHexEncoder.Decrypt(encrypted);
+                string encrypted = encryptorNoPaddingHexEncoder.EncryptEncoded(Data);
+                string decrypted = encryptorNoPaddingHexEncoder.DecryptEncoded(encrypted);
             }).Should().Throw<CryptographicException>();
         }
 
         [TestMethod]
         public void TestEncryptDecryptAesPkcs7PaddingHexEncoder()
         {
-            string encrypted = encryptorPkcs7PaddingHexEncoder.Encrypt(Data);
-            string decrypted = encryptorPkcs7PaddingHexEncoder.Decrypt(encrypted);
+            string encrypted = encryptorPkcs7PaddingHexEncoder.EncryptEncoded(Data);
+            string decrypted = encryptorPkcs7PaddingHexEncoder.DecryptEncoded(encrypted);
             decrypted.Should().BeEquivalentTo(Data);
         }
 
@@ -63,16 +63,16 @@ namespace InsaneIO.Insane.Tests
         [TestMethod]
         public void TestEncryptDecryptAesAnsiX923PaddingHexEncoder()
         {
-            string encrypted = encryptorAnsiX923PaddingHexEncoder.Encrypt(Data);
-            string decrypted = encryptorAnsiX923PaddingHexEncoder.Decrypt(encrypted);
+            string encrypted = encryptorAnsiX923PaddingHexEncoder.EncryptEncoded(Data);
+            string decrypted = encryptorAnsiX923PaddingHexEncoder.DecryptEncoded(encrypted);
             decrypted.Should().BeEquivalentTo(Data);
         }
 
         [TestMethod]
         public void TestEncryptDecryptAesNoPaddingBase32Encoder()
         {
-            string encrypted = encryptorNoPaddingBase32Encoder.Encrypt(Data256bitsBlocksSizeOk);
-            encryptorNoPaddingBase32Encoder.Decrypt(encrypted).Should().BeEquivalentTo(Data256bitsBlocksSizeOk);
+            string encrypted = encryptorNoPaddingBase32Encoder.EncryptEncoded(Data256bitsBlocksSizeOk);
+            encryptorNoPaddingBase32Encoder.DecryptEncoded(encrypted).Should().BeEquivalentTo(Data256bitsBlocksSizeOk);
         }
 
         [TestMethod]
@@ -80,16 +80,16 @@ namespace InsaneIO.Insane.Tests
         {
             FluentActions.Invoking(() =>
             {
-                string encrypted = encryptorNoPaddingBase32Encoder.Encrypt(Data);
-                string decrypted = encryptorNoPaddingBase32Encoder.Decrypt(encrypted);
+                string encrypted = encryptorNoPaddingBase32Encoder.EncryptEncoded(Data);
+                string decrypted = encryptorNoPaddingBase32Encoder.DecryptEncoded(encrypted);
             }).Should().Throw<CryptographicException>();
         }
 
         [TestMethod]
         public void TestEncryptDecryptAesPkcs7PaddingBase32Encoder()
         {
-            string encrypted = encryptorPkcs7PaddingBase32Encoder.Encrypt(Data);
-            string decrypted = encryptorPkcs7PaddingBase32Encoder.Decrypt(encrypted);
+            string encrypted = encryptorPkcs7PaddingBase32Encoder.EncryptEncoded(Data);
+            string decrypted = encryptorPkcs7PaddingBase32Encoder.DecryptEncoded(encrypted);
             decrypted.Should().BeEquivalentTo(Data);
         }
 
@@ -97,16 +97,16 @@ namespace InsaneIO.Insane.Tests
         [TestMethod]
         public void TestEncryptDecryptAesAnsiX923PaddingBase32Encoder()
         {
-            string encrypted = encryptorAnsiX923PaddingBase32Encoder.Encrypt(Data);
-            string decrypted = encryptorAnsiX923PaddingBase32Encoder.Decrypt(encrypted);
+            string encrypted = encryptorAnsiX923PaddingBase32Encoder.EncryptEncoded(Data);
+            string decrypted = encryptorAnsiX923PaddingBase32Encoder.DecryptEncoded(encrypted);
             decrypted.Should().BeEquivalentTo(Data);
         }
 
         [TestMethod]
         public void TestEncryptDecryptAesNoPaddingBase64Encoder()
         {
-            string encrypted = encryptorNoPaddingBase64Encoder.Encrypt(Data256bitsBlocksSizeOk);
-            encryptorNoPaddingBase64Encoder.Decrypt(encrypted).Should().BeEquivalentTo(Data256bitsBlocksSizeOk);
+            string encrypted = encryptorNoPaddingBase64Encoder.EncryptEncoded(Data256bitsBlocksSizeOk);
+            encryptorNoPaddingBase64Encoder.DecryptEncoded(encrypted).Should().BeEquivalentTo(Data256bitsBlocksSizeOk);
         }
 
         [TestMethod]
@@ -114,16 +114,16 @@ namespace InsaneIO.Insane.Tests
         {
             FluentActions.Invoking(() =>
             {
-                string encrypted = encryptorNoPaddingBase64Encoder.Encrypt(Data);
-                string decrypted = encryptorNoPaddingBase64Encoder.Decrypt(encrypted);
+                string encrypted = encryptorNoPaddingBase64Encoder.EncryptEncoded(Data);
+                string decrypted = encryptorNoPaddingBase64Encoder.DecryptEncoded(encrypted);
             }).Should().Throw<CryptographicException>();
         }
 
         [TestMethod]
         public void TestEncryptDecryptAesPkcs7PaddingBase64Encoder()
         {
-            string encrypted = encryptorPkcs7PaddingBase64Encoder.Encrypt(Data);
-            string decrypted = encryptorPkcs7PaddingBase64Encoder.Decrypt(encrypted);
+            string encrypted = encryptorPkcs7PaddingBase64Encoder.EncryptEncoded(Data);
+            string decrypted = encryptorPkcs7PaddingBase64Encoder.DecryptEncoded(encrypted);
             decrypted.Should().BeEquivalentTo(Data);
         }
 
@@ -131,8 +131,8 @@ namespace InsaneIO.Insane.Tests
         [TestMethod]
         public void TestEncryptDecryptAesAnsiX923PaddingBase64Encoder()
         {
-            string encrypted = encryptorAnsiX923PaddingBase64Encoder.Encrypt(Data);
-            string decrypted = encryptorAnsiX923PaddingBase64Encoder.Decrypt(encrypted);
+            string encrypted = encryptorAnsiX923PaddingBase64Encoder.EncryptEncoded(Data);
+            string decrypted = encryptorAnsiX923PaddingBase64Encoder.DecryptEncoded(encrypted);
             decrypted.Should().BeEquivalentTo(Data);
         }
 

@@ -15,31 +15,19 @@ namespace InsaneIO.Insane.Cryptography
     [RequiresPreviewFeatures]
     public class ScryptHasher : IHasher
     {
-        public static Type HasherType => typeof(ScryptHasher);
+        public static Type SelfType => typeof(ScryptHasher);
+        public string Name { get => IBaseSerialize.GetName(SelfType); }
 
-        public string Salt { get; init; } = Base64Encoder.DefaultInstance.Encode(RandomExtensions.Next(HashExtensions.ScryptSaltSize));
-        public IEncoder Encoder { get; init; } = Base64Encoder.DefaultInstance;
+        public string SaltString { get => Encoder.Encode(Salt); init => Salt = value.ToByteArrayUtf8(); }
+
+        public byte[] SaltBytes { get => Salt; init => Salt = value; }
+
+        private byte[] Salt = RandomExtensions.Next(HashExtensions.ScryptSaltSize);
         public uint Iterations { get; init; } = HashExtensions.ScryptIterations;
         public uint BlockSize { get; init; } = HashExtensions.ScryptBlockSize;
         public uint Parallelism { get; init; } = HashExtensions.ScryptParallelism;
         public uint DerivedKeyLength { get; init; } = HashExtensions.ScryptDerivedKeyLength;
-
-        private string _name = IBaseSerialize.GetName(HasherType);
-        public string Name
-        {
-            get
-            {
-                return _name;
-            }
-            init
-            {
-                if (_name is not null)
-                {
-                    return;
-                }
-                _name = value;
-            }
-        }
+        public IEncoder Encoder { get; init; } = Base64Encoder.DefaultInstance;
 
         public ScryptHasher()
         {
@@ -49,30 +37,31 @@ namespace InsaneIO.Insane.Cryptography
         {
             JsonNode jsonNode = JsonNode.Parse(json)!;
             Type encoderType = Type.GetType(jsonNode[nameof(Encoder)]![nameof(IEncoder.Name)]!.GetValue<string>())!;
+            IEncoder encoder = (IEncoder)JsonSerializer.Deserialize(jsonNode[nameof(Encoder)], encoderType)!;
             return new ScryptHasher
             {
-                Salt = jsonNode[nameof(Salt)]!.GetValue<string>(),
-                Encoder = (IEncoder)JsonSerializer.Deserialize(jsonNode[nameof(Encoder)], encoderType)!,
+                Salt = encoder.Decode( jsonNode[nameof(Salt)]!.GetValue<string>()),
                 Iterations = jsonNode[nameof(Iterations)]!.GetValue<uint>(),
                 BlockSize = jsonNode[nameof(BlockSize)]!.GetValue<uint>(),
                 Parallelism = jsonNode[nameof(Parallelism)]!.GetValue<uint>(),
-                DerivedKeyLength = jsonNode[nameof(DerivedKeyLength)]!.GetValue<uint>()
+                DerivedKeyLength = jsonNode[nameof(DerivedKeyLength)]!.GetValue<uint>(),
+                Encoder = encoder,
             };
         }
 
         public byte[] Compute(byte[] data)
         {
-            return data.ToScrypt(Salt.ToByteArrayUtf8(), Iterations, BlockSize, Parallelism, DerivedKeyLength);
+            return data.ToScrypt(Salt, Iterations, BlockSize, Parallelism, DerivedKeyLength);
         }
 
         public string ComputeEncoded(string data)
         {
-            return data.ToScrypt(Salt, Encoder, Iterations, BlockSize, Parallelism, DerivedKeyLength);
+            return Encoder.Encode(Compute(data.ToByteArrayUtf8()));
         }
 
-        public string Serialize()
+        public string Serialize(bool indented = false)
         {
-            return ToJsonObject().ToJsonString();
+            return ToJsonObject().ToJsonString(IJsonSerialize.GetIndentOptions(indented));
         }
 
         public JsonObject ToJsonObject()
@@ -80,12 +69,12 @@ namespace InsaneIO.Insane.Cryptography
             return new JsonObject
             {
                 [nameof(Name)] = Name,
-                [nameof(Salt)] = Salt,
-                [nameof(Encoder)] = Encoder.ToJsonObject(),
+                [nameof(Salt)] = Encoder.Encode(Salt),
                 [nameof(Iterations)] = Iterations,
                 [nameof(BlockSize)] = BlockSize,
                 [nameof(Parallelism)] = Parallelism,
-                [nameof(DerivedKeyLength)] = DerivedKeyLength
+                [nameof(DerivedKeyLength)] = DerivedKeyLength,
+                [nameof(Encoder)] = Encoder.ToJsonObject(),
             };
         }
 

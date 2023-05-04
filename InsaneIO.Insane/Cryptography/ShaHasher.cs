@@ -14,27 +14,11 @@ namespace InsaneIO.Insane.Cryptography
     [RequiresPreviewFeatures]
     public class ShaHasher : IHasher, IHasherJsonSerialize
     {
-        public static Type HasherType => typeof(ShaHasher);
+        public static Type SelfType => typeof(ShaHasher);
+        public string Name { get => IBaseSerialize.GetName(SelfType); }
 
         public HashAlgorithm HashAlgorithm { get; init; } = HashAlgorithm.Sha512;
         public IEncoder Encoder { get; init; } = Base64Encoder.DefaultInstance;
-
-        private string _name = IBaseSerialize.GetName(HasherType);
-        public string Name
-        {
-            get
-            {
-                return _name;
-            }
-            init
-            {
-                if (_name is not null)
-                {
-                    return;
-                }
-                _name = value;
-            }
-        }
 
         public ShaHasher()
         {
@@ -61,9 +45,9 @@ namespace InsaneIO.Insane.Cryptography
             return Encoder.Encode(Compute(data.ToByteArrayUtf8()));
         }
 
-        public string Serialize()
+        public string Serialize(bool indented = false)
         {
-            return ToJsonObject().ToJsonString();
+            return ToJsonObject().ToJsonString(IJsonSerialize.GetIndentOptions(indented));
         }
 
         public JsonObject ToJsonObject()

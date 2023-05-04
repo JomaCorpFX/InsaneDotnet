@@ -11,24 +11,8 @@ namespace InsaneIO.Insane.Cryptography
     [RequiresPreviewFeatures]
     public class HexEncoder : IEncoder
     {
-        public static Type EncoderType => typeof(HexEncoder);
-
-        private string _name = IBaseSerialize.GetName(EncoderType);
-        public string Name
-        {
-            get
-            {
-                return _name;
-            }
-            init
-            {
-                if (_name is not null)
-                {
-                    return;
-                }
-                _name = value;
-            }
-        }
+        public static Type SelfType => typeof(HexEncoder);
+        public string Name { get => IBaseSerialize.GetName(SelfType); }
 
         public static readonly HexEncoder DefaultInstance = new();
         public bool ToUpper { get; init; } = false;
@@ -57,9 +41,9 @@ namespace InsaneIO.Insane.Cryptography
             };
         }
 
-        public string Serialize()
+        public string Serialize(bool indented = false)
         {
-            return ToJsonObject().ToJsonString();
+            return ToJsonObject().ToJsonString(IJsonSerialize.GetIndentOptions(indented));
         }
 
         public static IEncoder Deserialize(string json)

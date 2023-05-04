@@ -1,4 +1,5 @@
 ﻿using InsaneIO.Insane.Cryptography;
+using InsaneIO.Insane.Serialization;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
@@ -15,7 +16,8 @@ namespace InsaneIO.Insane.Cryptography
     [RequiresPreviewFeatures]
     public class HmacHasher : IHasher
     {
-        public static Type HasherType => typeof(HmacHasher);
+        public static Type SelfType => typeof(HmacHasher);
+        public string Name { get => IBaseSerialize.GetName(SelfType); }
 
         public HashAlgorithm HashAlgorithm { get; init; } = HashAlgorithm.Sha512;
         public IEncoder Encoder { get; init; } = Base64Encoder.DefaultInstance;
@@ -25,23 +27,6 @@ namespace InsaneIO.Insane.Cryptography
         public byte[] KeyBytes { get => Key; init => Key = value; }
 
         private byte[] Key = RandomExtensions.Next(HashExtensions.HmacKeySize);
-
-        private string _name = IHasher.GetName(HasherType);
-        public string Name
-        {
-            get
-            {
-                return _name;
-            }
-            init
-            {
-                if (_name is not null)
-                {
-                    return;
-                }
-                _name = value;
-            }
-        }
 
         public HmacHasher()
         {
@@ -71,12 +56,9 @@ namespace InsaneIO.Insane.Cryptography
         }
 
 
-        public string Serialize()
+        public string Serialize(bool indented = false)
         {
-            return ToJsonObject().ToJsonString(new JsonSerializerOptions()
-            {
-                WriteIndented = true
-            }) ;
+            return ToJsonObject().ToJsonString(IJsonSerialize.GetIndentOptions(indented));
         }
 
         public JsonObject ToJsonObject()
