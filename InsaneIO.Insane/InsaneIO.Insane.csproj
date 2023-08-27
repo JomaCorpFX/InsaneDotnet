@@ -34,7 +34,7 @@
 		<IsPrerelease>false</IsPrerelease>
 		<PrereleaseName>Preview</PrereleaseName>
 		<BuildSuffix>Build</BuildSuffix>
-		<BuildNumber>852</BuildNumber>
+		<BuildNumber>962</BuildNumber>
 		<VersionPrefix>6.0.8</VersionPrefix>
 		<VersionSuffix></VersionSuffix>
 		<Version>6.0.8</Version>
@@ -56,6 +56,7 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+		<PackageReference Include="Microsoft.JSInterop" Version="6.0.18" />
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -74,6 +75,10 @@
 		<None Include="../Icon.png" Pack="true" Visible="true" PackagePath="$(PackageIcon)" />
 		<None Include="../README.md" Pack="true" Visible="true" PackagePath="$(PackageReadmeFile)" />
 		<None Include="../LICENSE.md" Pack="true" Visible="true" PackagePath="$(PackageContentPath)_Licenses/InsaneIO.Insane.License.md;$(PackageLicenseFile)" PackageCopyToOutput="true" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Strings\" />
 	</ItemGroup>
 	
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">

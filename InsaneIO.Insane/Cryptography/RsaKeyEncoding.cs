@@ -1,9 +1,21 @@
-﻿namespace InsaneIO.Insane.Cryptography
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace InsaneIO.Insane.Cryptography
 {
     public enum RsaKeyEncoding
     {
-        Ber,
-        Pem,
-        Xml
+        Unknown,
+        BerPublic,
+        BerPrivate,
+        PemPublic,
+        PemPrivate,
+        PemRsaPublic,
+        PemRsaPrivate,
+        XmlPublic,
+        XmlPrivate
     }
 }

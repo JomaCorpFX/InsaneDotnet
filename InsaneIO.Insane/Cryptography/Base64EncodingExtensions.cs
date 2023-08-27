@@ -1,5 +1,4 @@
-﻿using InsaneIO.Insane.Strings;
-using System.Runtime.Versioning;
+﻿using System.Runtime.Versioning;
 
 namespace InsaneIO.Insane.Extensions
 {
@@ -17,14 +16,14 @@ namespace InsaneIO.Insane.Extensions
             {
                 return data;
             }
-            StringBuilder sb = new();
             int Segments = data.Length / distance;
-            if (Segments < 0)
+            if (Segments == 0)
             {
-                return data.Trim();
+                return data;
             }
             else
             {
+                StringBuilder sb = new();
                 for (int i = 0; i < Segments; i++)
                 {
                     sb.AppendLine(data.Substring(i * distance, distance));
@@ -33,64 +32,68 @@ namespace InsaneIO.Insane.Extensions
                 {
                     sb.AppendLine(data[(Segments * distance)..]);
                 }
-                return sb.ToString().Trim();
+                return sb.ToString(0, sb.Length - Environment.NewLine.Length);
             }
         }
 
-        public static string ToBase64(this byte[] data, uint lineBreaksLength = NoLineBreaks, bool removePadding = false)
+        public static string EncodeToBase64(this byte[] data, uint lineBreaksLength = NoLineBreaks, bool removePadding = false)
         {
             var result = InsertLineBreaks(Convert.ToBase64String(data), lineBreaksLength);
-            return removePadding ? result.Replace(StringsConstants.EqualSign, string.Empty) : result;
+            return removePadding ? result.Replace(Constants.EqualSign, string.Empty) : result;
         }
 
-        public static string ToBase64(this string data, uint lineBreaksLength = NoLineBreaks, bool removePadding = false)
+        public static string EncodeToBase64(this string data, uint lineBreaksLength = NoLineBreaks, bool removePadding = false)
         {
-            return ToBase64(data.ToByteArrayUtf8(), lineBreaksLength, removePadding);
+            return EncodeToBase64(data.ToByteArrayUtf8(), lineBreaksLength, removePadding);
         }
 
-        public static string ToUrlSafeBase64(this byte[] data)
+        public static string EncodeToUrlSafeBase64(this byte[] data)
         {
-            StringBuilder sb = new(ToBase64(data));
-            sb.Replace(StringsConstants.PlusSign, StringsConstants.MinusSign).Replace(StringsConstants.Slash, StringsConstants.Underscore).Replace(StringsConstants.EqualSign, string.Empty);
+            StringBuilder sb = new(EncodeToBase64(data));
+            sb.Replace(Constants.PlusSign, Constants.MinusSign).Replace(Constants.Slash, Constants.Underscore).Replace(Constants.EqualSign, string.Empty);
             return sb.ToString();
         }
 
-        public static string ToFilenameSafeBase64(this byte[] data)
+        public static string EncodeToFilenameSafeBase64(this byte[] data)
         {
-            return ToUrlSafeBase64(data);
+            return EncodeToUrlSafeBase64(data);
         }
 
-        public static string ToUrlEncodedBase64(this byte[] data)
+        public static string EncodeToUrlEncodedBase64(this byte[] data)
         {
-            StringBuilder sb = new(ToBase64(data));
-            sb.Replace(StringsConstants.PlusSign, StringsConstants.UrlEncodedPlusSign).Replace(StringsConstants.Slash, StringsConstants.UrlEncodedSlash).Replace(StringsConstants.EqualSign, StringsConstants.UrlEncodedEqualSign);
+            StringBuilder sb = new(EncodeToBase64(data));
+            sb.Replace(Constants.PlusSign, Constants.UrlEncodedPlusSign).Replace(Constants.Slash, Constants.UrlEncodedSlash).Replace(Constants.EqualSign, Constants.UrlEncodedEqualSign);
             return sb.ToString();
         }
 
-        public static byte[] FromBase64(this string data)
+        public static byte[] DecodeFromBase64(this string data)
         {
             StringBuilder sb = new(data.Trim());
-            sb.Replace(StringsConstants.UrlEncodedPlusSign, StringsConstants.PlusSign).Replace(StringsConstants.UrlEncodedSlash, StringsConstants.Slash).Replace(StringsConstants.UrlEncodedEqualSign, StringsConstants.EqualSign)
-                .Replace(StringsConstants.MinusSign, StringsConstants.PlusSign).Replace(StringsConstants.Underscore, StringsConstants.Slash)
-                .Replace(StringsConstants.LineFeed, string.Empty).Replace(StringsConstants.CarriageReturn, string.Empty);
+            sb.Replace(Constants.UrlEncodedPlusSign, Constants.PlusSign)
+                .Replace(Constants.UrlEncodedSlash, Constants.Slash)
+                .Replace(Constants.UrlEncodedEqualSign, Constants.EqualSign)
+                .Replace(Constants.MinusSign, Constants.PlusSign)
+                .Replace(Constants.Underscore, Constants.Slash)
+                .Replace(Constants.LineFeed, string.Empty)
+                .Replace(Constants.CarriageReturn, string.Empty);
             int modulo = sb.Length % 4;
             sb.Append('=', modulo > 0 ? 4 - modulo : 0);
             return Convert.FromBase64String(sb.ToString());
         }
 
-        public static string Base64ToUrlSafeBase64(this string base64)
+        public static string EncodeBase64ToUrlSafeBase64(this string base64)
         {
-            return ToUrlSafeBase64(FromBase64(base64));
+            return EncodeToUrlSafeBase64(DecodeFromBase64(base64));
         }
 
-        public static string Base64ToFilenameSafeBase64(this string base64)
+        public static string EncodeBase64ToFilenameSafeBase64(this string base64)
         {
-            return ToFilenameSafeBase64(FromBase64(base64));
+            return EncodeToFilenameSafeBase64(DecodeFromBase64(base64));
         }
 
-        public static string Base64ToUrlEncodedBase64(this string base64)
+        public static string EncodeBase64ToUrlEncodedBase64(this string base64)
         {
-            return ToUrlEncodedBase64(FromBase64(base64));
+            return EncodeToUrlEncodedBase64(DecodeFromBase64(base64));
         }
     }
 }

@@ -16,7 +16,7 @@ namespace InsaneIO.Insane.Device
         private static String GetRealDeviceId()
         {
 
-            return "DeviceID".ToHash(Base64Encoder.DefaultInstance, HashAlgorithm.Sha256);
+            return "DeviceID".ComputeEncodedHash(Base64Encoder.DefaultInstance, HashAlgorithm.Sha256);
         }
 
         private static string _RealDeviceId = GetRealDeviceId();
@@ -33,7 +33,7 @@ namespace InsaneIO.Insane.Device
         {
             get
             {
-                return RealDeviceId.ToHash(Base64Encoder.DefaultInstance, HashAlgorithm.Sha256);
+                return RealDeviceId.ComputeEncodedHash(Base64Encoder.DefaultInstance, HashAlgorithm.Sha256);
             }
         }
 

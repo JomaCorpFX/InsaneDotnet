@@ -65,7 +65,7 @@ namespace InsaneIO.Insane.Extensions
 
         internal static string GetConstraintFieldSegments<TEntity>(Expression<Func<TEntity, object?>> property) where TEntity : class
         {
-            StringBuilder ret = new StringBuilder();
+            StringBuilder ret = new();
             property.GetExpressionReturnMembersNames().ForEach(value =>
             {
                 ret.Append($"_{value}");
@@ -112,7 +112,7 @@ namespace InsaneIO.Insane.Extensions
         internal static string GetIdentifierName(string name, DatabaseFacade database)
         {
             var maxLength = GetIdentifierMaxLength(database) - IdentifierNameSuffixLength;
-            return $"{(name.Length < (maxLength) ? name : name.Substring(0, maxLength)) }_{ HashExtensions.ToHash(name, HexEncoder.DefaultInstance).Substring(0, IdentifierNameSuffixLength).ToUpper() }";
+            return $"{(name.Length < (maxLength) ? name : name.Substring(0, maxLength)) }_{ HashExtensions.ComputeEncodedHash(name, HexEncoder.DefaultInstance).Substring(0, IdentifierNameSuffixLength).ToUpper() }";
         }
 
         internal static string GetPrincipalName<TEntity>(this EntityTypeBuilder<TEntity> builder, DatabaseFacade database)

@@ -1,9 +1,14 @@
-﻿using Microsoft.VisualBasic;
+﻿using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.JSInterop;
+using Microsoft.VisualBasic;
+using System.Drawing;
 using System.Reflection.PortableExecutable;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
@@ -14,152 +19,202 @@ namespace InsaneIO.Insane.Extensions
     [RequiresPreviewFeatures]
     public static class RsaExtensions
     {
+        private static readonly Regex Base64ValueRegex = new Regex(Constants.Base64ValueRegexPattern, RegexOptions.None, TimeSpan.FromSeconds(2));
+        private static readonly Regex RsaXmlPublicKeyRegex = new Regex(Constants.RsaXmlPublicKeyRegexPattern, RegexOptions.None, TimeSpan.FromSeconds(2));
+        private static readonly Regex RsaXmlPrivateKeyRegex = new Regex(Constants.RsaXmlPrivateKeyRegexPattern, RegexOptions.None, TimeSpan.FromSeconds(2));
 
-        private const string RsaPemPrivateKeyInitialString = "-----BEGIN PRIVATE KEY-----";
-        private const string RsaPemPrivateKeyFinalString = "-----END PRIVATE KEY-----";
-        private const string RsaPemPublicKeyInitialString = "-----BEGIN PUBLIC KEY-----";
-        private const string RsaPemPublicKeyFinalString = "-----END PUBLIC KEY-----";
-        private const string PemPublicAndPrivateKeyPattern = "^(?:(-----BEGIN PUBLIC KEY-----)(?:\\r|\\n|\\r\\n)((?:(?:(?:[A-Za-z0-9+\\/]{4}){16}(?:\\r|\\n|\\r\\n))+)(?:(?:[A-Za-z0-9+\\/]{4}){0,15})(?:(?:[A-Za-z0-9+\\/]{4}|[A-Za-z0-9+\\/]{2}==|[A-Za-z0-9+\\/]{3}=)))(?:\\r|\\n|\\r\\n)(-----END PUBLIC KEY-----)|(-----BEGIN PRIVATE KEY-----)(?:\\r|\\n|\\r\\n)((?:(?:(?:[A-Za-z0-9+\\/]{4}){16}(?:\\r|\\n|\\r\\n))+)(?:(?:[A-Za-z0-9+\\/]{4}){0,15})(?:(?:[A-Za-z0-9+\\/]{4}|[A-Za-z0-9+\\/]{2}==|[A-Za-z0-9+\\/]{3}=)))(?:\\r|\\n|\\r\\n)(-----END PRIVATE KEY-----))$"; // public https://regex101.com/r/tdV9cC/1 private https://regex101.com/r/tdV9cC/2
-        private const string XmlPublicAndPrivateKeyPattern = "(\\s*<\\s*RSAKeyValue\\s*>\\s*(?:\\s*<\\s*Modulus\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*Modulus\\s*>()|\\s*<\\s*Exponent\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*Exponent\\s*>()|\\s*<\\s*P\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*P\\s*>()|\\s*<\\s*Q\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*Q\\s*>()|\\s*<\\s*DP\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*DP\\s*>()|\\s*<\\s*DQ\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*DQ\\s*>()|\\s*<\\s*InverseQ\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*InverseQ\\s*>()|\\s*<\\s*D\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*D\\s*>()){8}\\s*<\\/\\s*RSAKeyValue\\s*>\\s*\\2\\3\\4\\5\\6\\7\\8\\9)|(\\s*<\\s*RSAKeyValue\\s*>\\s*(?:\\s*<\\s*Modulus\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*Modulus\\s*>()|\\s*<\\s*Exponent\\s*>\\s*[a-zA-Z0-9\\+\\/]+={0,2}\\s*<\\/\\s*Exponent\\s*>()){2}\\s*<\\/\\s*RSAKeyValue\\s*>\\s*\\11\\12)"; //https://regex101.com/r/fQV2VN/4  (\s*<\s*RSAKeyValue\s*>\s*(?:\s*<\s*Modulus\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*Modulus\s*>()|\s*<\s*Exponent\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*Exponent\s*>()|\s*<\s*P\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*P\s*>()|\s*<\s*Q\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*Q\s*>()|\s*<\s*DP\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*DP\s*>()|\s*<\s*DQ\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*DQ\s*>()|\s*<\s*InverseQ\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*InverseQ\s*>()|\s*<\s*D\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*D\s*>()){8}\s*<\/\s*RSAKeyValue\s*>\s*\2\3\4\5\6\7\8\9)|(\s*<\s*RSAKeyValue\s*>\s*(?:\s*<\s*Modulus\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*Modulus\s*>()|\s*<\s*Exponent\s*>\s*[a-zA-Z0-9\+\/]+={0,2}\s*<\/\s*Exponent\s*>()){2}\s*<\/\s*RSAKeyValue\s*>\s*\11\12)
-        private const string Base64ValuePattern = "^(?:(?:[A-Za-z0-9+\\/]{4})*)(?:[A-Za-z0-9+\\/]{2}==|[A-Za-z0-9+\\/]{3}=)?$";
+        private static readonly Regex RsaPemPublicKeyRegex = new Regex(Constants.RsaPemPublicKeyRegexPattern, RegexOptions.None, TimeSpan.FromSeconds(2));
+        private static readonly Regex RsaPemPrivateKeyRegex = new Regex(Constants.RsaPemPrivateKeyRegexPattern, RegexOptions.None, TimeSpan.FromSeconds(2));
 
+        private static readonly Regex RsaPemRsaPublicKeyRegex = new Regex(Constants.RsaPemRsaPublicKeyRegexPattern, RegexOptions.None, TimeSpan.FromSeconds(2));
+        private static readonly Regex RsaPemRsaPrivateKeyRegex = new Regex(Constants.RsaPemRsaPrivateKeyRegexPattern, RegexOptions.None, TimeSpan.FromSeconds(2));
 
-        public static RsaKeyPair CreateRsaKeyPair(this uint keySize, RsaKeyEncoding encoding = RsaKeyEncoding.Ber)
+        public static RsaKeyPair CreateRsaKeyPair(this uint keySize, RsaKeyPairEncoding encoding = RsaKeyPairEncoding.Ber)
         {
             RsaKeyPair result;
             using RSA Csp = RSA.Create((int)keySize);
             switch (encoding)
             {
-                case RsaKeyEncoding.Xml:
+                case RsaKeyPairEncoding.Xml:
                     result = new RsaKeyPair
                     {
                         PublicKey = XDocument.Parse(Csp.ToXmlString(false)).ToString(),
                         PrivateKey = XDocument.Parse(Csp.ToXmlString(true)).ToString()
                     };
                     break;
-                case RsaKeyEncoding.Pem:
+                case RsaKeyPairEncoding.Pem:
                     result = new RsaKeyPair
                     {
-                        PublicKey = $"{RsaPemPublicKeyInitialString}{Environment.NewLine}{Csp.ExportSubjectPublicKeyInfo().ToBase64(HashExtensions.PemLineBreaksLength)}{Environment.NewLine}{RsaPemPublicKeyFinalString}",
-                        PrivateKey = $"{RsaPemPrivateKeyInitialString}{Environment.NewLine}{Csp.ExportPkcs8PrivateKey().ToBase64(HashExtensions.PemLineBreaksLength)}{Environment.NewLine}{RsaPemPrivateKeyFinalString}"
+                        PublicKey = $"{Constants.RsaPemPublicKeyHeader}{Environment.NewLine}{Csp.ExportSubjectPublicKeyInfo().EncodeToBase64(Constants.Base64PemLineBreaksLength)}{Environment.NewLine}{Constants.RsaPemPublicKeyFooter}",
+                        PrivateKey = $"{Constants.RsaPemPrivateKeyHeader}{Environment.NewLine}{Csp.ExportPkcs8PrivateKey().EncodeToBase64(Constants.Base64PemLineBreaksLength)}{Environment.NewLine}{Constants.RsaPemPrivateKeyFooter}"
                     };
                     break;
+                case RsaKeyPairEncoding.PemRsa:
+                    result = new RsaKeyPair
+                    {
+                        PublicKey = $"{Constants.RsaPemRsaPublicKeyHeader}{Environment.NewLine}{Csp.ExportSubjectPublicKeyInfo().EncodeToBase64(Constants.Base64PemLineBreaksLength)}{Environment.NewLine}{Constants.RsaPemRsaPublicKeyFooter}",
+                        PrivateKey = $"{Constants.RsaPemRsaPrivateKeyHeader}{Environment.NewLine}{Csp.ExportPkcs8PrivateKey().EncodeToBase64(Constants.Base64PemLineBreaksLength)}{Environment.NewLine}{Constants.RsaPemRsaPrivateKeyFooter}"
+                    };
+                    break;
+                case RsaKeyPairEncoding.Ber:
+                    result = new RsaKeyPair
+                    {
+                        PublicKey = Csp.ExportSubjectPublicKeyInfo().EncodeToBase64(),
+                        PrivateKey = Csp.ExportPkcs8PrivateKey().EncodeToBase64()
+                    };
+                    break;
+
                 default:
-                    result = new RsaKeyPair
-                    {
-                        PublicKey = Csp.ExportSubjectPublicKeyInfo().ToBase64(),
-                        PrivateKey = Csp.ExportPkcs8PrivateKey().ToBase64()
-                    };
-                    break;
+                    throw new NotImplementedException(encoding.ToString());
+
             }
             return result;
         }
 
-        public static bool ValidateRsaPublicKey(this string publicKey)
+        internal static (RsaKeyEncoding Encoding, RSA Rsa) GetRsaKeyEncodingWithRSA(this string key)
         {
+            key = key.Trim();
+            var rsa = RSA.Create();
+            if (Base64ValueRegex.IsMatch(key))
+            {
+                try
+                {
+                    rsa.ImportPkcs8PrivateKey(key.DecodeFromBase64(), out int bytesRead2);
+                    return (RsaKeyEncoding.BerPrivate, rsa);
+                }
+                catch
+                {
+                    try
+                    {
+                        rsa.ImportSubjectPublicKeyInfo(key.DecodeFromBase64(), out int bytesRead2);
+                        return (RsaKeyEncoding.BerPublic, rsa);
+                    }
+                    catch
+                    {
+                        return (RsaKeyEncoding.Unknown, rsa);
+                    }
+                }
+            }
+
             try
             {
-                if (string.IsNullOrWhiteSpace(publicKey)) return false;
-                using RSA csp = RSA.Create();
-                ParsePublicKey(csp, publicKey);
-                return true;
+
+                if (RsaXmlPrivateKeyRegex.IsMatch(key))
+                {
+                    rsa.FromXmlString(key);
+                    return (RsaKeyEncoding.XmlPrivate, rsa);
+                }
+
+                if (RsaXmlPublicKeyRegex.IsMatch(key))
+                {
+                    rsa.FromXmlString(key);
+                    return (RsaKeyEncoding.XmlPublic, rsa);
+                }
+
+                {
+                    StringBuilder pemsb = new(key);
+                    if (RsaPemPublicKeyRegex.IsMatch(key))
+                    {
+                        pemsb.Replace(Constants.RsaPemPublicKeyHeader, string.Empty).Replace(Constants.RsaPemPublicKeyFooter, string.Empty);
+                        rsa.ImportSubjectPublicKeyInfo(pemsb.ToString().Trim().DecodeFromBase64(), out int bytesRead1);
+                        return (RsaKeyEncoding.PemPublic, rsa);
+                    }
+
+                    if (RsaPemPrivateKeyRegex.IsMatch(key))
+                    {
+                        pemsb.Replace(Constants.RsaPemPrivateKeyHeader, string.Empty).Replace(Constants.RsaPemPrivateKeyFooter, string.Empty);
+                        rsa.ImportPkcs8PrivateKey(pemsb.ToString().Trim().DecodeFromBase64(), out int bytesRead1);
+                        return (RsaKeyEncoding.PemPrivate, rsa);
+                    }
+
+                    if (RsaPemRsaPublicKeyRegex.IsMatch(key))
+                    {
+                        pemsb.Replace(Constants.RsaPemRsaPublicKeyHeader, string.Empty).Replace(Constants.RsaPemRsaPublicKeyFooter, string.Empty);
+                        rsa.ImportSubjectPublicKeyInfo(pemsb.ToString().Trim().DecodeFromBase64(), out int bytesRead1);
+                        return (RsaKeyEncoding.PemRsaPublic, rsa);
+                    }
+
+                    if (RsaPemRsaPrivateKeyRegex.IsMatch(key))
+                    {
+                        pemsb.Replace(Constants.RsaPemRsaPrivateKeyHeader, string.Empty).Replace(Constants.RsaPemRsaPrivateKeyFooter, string.Empty);
+                        rsa.ImportPkcs8PrivateKey(pemsb.ToString().Trim().DecodeFromBase64(), out int bytesRead1);
+                        return (RsaKeyEncoding.PemRsaPrivate, rsa);
+                    }
+                }
             }
             catch
             {
-                return false;
+                return (RsaKeyEncoding.Unknown, rsa);
             }
+
+            return (RsaKeyEncoding.Unknown, rsa);
+        }
+
+        public static RsaKeyEncoding GetRsaKeyEncoding(this string key)
+        {
+            return GetRsaKeyEncodingWithRSA(key).Encoding;
+        }
+
+
+        public static bool ValidateRsaPublicKey(this string publicKey)
+        {
+            RsaKeyEncoding encoding = GetRsaKeyEncoding(publicKey);
+            if (encoding == RsaKeyEncoding.XmlPublic ||
+                encoding == RsaKeyEncoding.PemPublic ||
+                encoding == RsaKeyEncoding.PemRsaPublic ||
+                encoding == RsaKeyEncoding.BerPublic)
+            {
+                return true;
+            }
+            return false;
         }
 
         public static bool ValidateRsaPrivateKey(this string privateKey)
         {
-            try
+            RsaKeyEncoding encoding = GetRsaKeyEncoding(privateKey);
+            if (encoding == RsaKeyEncoding.XmlPrivate ||
+                encoding == RsaKeyEncoding.PemPrivate ||
+                encoding == RsaKeyEncoding.PemRsaPrivate ||
+                encoding == RsaKeyEncoding.BerPrivate)
             {
-                if (string.IsNullOrWhiteSpace(privateKey)) return false;
-                using RSA csp = RSA.Create();
-                ParsePrivateKey(csp, privateKey);
                 return true;
             }
-            catch
-            {
-                return false;
-            }
+            return false;
         }
 
-        public static RsaKeyEncoding GetRsaKeyEncoding(string key)
+
+
+        private static RSA ParsePublicKey(string publicKey)
         {
-            if (Regex.IsMatch(key, Base64ValuePattern, RegexOptions.None, TimeSpan.FromSeconds(2)))
+            if (string.IsNullOrWhiteSpace(publicKey)) throw new ArgumentException("Invalid null or empty public key.");
+            var result = GetRsaKeyEncodingWithRSA(publicKey);
+            if (result.Encoding == RsaKeyEncoding.XmlPublic ||
+            result.Encoding == RsaKeyEncoding.PemPublic ||
+            result.Encoding == RsaKeyEncoding.PemRsaPublic ||
+            result.Encoding == RsaKeyEncoding.BerPublic)
             {
-                return RsaKeyEncoding.Ber;
+                return result.Rsa;
             }
-            if (Regex.IsMatch(key, XmlPublicAndPrivateKeyPattern, RegexOptions.None, TimeSpan.FromSeconds(2)))
-            {
-                return RsaKeyEncoding.Xml;
-            }
-            if (Regex.IsMatch(key, PemPublicAndPrivateKeyPattern, RegexOptions.None, TimeSpan.FromSeconds(2)))
-            {
-                return RsaKeyEncoding.Pem;
-            }
-            throw new ArgumentException("Invalid key encoding.");
+            throw new ArgumentException("Unable to parse private key.");
         }
 
-        private static void ParsePublicKey(RSA rsa, string publicKey)
+        private static RSA ParsePrivateKey(string privateKey)
         {
-            publicKey = publicKey.Trim();
-            if (string.IsNullOrWhiteSpace(publicKey)) throw new ArgumentException("Invalid null or empty private key.");
-            try
-            {
-                switch (GetRsaKeyEncoding(publicKey))
-                {
-                    case RsaKeyEncoding.Xml:
-                        rsa.FromXmlString(publicKey);
-                        break;
-                    case RsaKeyEncoding.Pem:
-                        StringBuilder pemsb = new(publicKey);
-                        pemsb.Replace(RsaPemPublicKeyInitialString, string.Empty).Replace(RsaPemPublicKeyFinalString, string.Empty);
-                        rsa.ImportSubjectPublicKeyInfo(pemsb.ToString().Trim().FromBase64(), out int bytesRead1);
-                        break;
-                    default:
-                        rsa.ImportSubjectPublicKeyInfo(publicKey.FromBase64(), out int bytesRead2);
-                        break;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new ArgumentException("Unable to parse public key.", ex);
-            }
-        }
-
-        private static void ParsePrivateKey(RSA rsa, string privateKey)
-        {
-            privateKey = privateKey.Trim();
             if (string.IsNullOrWhiteSpace(privateKey)) throw new ArgumentException("Invalid null or empty private key.");
-            try
+            var result = GetRsaKeyEncodingWithRSA(privateKey);
+            if (result.Encoding == RsaKeyEncoding.XmlPrivate ||
+            result.Encoding == RsaKeyEncoding.PemPrivate ||
+            result.Encoding == RsaKeyEncoding.PemRsaPrivate ||
+            result.Encoding == RsaKeyEncoding.BerPrivate)
             {
-                switch (GetRsaKeyEncoding(privateKey))
-                {
-                    case RsaKeyEncoding.Xml:
-                        rsa.FromXmlString(privateKey);
-                        break;
-                    case RsaKeyEncoding.Pem:
-                        StringBuilder pemsb = new(privateKey);
-                        pemsb.Replace(RsaPemPrivateKeyInitialString, string.Empty).Replace(RsaPemPrivateKeyFinalString, string.Empty);
-                        rsa.ImportPkcs8PrivateKey(pemsb.ToString().Trim().FromBase64(), out int bytesRead1);
-                        break;
-                    default:
-                        rsa.ImportPkcs8PrivateKey(privateKey.FromBase64(), out int bytesRead2);
-                        break;
-                }
+                return result.Rsa;
             }
-            catch (Exception ex)
-            {
-                throw new ArgumentException("Unable to parse private key.", ex);
-            }
+            throw new ArgumentException("Unable to parse private key.");
         }
 
         public static byte[] EncryptRsa(this byte[] data, string publicKey, RsaPadding padding = RsaPadding.OaepSha256)
         {
-            using RSA rsa = RSA.Create();
-            ParsePublicKey(rsa, publicKey);
+            using RSA rsa = ParsePublicKey(publicKey);
             RSAEncryptionPadding rsaPadding = padding switch
             {
                 RsaPadding.Pkcs1 => RSAEncryptionPadding.Pkcs1,
@@ -172,15 +227,25 @@ namespace InsaneIO.Insane.Extensions
             return rsa.Encrypt(data, rsaPadding);
         }
 
-        public static string EncryptRsa(this string data, string publicKey, IEncoder encoder, RsaPadding padding = RsaPadding.OaepSha256)
+        public static byte[] EncryptRsa(this string data, string publicKey, RsaPadding padding = RsaPadding.OaepSha256)
         {
-            return encoder.Encode(EncryptRsa(data.ToByteArrayUtf8(), publicKey, padding));
+            return EncryptRsa(data.ToByteArrayUtf8(), publicKey, padding);
         }
+
+        public static string EncryptEncodedRsa(this byte[] data, string publicKey, IEncoder encoder, RsaPadding padding = RsaPadding.OaepSha256)
+        {
+            return encoder.Encode(EncryptRsa(data, publicKey, padding));
+        }
+
+        public static string EncryptEncodedRsa(this string data, string publicKey, IEncoder encoder, RsaPadding padding = RsaPadding.OaepSha256)
+        {
+            return encoder.Encode(EncryptRsa(data, publicKey, padding));
+        }
+
 
         public static byte[] DecryptRsa(this byte[] data, string privateKey, RsaPadding padding = RsaPadding.OaepSha256)
         {
-            using RSA rsa = RSA.Create();
-            ParsePrivateKey(rsa, privateKey);
+            using RSA rsa = ParsePrivateKey(privateKey);
             RSAEncryptionPadding rsaPadding = padding switch
             {
                 RsaPadding.Pkcs1 => RSAEncryptionPadding.Pkcs1,
@@ -193,9 +258,116 @@ namespace InsaneIO.Insane.Extensions
             return rsa.Decrypt(data, rsaPadding);
         }
 
-        public static string DecryptRsa(this string data, string privateKey, IEncoder encoder, RsaPadding padding = RsaPadding.OaepSha256)
+        public static byte[] DecryptEncodedRsa(this string data, string privateKey, IEncoder encoder, RsaPadding padding = RsaPadding.OaepSha256)
         {
-            return DecryptRsa(encoder.Decode(data), privateKey, padding).ToStringFromUtf8();
+            return DecryptRsa(encoder.Decode(data), privateKey, padding);
+        }
+
+        // █ IJSRuntime methods.
+
+        public static async Task<RsaKeyPair> CreateRsaKeyPairAsync(this IJSRuntime js, uint keySize, RsaKeyPairEncoding encoding = RsaKeyPairEncoding.Ber)
+        {
+            string fxName = "Insane_" + HexEncoder.DefaultInstance.Encode(RandomExtensions.NextBytes(16));
+            string jscode = @$"
+Insane.{fxName} = (keySize, encoding) => {{
+    var keypair = Insane.RsaExtensions.CreateRsaKeyPair(keySize, Insane.RsaKeyEncodingEnumExtensions.ParseInt(encoding));
+    var result = keypair.Serialize(true);
+    keypair.delete();
+    return result;
+}};
+";
+            await js.InvokeAsync<object>("eval", jscode);
+            var result = await js.InvokeAsync<string>($"Insane.{fxName}", keySize, encoding.IntValue());
+            await js.InvokeAsync<object>("eval", $"delete Insane.{fxName};");
+            return JsonSerializer.Deserialize<RsaKeyPair>(result)!;
+        }
+
+        public static async Task<bool> ValidateRsaPublicKeyAsync(this IJSRuntime js, string publicKey)
+        {
+            return await js.InvokeAsync<bool>("Insane.RsaExtensions.ValidateRsaPublicKey", publicKey);
+        }
+
+        public static async Task<bool> ValidateRsaPrivateKeyAsync(this IJSRuntime js, string privateKey)
+        {
+            return await js.InvokeAsync<bool>("Insane.RsaExtensions.ValidateRsaPrivateKey", privateKey);
+        }
+
+        public static async Task<RsaKeyPairEncoding> GetRsaKeyEncoding(this IJSRuntime js, string key)
+        {
+            string fxName = "Insane_" + HexEncoder.DefaultInstance.Encode(RandomExtensions.NextBytes(16));
+            string jscode = @$"
+Insane.{fxName} = (key) => {{
+    var encoding = Insane.RsaExtensions.GetRsaKeyEncoding(key);
+    return encoding.value;
+}};
+";
+            await js.InvokeAsync<object>("eval", jscode);
+            var result = await js.InvokeAsync<RsaKeyPairEncoding>($"Insane.{fxName}", key);
+            await js.InvokeAsync<object>("eval", $"delete Insane.{fxName};");
+            return result;
+        }
+
+
+        public static async Task<byte[]> EncryptRsaAsync(this IJSRuntime js, byte[] data, string publicKey, RsaPadding padding = RsaPadding.OaepSha256)
+        {
+            string fxName = "Insane_" + HexEncoder.DefaultInstance.Encode(RandomExtensions.NextBytes(16));
+            string jscode = @$"
+Insane.{fxName} = (data, publicKey, padding) => {{
+    var data = Insane.InteropExtensions.JsUint8ArrayToStdVectorUint8(data);
+    var padding = Insane.RsaPaddingEnumExtensions.ParseInt(padding);
+    var encrypted = Insane.RsaExtensions.EncryptRsa(data, publicKey, padding);
+    data.delete();
+    var ret = Insane.InteropExtensions.StdVectorUint8ToJsUint8Array(encrypted);
+    encrypted.delete();
+    return ret;
+}};
+";
+            await js.InvokeAsync<object>("eval", jscode);
+            var result = await js.InvokeAsync<byte[]>($"Insane.{fxName}", data, publicKey, padding.IntValue());
+            await js.InvokeAsync<object>("eval", $"delete Insane.{fxName};");
+            return result;
+        }
+
+
+        public static async Task<byte[]> EncryptRsaAsync(this IJSRuntime js, string data, string publicKey, RsaPadding padding = RsaPadding.OaepSha256)
+        {
+            return await EncryptRsaAsync(js, data.ToByteArrayUtf8(), publicKey, padding);
+        }
+
+        public static async Task<string> EncryptEncodedRsaAsync(this IJSRuntime js, byte[] data, string publicKey, IEncoder encoder, RsaPadding padding = RsaPadding.OaepSha256)
+        {
+            return encoder.Encode(await EncryptRsaAsync(js, data, publicKey, padding));
+        }
+
+        public static async Task<string> EncryptEncodedRsaAsync(this IJSRuntime js, string data, string publicKey, IEncoder encoder, RsaPadding padding = RsaPadding.OaepSha256)
+        {
+            return encoder.Encode(await EncryptRsaAsync(js, data, publicKey, padding));
+        }
+
+
+        public static async Task<byte[]> DecryptRsaAsync(this IJSRuntime js, byte[] data, string privateKey, RsaPadding padding = RsaPadding.OaepSha256)
+        {
+            string fxName = "Insane_" + HexEncoder.DefaultInstance.Encode(RandomExtensions.NextBytes(16));
+            string jscode = @$"
+Insane.{fxName} = (data, privateKey, padding) => {{
+    var data = Insane.InteropExtensions.JsUint8ArrayToStdVectorUint8(data);
+    var padding = Insane.RsaPaddingEnumExtensions.ParseInt(padding);
+    var encrypted = Insane.RsaExtensions.DecryptRsa(data, privateKey, padding);
+    data.delete();
+    var ret = Insane.InteropExtensions.StdVectorUint8ToJsUint8Array(encrypted);
+    encrypted.delete();
+    return ret;
+}};
+";
+            await js.InvokeAsync<object>("eval", jscode);
+            var result = await js.InvokeAsync<byte[]>($"Insane.{fxName}", data, privateKey, padding.IntValue());
+            await js.InvokeAsync<object>("eval", $"delete Insane.{fxName};");
+            return result;
+        }
+
+        public static async Task<byte[]> DecryptEncodedRsaAsync(this IJSRuntime js, string data, string privateKey, IEncoder encoder, RsaPadding padding = RsaPadding.OaepSha256)
+        {
+            return await DecryptRsaAsync(js, encoder.Decode(data), privateKey, padding);
         }
     }
 }

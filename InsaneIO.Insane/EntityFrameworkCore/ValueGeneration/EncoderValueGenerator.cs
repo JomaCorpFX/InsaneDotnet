@@ -22,7 +22,7 @@ namespace InsaneIO.Insane.EntityFrameworkCore.ValueGeneration
         public override string Next(EntityEntry entry)
         {
             int maxLen = property.GetMaxLength() ?? EntityFrameworkCoreConstants.GuidLength;
-            return encoder.Encode(RandomExtensions.Next((uint)maxLen)).Substring(0, maxLen);
+            return encoder.Encode(RandomExtensions.NextBytes((uint)maxLen)).Substring(0, maxLen);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace InsaneIO.Insane.Extensions
 
         public static string GenerateTotpUri(this byte[] secret, string label, string issuer, HashAlgorithm algorithm = HashAlgorithm.Sha1, TwoFactorCodeLength codeLength = TwoFactorCodeLength.SixDigits, long timePeriodInSeconds = TotpDefaultPeriod)
         {
-            return $"otpauth://totp/{HttpUtility.UrlEncode(label)}?secret={secret.ToBase32(true)}&issuer={HttpUtility.UrlEncode(issuer)}&algorithm={algorithm.ToString().ToUpper()}&digits={codeLength.IntValue()}&period={timePeriodInSeconds}";
+            return $"otpauth://totp/{HttpUtility.UrlEncode(label)}?secret={secret.EncodeToBase32(true)}&issuer={HttpUtility.UrlEncode(issuer)}&algorithm={algorithm.ToString().ToUpper()}&digits={codeLength.IntValue()}&period={timePeriodInSeconds}";
         }
 
         public static string GenerateTotpUri(this string base32EncodedSecret, string label, string issuer)
@@ -29,8 +29,8 @@ namespace InsaneIO.Insane.Extensions
             };
             long timeInterval = (now.ToUnixTimeSeconds() - DateTimeOffset.UnixEpoch.ToUnixTimeSeconds()) / timePeriodInSeconds;
             timeInterval = BitConverter.IsLittleEndian ? BinaryPrimitives.ReverseEndianness(timeInterval) : timeInterval;
-            byte[] hmac = BitConverter.GetBytes(timeInterval).ToHmac(secret, hashAlgorithm);
-            byte offset = (byte)(hmac[HashExtensions.Sha1HashSizeInBytes - 1] & 0x0F);
+            byte[] hmac = BitConverter.GetBytes(timeInterval).ComputeHmac(secret, hashAlgorithm);
+            byte offset = (byte)(hmac[Constants.Sha1HashSizeInBytes - 1] & 0x0F);
             var slice = hmac[offset..(offset + 4)];
             long code = ((BitConverter.IsLittleEndian ? BinaryPrimitives.ReadInt32BigEndian(slice) : BinaryPrimitives.ReadInt32LittleEndian(slice)) & 0x7FFFFFFF) % (int)(Math.Pow(10, length.IntValue()));
             return code.ToString().PadLeft(length.IntValue(), '0');

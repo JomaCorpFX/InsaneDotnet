@@ -19,19 +19,19 @@ namespace InsaneIO.Insane.Tests
         public const string Data = "Hello World!!!";
         public const string Data256bitsBlocksSizeOk = "012345678901234567890123456789ab";
         public const string Key = "12345678";
-        public static readonly AesCbcEncryptor encryptor = new AesCbcEncryptor { Key = Key };
+        public static readonly AesCbcEncryptor encryptor = new AesCbcEncryptor { KeyString = Key };
 
-        public static readonly AesCbcEncryptor encryptorNoPaddingHexEncoder = new AesCbcEncryptor { Key = Key, Padding = AesCbcPadding.None, Encoder = HexEncoder.DefaultInstance };
-        public static readonly AesCbcEncryptor encryptorPkcs7PaddingHexEncoder = new AesCbcEncryptor { Key = Key, Padding = AesCbcPadding.Pkcs7, Encoder = HexEncoder.DefaultInstance };
-        public static readonly AesCbcEncryptor encryptorAnsiX923PaddingHexEncoder = new AesCbcEncryptor { Key = Key, Padding = AesCbcPadding.AnsiX923, Encoder = HexEncoder.DefaultInstance };
+        public static readonly AesCbcEncryptor encryptorNoPaddingHexEncoder = new AesCbcEncryptor { KeyString = Key, Padding = AesCbcPadding.None, Encoder = HexEncoder.DefaultInstance };
+        public static readonly AesCbcEncryptor encryptorPkcs7PaddingHexEncoder = new AesCbcEncryptor { KeyString = Key, Padding = AesCbcPadding.Pkcs7, Encoder = HexEncoder.DefaultInstance };
+        public static readonly AesCbcEncryptor encryptorAnsiX923PaddingHexEncoder = new AesCbcEncryptor { KeyString = Key, Padding = AesCbcPadding.AnsiX923, Encoder = HexEncoder.DefaultInstance };
 
-        public static readonly AesCbcEncryptor encryptorNoPaddingBase32Encoder = new AesCbcEncryptor { Key = Key, Padding = AesCbcPadding.None, Encoder = Base32Encoder.DefaultInstance };
-        public static readonly AesCbcEncryptor encryptorPkcs7PaddingBase32Encoder = new AesCbcEncryptor { Key = Key, Padding = AesCbcPadding.Pkcs7, Encoder = Base32Encoder.DefaultInstance };
-        public static readonly AesCbcEncryptor encryptorAnsiX923PaddingBase32Encoder = new AesCbcEncryptor { Key = Key, Padding = AesCbcPadding.AnsiX923, Encoder = Base32Encoder.DefaultInstance };
+        public static readonly AesCbcEncryptor encryptorNoPaddingBase32Encoder = new AesCbcEncryptor { KeyString = Key, Padding = AesCbcPadding.None, Encoder = Base32Encoder.DefaultInstance };
+        public static readonly AesCbcEncryptor encryptorPkcs7PaddingBase32Encoder = new AesCbcEncryptor { KeyString = Key, Padding = AesCbcPadding.Pkcs7, Encoder = Base32Encoder.DefaultInstance };
+        public static readonly AesCbcEncryptor encryptorAnsiX923PaddingBase32Encoder = new AesCbcEncryptor { KeyString = Key, Padding = AesCbcPadding.AnsiX923, Encoder = Base32Encoder.DefaultInstance };
 
-        public static readonly AesCbcEncryptor encryptorNoPaddingBase64Encoder = new AesCbcEncryptor { Key = Key, Padding = AesCbcPadding.None, Encoder = Base64Encoder.DefaultInstance };
-        public static readonly AesCbcEncryptor encryptorPkcs7PaddingBase64Encoder = new AesCbcEncryptor { Key = Key, Padding = AesCbcPadding.Pkcs7, Encoder = Base64Encoder.DefaultInstance };
-        public static readonly AesCbcEncryptor encryptorAnsiX923PaddingBase64Encoder = new AesCbcEncryptor { Key = Key, Padding = AesCbcPadding.AnsiX923, Encoder = Base64Encoder.DefaultInstance };
+        public static readonly AesCbcEncryptor encryptorNoPaddingBase64Encoder = new AesCbcEncryptor { KeyString = Key, Padding = AesCbcPadding.None, Encoder = Base64Encoder.DefaultInstance };
+        public static readonly AesCbcEncryptor encryptorPkcs7PaddingBase64Encoder = new AesCbcEncryptor { KeyString = Key, Padding = AesCbcPadding.Pkcs7, Encoder = Base64Encoder.DefaultInstance };
+        public static readonly AesCbcEncryptor encryptorAnsiX923PaddingBase64Encoder = new AesCbcEncryptor { KeyString = Key, Padding = AesCbcPadding.AnsiX923, Encoder = Base64Encoder.DefaultInstance };
 
 
         [TestMethod]

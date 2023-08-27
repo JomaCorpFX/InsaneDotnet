@@ -46,5 +46,10 @@
         {
             return (TNumber)Enum.ToObject(value.GetType(), value);
         }
+
+        public static TEnum ParseEnum<TEnum, TNumber>(this TNumber value) where TNumber : IConvertible where TEnum: Enum
+        {
+            return (TEnum)Enum.ToObject(typeof(TEnum), value);
+        }
     }
 }

@@ -10,11 +10,13 @@ namespace InsaneIO.Insane.Cryptography
     public class RsaEncryptor : IEncryptor
     {
         public static Type SelfType => typeof(RsaEncryptor);
-        public string Name { get => IBaseSerialize.GetName(SelfType); }
+        public string AssemblyName { get => IBaseSerializable.GetName(SelfType); }
 
         public required RsaKeyPair KeyPair { get; init; }
         public RsaPadding Padding { get; init; } = RsaPadding.OaepSha256;
         public IEncoder Encoder { get; init; } = Base64Encoder.DefaultInstance;
+
+        public ISecretProtector Protector { get; init; } = new AesCbcProtector();
 
         public RsaEncryptor()
         {
@@ -37,22 +39,22 @@ namespace InsaneIO.Insane.Cryptography
 
         public string DecryptEncoded(string data)
         {
-            return Decrypt(Encoder.Decode(data)).ToStringFromUtf8();
+            return Decrypt(Encoder.Decode(data)).ToStringUtf8();
         }
 
         public static IEncryptor Deserialize(string json, byte[] serializeKey)
         {
             JsonNode jsonNode = JsonNode.Parse(json)!;
-            Type encoderType = Type.GetType(jsonNode[nameof(Encoder)]![nameof(IEncoder.Name)]!.GetValue<string>())!;
+            Type encoderType = Type.GetType(jsonNode[nameof(Encoder)]![nameof(IEncoder.AssemblyName)]!.GetValue<string>())!;
             IEncoder encoder = (IEncoder)JsonSerializer.Deserialize(jsonNode[nameof(Encoder)], encoderType)!;
-            Type protectorType = Type.GetType(jsonNode["Protector"]!.GetValue<string>())!;
+            Type protectorType = Type.GetType(jsonNode[nameof(Protector)]!.GetValue<string>())!;
             ISecretProtector protector = (ISecretProtector)Activator.CreateInstance(protectorType)!;
             string publickey = jsonNode[nameof(KeyPair)]![nameof(RsaKeyPair.PublicKey)]!.GetValue<string?>()!;
             string privatekey = jsonNode[nameof(KeyPair)]![nameof(RsaKeyPair.PrivateKey)]!.GetValue<string?>()!;
             RsaKeyPair keyPair = new RsaKeyPair
             {
-                PublicKey = protector.Unprotect(encoder.Decode(publickey), serializeKey).ToStringFromUtf8(),
-                PrivateKey = protector.Unprotect(encoder.Decode(privatekey), serializeKey).ToStringFromUtf8()
+                PublicKey = protector.Unprotect(encoder.Decode(publickey), serializeKey).ToStringUtf8(),
+                PrivateKey = protector.Unprotect(encoder.Decode(privatekey), serializeKey).ToStringUtf8()
             };
             return new RsaEncryptor
             {
@@ -67,27 +69,26 @@ namespace InsaneIO.Insane.Cryptography
             return Deserialize(json, serializeKey.ToByteArrayUtf8());
         }
 
-        public string Serialize(byte[] serializeKey, bool indented = false, ISecretProtector? protector = null)
+        public string Serialize(byte[] serializeKey, bool indented = false)
         {
-            return ToJsonObject(serializeKey, protector).ToJsonString(IJsonSerialize.GetIndentOptions(indented));
+            return ToJsonObject(serializeKey).ToJsonString(IJsonSerializable.GetIndentOptions(indented));
         }
 
-        public string Serialize(string serializeKey, bool indented = false, ISecretProtector? protector = null)
+        public string Serialize(string serializeKey, bool indented = false)
         {
-            return ToJsonObject(serializeKey, protector).ToJsonString(IJsonSerialize.GetIndentOptions(indented));
+            return ToJsonObject(serializeKey).ToJsonString(IJsonSerializable.GetIndentOptions(indented));
         }
 
-        public JsonObject ToJsonObject(byte[] serializeKey, ISecretProtector? protector = null)
+        public JsonObject ToJsonObject(byte[] serializeKey)
         {
-            protector ??= new AesCbcProtector();
             return new JsonObject
             {
-                [nameof(Name)] = Name,
-                ["Protector"] = protector.Name,
+                [nameof(AssemblyName)] = AssemblyName,
+                [nameof(Protector)] = Protector.AssemblyName,
                 [nameof(KeyPair)] = (new RsaKeyPair
                 {
-                    PublicKey = Encoder.Encode(protector.Protect(KeyPair.PublicKey.ToByteArrayUtf8(), serializeKey)),
-                    PrivateKey = Encoder.Encode(protector.Protect(KeyPair.PrivateKey.ToByteArrayUtf8(), serializeKey))
+                    PublicKey = Encoder.Encode(Protector.Protect(KeyPair.PublicKey.ToByteArrayUtf8(), serializeKey)),
+                    PrivateKey = Encoder.Encode(Protector.Protect(KeyPair.PrivateKey.ToByteArrayUtf8(), serializeKey))
                 }).ToJsonObject(),
                 [nameof(Padding)] = Padding.NumberValue<int>(),
                 [nameof(Encoder)] = Encoder.ToJsonObject(),
@@ -95,9 +96,9 @@ namespace InsaneIO.Insane.Cryptography
             };
         }
 
-        public JsonObject ToJsonObject(string serializeKey, ISecretProtector? protector = null)
+        public JsonObject ToJsonObject(string serializeKey)
         {
-            return ToJsonObject(serializeKey.ToByteArrayUtf8(), protector);
+            return ToJsonObject(serializeKey.ToByteArrayUtf8());
         }
     }
 }
