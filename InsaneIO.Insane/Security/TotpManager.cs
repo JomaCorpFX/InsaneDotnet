@@ -16,10 +16,10 @@ namespace InsaneIO.Insane.Security
     /// Testing codes in the link - https://totp.danhersam.com/
     /// </summary>
     [RequiresPreviewFeatures]
-    public class TotpManager : IJsonSerialize
+    public class TotpManager : IJsonSerializable
     {
         public static Type SelfType => typeof(TotpManager);
-        public string Name { get => IBaseSerialize.GetName(SelfType); }
+        public string AssemblyName { get => IJsonSerializable.GetName(SelfType); }
 
         public required byte[] Secret { get; init; } = null!;
 
@@ -29,16 +29,16 @@ namespace InsaneIO.Insane.Security
         public HashAlgorithm HashAlgorithm { get; init; } = HashAlgorithm.Sha1;
         public uint TimePeriodInSeconds { get; init; } = TotpExtensions.TotpDefaultPeriod;
 
-        public string Serialize(bool indented)
+        public string Serialize(bool indented = true)
         {
-            return ToJsonObject().ToJsonString(IJsonSerialize.GetIndentOptions(indented));
+            return ToJsonObject().ToJsonString(IJsonSerializable.GetIndentOptions(indented));
         }
 
         public JsonObject ToJsonObject()
         {
             return new JsonObject
             {
-                [nameof(Name)] = Name,
+                [nameof(AssemblyName)] = AssemblyName,
                 [nameof(Secret)] = Base32Encoder.DefaultInstance.Encode(Secret),
                 [nameof(Label)] = Label,
                 [nameof(Issuer)] = Issuer,

@@ -15,7 +15,7 @@ namespace InsaneIO.Insane.Cryptography
     public class ShaHasher : IHasher, IHasherJsonSerialize
     {
         public static Type SelfType => typeof(ShaHasher);
-        public string Name { get => IBaseSerialize.GetName(SelfType); }
+        public string AssemblyName { get => IBaseSerializable.GetName(SelfType); }
 
         public HashAlgorithm HashAlgorithm { get; init; } = HashAlgorithm.Sha512;
         public IEncoder Encoder { get; init; } = Base64Encoder.DefaultInstance;
@@ -27,7 +27,7 @@ namespace InsaneIO.Insane.Cryptography
         public static IHasher Deserialize(string json)
         {
             JsonNode jsonNode = JsonNode.Parse(json)!;
-            Type encoderType = Type.GetType(jsonNode[nameof(Encoder)]![nameof(IEncoder.Name)]!.GetValue<string>())!;
+            Type encoderType = Type.GetType(jsonNode[nameof(Encoder)]![nameof(IEncoder.AssemblyName)]!.GetValue<string>())!;
             return new ShaHasher
             {
                 HashAlgorithm = Enum.Parse<HashAlgorithm>(jsonNode[nameof(HashAlgorithm)]!.GetValue<int>().ToString()),
@@ -37,7 +37,7 @@ namespace InsaneIO.Insane.Cryptography
 
         public byte[] Compute(byte[] data)
         {
-            return HashExtensions.ToHash(data, HashAlgorithm);
+            return HashExtensions.ComputeHash(data, HashAlgorithm);
         }
 
         public string ComputeEncoded(string data)
@@ -47,14 +47,14 @@ namespace InsaneIO.Insane.Cryptography
 
         public string Serialize(bool indented = false)
         {
-            return ToJsonObject().ToJsonString(IJsonSerialize.GetIndentOptions(indented));
+            return ToJsonObject().ToJsonString(IJsonSerializable.GetIndentOptions(indented));
         }
 
         public JsonObject ToJsonObject()
         {
             return new JsonObject()
             {
-                [nameof(Name)] = Name,
+                [nameof(AssemblyName)] = AssemblyName,
                 [nameof(HashAlgorithm)] = HashAlgorithm.NumberValue<int>(),
                 [nameof(Encoder)] = Encoder.ToJsonObject()
             };

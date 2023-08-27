@@ -7,7 +7,7 @@
             return ToByteArray(data, Encoding.UTF8);
         }
 
-        public static string ToStringFromUtf8(this byte[] utf8Bytes)
+        public static string ToStringUtf8(this byte[] utf8Bytes)
         {
             return ToString(utf8Bytes, Encoding.UTF8);
         }

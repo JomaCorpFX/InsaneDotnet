@@ -2,7 +2,7 @@
 {
     public static class HexEncodingExtensions
     {
-        public static string ToHex(this byte[] data, bool toUpper = false)
+        public static string EncodeToHex(this byte[] data, bool toUpper = false)
         {
             data.ThrowIfNull();
             StringBuilder ret = new(string.Empty);
@@ -13,12 +13,12 @@
             return ret.ToString();
         }
 
-        public static string ToHex(this string data, bool toUpper = false)
+        public static string EncodeToHex(this string data, bool toUpper = false)
         {
-            return ToHex(data.ToByteArrayUtf8(), toUpper);
+            return EncodeToHex(data.ToByteArrayUtf8(), toUpper);
         }
 
-        public static byte[] FromHex(this string data)
+        public static byte[] DecodeFromHex(this string data)
         {
             byte[] ret = new byte[data.Length / 2];
             for (int i = 0; i < data.Length / 2; i++)

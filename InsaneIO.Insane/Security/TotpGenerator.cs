@@ -16,7 +16,7 @@ namespace InsaneIO.Insane.Security
 
         public TotpGenerator(string base32EncodedSecret)
         {
-            Secret = base32EncodedSecret.FromBase32();
+            Secret = base32EncodedSecret.DecodeFromBase32();
         }
 
         public TotpGenerator(string encodedSecret, IEncoder secretDecoder)

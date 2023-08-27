@@ -16,17 +16,17 @@ namespace InsaneIO.Insane.Cryptography
     public class ScryptHasher : IHasher
     {
         public static Type SelfType => typeof(ScryptHasher);
-        public string Name { get => IBaseSerialize.GetName(SelfType); }
+        public string AssemblyName { get => IJsonSerializable.GetName(SelfType); }
 
         public string SaltString { get => Encoder.Encode(Salt); init => Salt = value.ToByteArrayUtf8(); }
 
         public byte[] SaltBytes { get => Salt; init => Salt = value; }
 
-        private byte[] Salt = RandomExtensions.Next(HashExtensions.ScryptSaltSize);
-        public uint Iterations { get; init; } = HashExtensions.ScryptIterations;
-        public uint BlockSize { get; init; } = HashExtensions.ScryptBlockSize;
-        public uint Parallelism { get; init; } = HashExtensions.ScryptParallelism;
-        public uint DerivedKeyLength { get; init; } = HashExtensions.ScryptDerivedKeyLength;
+        private byte[] Salt = RandomExtensions.NextBytes(Constants.ScryptSaltSize);
+        public uint Iterations { get; init; } = Constants.ScryptIterations;
+        public uint BlockSize { get; init; } = Constants.ScryptBlockSize;
+        public uint Parallelism { get; init; } = Constants.ScryptParallelism;
+        public uint DerivedKeyLength { get; init; } = Constants.ScryptDerivedKeyLength;
         public IEncoder Encoder { get; init; } = Base64Encoder.DefaultInstance;
 
         public ScryptHasher()
@@ -36,7 +36,7 @@ namespace InsaneIO.Insane.Cryptography
         public static IHasher Deserialize(string json)
         {
             JsonNode jsonNode = JsonNode.Parse(json)!;
-            Type encoderType = Type.GetType(jsonNode[nameof(Encoder)]![nameof(IEncoder.Name)]!.GetValue<string>())!;
+            Type encoderType = Type.GetType(jsonNode[nameof(Encoder)]![nameof(IEncoder.AssemblyName)]!.GetValue<string>())!;
             IEncoder encoder = (IEncoder)JsonSerializer.Deserialize(jsonNode[nameof(Encoder)], encoderType)!;
             return new ScryptHasher
             {
@@ -51,7 +51,7 @@ namespace InsaneIO.Insane.Cryptography
 
         public byte[] Compute(byte[] data)
         {
-            return data.ToScrypt(Salt, Iterations, BlockSize, Parallelism, DerivedKeyLength);
+            return data.ComputeScrypt(Salt, Iterations, BlockSize, Parallelism, DerivedKeyLength);
         }
 
         public string ComputeEncoded(string data)
@@ -61,14 +61,14 @@ namespace InsaneIO.Insane.Cryptography
 
         public string Serialize(bool indented = false)
         {
-            return ToJsonObject().ToJsonString(IJsonSerialize.GetIndentOptions(indented));
+            return ToJsonObject().ToJsonString(IJsonSerializable.GetIndentOptions(indented));
         }
 
         public JsonObject ToJsonObject()
         {
             return new JsonObject
             {
-                [nameof(Name)] = Name,
+                [nameof(AssemblyName)] = AssemblyName,
                 [nameof(Salt)] = Encoder.Encode(Salt),
                 [nameof(Iterations)] = Iterations,
                 [nameof(BlockSize)] = BlockSize,

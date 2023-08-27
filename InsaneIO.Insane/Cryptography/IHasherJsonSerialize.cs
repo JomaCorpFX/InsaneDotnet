@@ -9,7 +9,7 @@ using InsaneIO.Insane.Serialization;
 namespace InsaneIO.Insane.Cryptography
 {
     [RequiresPreviewFeatures]
-    public interface IHasherJsonSerialize : IJsonSerialize
+    public interface IHasherJsonSerialize : IJsonSerializable
     {
         public static abstract IHasher Deserialize(string json);
     }

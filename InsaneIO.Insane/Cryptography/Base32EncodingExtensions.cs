@@ -1,5 +1,6 @@
 ﻿namespace InsaneIO.Insane.Extensions
 {
+    //Original author: https://stackoverflow.com/a/7135008 https://stackoverflow.com/users/904128/shane
     public static class Base32EncodingExtensions
     {
 
@@ -24,7 +25,7 @@
             };
         }
         
-        public static string ToBase32(this byte[] data, bool removePadding = false, bool toLower = false)
+        public static string EncodeToBase32(this byte[] data, bool removePadding = false, bool toLower = false)
         {
             data.ThrowIfNull();
             int charCount = (int)Math.Ceiling(data.Length / 5d) * 8;
@@ -56,22 +57,23 @@
                     while (arrayIndex != charCount) returnArray[arrayIndex++] = '=';
                 }
             }
-            return new string(returnArray).Replace("\0", string.Empty);
+            return new string(returnArray,0, arrayIndex-1);
         }
 
-        public static string ToBase32(this string data, bool removePadding = false, bool toLower = false)
+        public static string EncodeToBase32(this string data, bool removePadding = false, bool toLower = false)
         {
-            return ToBase32(data.ToByteArrayUtf8(), removePadding, toLower);
+            return EncodeToBase32(data.ToByteArrayUtf8(), removePadding, toLower);
         }
 
-        public static byte[] FromBase32(this string data)
+        public static byte[] DecodeFromBase32(this string data)
         {
 
-            data = data.TrimEnd('=');
+            data = data.Trim().TrimEnd('=');
             int byteCount = data.Length * 5 / 8;
             byte[] returnArray = new byte[byteCount];
 
-            byte curByte = 0, bitsRemaining = 8;
+            byte curByte = 0;
+            int bitsRemaining = 8;
             int arrayIndex = 0;
 
             foreach (char c in data)

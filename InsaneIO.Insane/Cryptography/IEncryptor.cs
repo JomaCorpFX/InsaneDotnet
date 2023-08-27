@@ -4,7 +4,7 @@ using System.Runtime.Versioning;
 namespace InsaneIO.Insane.Cryptography
 {
     [RequiresPreviewFeatures]
-    public interface IEncryptor: IEncryptorJsonSerialize
+    public interface IEncryptor: IEncryptorJsonSerializable
     {
         public byte[] Encrypt(byte[] data);
         public string EncryptEncoded(string data);

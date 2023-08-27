@@ -1,4 +1,5 @@
-﻿using InsaneIO.Insane.Serialization;
+﻿using InsaneIO.Insane.Misc;
+using InsaneIO.Insane.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,19 +15,19 @@ namespace InsaneIO.Insane.Cryptography
     public class Argon2Hasher : IHasher
     {
         public static Type SelfType => typeof(Argon2Hasher);
-        public string Name { get => IBaseSerialize.GetName(SelfType); }
+        public string AssemblyName { get => IJsonSerializable.GetName(SelfType); }
 
         public string SaltString { get => Encoder.Encode(Salt); init => Salt = value.ToByteArrayUtf8(); }
 
         public byte[] SaltBytes { get => Salt; init => Salt = value; }
 
-        private byte[] Salt = RandomExtensions.Next(HashExtensions.Argon2SaltSize);
+        private byte[] Salt = RandomExtensions.NextBytes(Constants.Argon2SaltSize);
 
         public IEncoder Encoder { get; init; } = Base64Encoder.DefaultInstance;
-        public uint Iterations { get; init; } = HashExtensions.Argon2Iterations;
-        public uint MemorySizeKiB { get; init; } = HashExtensions.Argon2MemorySizeInKiB;
-        public uint DegreeOfParallelism { get; init; } = HashExtensions.Argon2DegreeOfParallelism;
-        public uint DerivedKeyLength { get; init; } = HashExtensions.Argon2DerivedKeyLength;
+        public uint Iterations { get; init; } = Constants.Argon2Iterations;
+        public uint MemorySizeKiB { get; init; } = Constants.Argon2MemorySizeInKiB;
+        public uint DegreeOfParallelism { get; init; } = Constants.Argon2DegreeOfParallelism;
+        public uint DerivedKeyLength { get; init; } = Constants.Argon2DerivedKeyLength;
         public Argon2Variant Argon2Variant { get; init; } = Argon2Variant.Argon2id;
 
         public Argon2Hasher()
@@ -36,7 +37,7 @@ namespace InsaneIO.Insane.Cryptography
         public static IHasher Deserialize(string json)
         {
             JsonNode jsonNode = JsonNode.Parse(json)!;
-            Type encoderType = Type.GetType(jsonNode[nameof(Encoder)]![nameof(IEncoder.Name)]!.GetValue<string>())!;
+            Type encoderType = Type.GetType(jsonNode[nameof(Encoder)]![nameof(IEncoder.AssemblyName)]!.GetValue<string>())!;
             IEncoder encoder = (IEncoder)JsonSerializer.Deserialize(jsonNode[nameof(Encoder)], encoderType)!;
             return new Argon2Hasher
             {
@@ -52,7 +53,7 @@ namespace InsaneIO.Insane.Cryptography
 
         public byte[] Compute(byte[] data)
         {
-            return data.ToArgon2(Salt, Iterations, MemorySizeKiB, DegreeOfParallelism, Argon2Variant, DerivedKeyLength);
+            return data.ComputeArgon2(Salt, Iterations, MemorySizeKiB, DegreeOfParallelism, Argon2Variant, DerivedKeyLength);
         }
 
         public string ComputeEncoded(string data)
@@ -62,14 +63,14 @@ namespace InsaneIO.Insane.Cryptography
 
         public string Serialize(bool indented = false)
         {
-            return ToJsonObject().ToJsonString(IJsonSerialize.GetIndentOptions(indented));
+            return ToJsonObject().ToJsonString(IJsonSerializable.GetIndentOptions(indented));
         }
 
         public JsonObject ToJsonObject()
         {
             return new JsonObject
             {
-                [nameof(Name)] = Name,
+                [nameof(AssemblyName)] = AssemblyName,
                 [nameof(Salt)] = Encoder.Encode(Salt),
                 [nameof(Iterations)] = Iterations,
                 [nameof(MemorySizeKiB)] = MemorySizeKiB,

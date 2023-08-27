@@ -17,7 +17,7 @@ namespace InsaneIO.Insane.Cryptography
     public class HmacHasher : IHasher
     {
         public static Type SelfType => typeof(HmacHasher);
-        public string Name { get => IBaseSerialize.GetName(SelfType); }
+        public string AssemblyName { get => IJsonSerializable.GetName(SelfType); }
 
         public HashAlgorithm HashAlgorithm { get; init; } = HashAlgorithm.Sha512;
         public IEncoder Encoder { get; init; } = Base64Encoder.DefaultInstance;
@@ -26,7 +26,7 @@ namespace InsaneIO.Insane.Cryptography
 
         public byte[] KeyBytes { get => Key; init => Key = value; }
 
-        private byte[] Key = RandomExtensions.Next(HashExtensions.HmacKeySize);
+        private byte[] Key = RandomExtensions.NextBytes(Constants.HmacKeySize);
 
         public HmacHasher()
         {
@@ -35,7 +35,7 @@ namespace InsaneIO.Insane.Cryptography
         public static IHasher Deserialize(string json)
         {
             JsonNode jsonNode = JsonNode.Parse(json)!;
-            Type encoderType = Type.GetType(jsonNode[nameof(Encoder)]![nameof(IEncoder.Name)]!.GetValue<string>())!;
+            Type encoderType = Type.GetType(jsonNode[nameof(Encoder)]![nameof(IEncoder.AssemblyName)]!.GetValue<string>())!;
             IEncoder encoder = (IEncoder)JsonSerializer.Deserialize(jsonNode[nameof(Encoder)], encoderType)!;
             return new HmacHasher
             {
@@ -47,7 +47,7 @@ namespace InsaneIO.Insane.Cryptography
 
         public byte[] Compute(byte[] data)
         {
-            return data.ToHmac(KeyBytes, HashAlgorithm);
+            return data.ComputeHmac(KeyBytes, HashAlgorithm);
         }
 
         public string ComputeEncoded(string data)
@@ -58,14 +58,14 @@ namespace InsaneIO.Insane.Cryptography
 
         public string Serialize(bool indented = false)
         {
-            return ToJsonObject().ToJsonString(IJsonSerialize.GetIndentOptions(indented));
+            return ToJsonObject().ToJsonString(IJsonSerializable.GetIndentOptions(indented));
         }
 
         public JsonObject ToJsonObject()
         {
             return new JsonObject()
             {
-                [nameof(Name)] = Name,
+                [nameof(AssemblyName)] = AssemblyName,
                 [nameof(Key)] = Encoder.Encode(Key),
                 [nameof(HashAlgorithm)] = HashAlgorithm.NumberValue<int>(),
                 [nameof(Encoder)] = Encoder.ToJsonObject(),

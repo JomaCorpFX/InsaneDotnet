@@ -6,10 +6,10 @@ using System.Text.Json.Nodes;
 namespace InsaneIO.Insane.Cryptography
 {
     [RequiresPreviewFeatures]
-    public class RsaKeyPair:IJsonSerialize
+    public class RsaKeyPair:IJsonSerializable
     {
         public static Type SelfType => typeof(RsaKeyPair);
-        public string Name { get => IBaseSerialize.GetName(SelfType); }
+        public string AssemblyName { get => IJsonSerializable.GetName(SelfType); }
         public string PublicKey { get; init; } = null!;
         public string PrivateKey { get; init; } = null!;
 
@@ -20,14 +20,14 @@ namespace InsaneIO.Insane.Cryptography
 
         public string Serialize(bool indented = false)
         {
-            return ToJsonObject().ToJsonString(IJsonSerialize.GetIndentOptions(indented));
+            return ToJsonObject().ToJsonString(IJsonSerializable.GetIndentOptions(indented));
         }
 
         public JsonObject ToJsonObject()
         {
             return new JsonObject()
             {
-                [nameof(Name)] = Name,
+                [nameof(AssemblyName)] = AssemblyName,
                 [nameof(PublicKey)] = PublicKey,
                 [nameof(PrivateKey)] = PrivateKey
             };

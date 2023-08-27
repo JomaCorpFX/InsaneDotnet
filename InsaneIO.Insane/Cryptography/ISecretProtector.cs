@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace InsaneIO.Insane.Cryptography
 {
     [RequiresPreviewFeatures]
-    public interface ISecretProtector: IBaseSerialize
+    public interface ISecretProtector: IJsonSerializable
     {
         public byte[] Protect(byte[] secret, byte[] key);
         public byte[] Unprotect(byte[] secret, byte[] key);

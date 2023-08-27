@@ -1,16 +1,20 @@
-﻿using InsaneIO.Insane.Serialization;
+﻿using InsaneIO.Insane.Misc;
+using InsaneIO.Insane.Serialization;
 using System.Runtime.Versioning;
 using System.Text.Json.Nodes;
 
 namespace InsaneIO.Insane.Cryptography
 {
+
     [RequiresPreviewFeatures]
-    public class Base32Encoder : IEncoder
+    public class Base32Encoder : IEncoder, IDefaultInstance<Base32Encoder>
     {
         public static Type SelfType => typeof(Base32Encoder);
-        public string Name { get => IBaseSerialize.GetName(SelfType); }
+        public string AssemblyName { get => IJsonSerializable.GetName(SelfType); }
 
-        public static readonly Base32Encoder DefaultInstance = new Base32Encoder();
+        private static readonly Base32Encoder _DefaultInstance = new();
+        public static Base32Encoder DefaultInstance => _DefaultInstance;
+
         public bool ToLower { get; set; } = false;
         public bool RemovePadding { get; set; } = false;
 
@@ -21,19 +25,24 @@ namespace InsaneIO.Insane.Cryptography
 
         public  byte[] Decode(string data)
         {
-            return data.FromBase32();
+            return data.DecodeFromBase32();
         }
 
         public  string Encode(byte[] data)
         {
-            return data.ToBase32(RemovePadding, ToLower);
+            return data.EncodeToBase32(RemovePadding, ToLower);
+        }
+
+        public string Encode(string data)
+        {
+            return Encode(data.ToByteArrayUtf8());
         }
 
         public JsonObject ToJsonObject()
         {
             return new JsonObject()
             {
-                [nameof(Name)] = Name,
+                [nameof(AssemblyName)] = AssemblyName,
                 [nameof(RemovePadding)] = RemovePadding,
                 [nameof(ToLower)] = ToLower,
             };
@@ -41,7 +50,7 @@ namespace InsaneIO.Insane.Cryptography
 
         public string Serialize(bool indented = false)
         {
-            return ToJsonObject().ToJsonString(IJsonSerialize.GetIndentOptions(indented));
+            return ToJsonObject().ToJsonString(IJsonSerializable.GetIndentOptions(indented));
         }
 
         public static IEncoder Deserialize(string json)
@@ -53,5 +62,7 @@ namespace InsaneIO.Insane.Cryptography
                 ToLower = jsonNode[nameof(ToLower)]!.GetValue<bool>()
             };
         }
+
+       
     }
 }
