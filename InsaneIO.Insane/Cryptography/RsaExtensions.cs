@@ -73,8 +73,12 @@ namespace InsaneIO.Insane.Extensions
 
         internal static (RsaKeyEncoding Encoding, RSA Rsa) GetRsaKeyEncodingWithRSA(this string key)
         {
-            key = key.Trim();
             var rsa = RSA.Create();
+            if(key==null)
+            {
+                return (RsaKeyEncoding.Unknown, rsa);
+            }
+            key = key.Trim();
             if (Base64ValueRegex.IsMatch(key))
             {
                 try
@@ -200,7 +204,6 @@ namespace InsaneIO.Insane.Extensions
 
         private static RSA ParsePrivateKey(string privateKey)
         {
-            if (string.IsNullOrWhiteSpace(privateKey)) throw new ArgumentException("Invalid null or empty private key.");
             var result = GetRsaKeyEncodingWithRSA(privateKey);
             if (result.Encoding == RsaKeyEncoding.XmlPrivate ||
             result.Encoding == RsaKeyEncoding.PemPrivate ||

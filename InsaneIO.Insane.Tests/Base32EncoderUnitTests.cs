@@ -93,7 +93,8 @@ namespace InsaneIO.Insane.Tests
         [TestMethod]
         public void TestEncodeLowercaseNoPadding2()
         {
-            Assert.AreEqual(encoderToLowerNoPadding.Encode(TestBytes2), LowerBase32Result2NoPadding);
+            var x = encoderToLowerNoPadding.Encode(TestBytes2);
+            Assert.AreEqual(x, LowerBase32Result2NoPadding);
         }
 
         [TestMethod]
