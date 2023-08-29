@@ -34,7 +34,7 @@
 		<IsPrerelease>false</IsPrerelease>
 		<PrereleaseName>Preview</PrereleaseName>
 		<BuildSuffix>Build</BuildSuffix>
-		<BuildNumber>962</BuildNumber>
+		<BuildNumber>980</BuildNumber>
 		<VersionPrefix>6.0.8</VersionPrefix>
 		<VersionSuffix></VersionSuffix>
 		<Version>6.0.8</Version>
@@ -43,6 +43,12 @@
 		<!--<UseBlazorWebAssembly>true</UseBlazorWebAssembly>-->
 		<!--<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>-->
 		<!--<CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>-->
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <Deterministic>True</Deterministic>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <Deterministic>True</Deterministic>
 	</PropertyGroup>
 
 	<ItemGroup>

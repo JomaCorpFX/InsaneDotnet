@@ -57,7 +57,8 @@
                     while (arrayIndex != charCount) returnArray[arrayIndex++] = '=';
                 }
             }
-            return new string(returnArray,0, arrayIndex-1);
+            var ret = new string(returnArray,0, arrayIndex);
+            return ret;
         }
 
         public static string EncodeToBase32(this string data, bool removePadding = false, bool toLower = false)
