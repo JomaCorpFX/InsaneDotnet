@@ -13,8 +13,6 @@ namespace InsaneIO.Insane.Cryptography
         BerPrivate,
         PemPublic,
         PemPrivate,
-        PemRsaPublic,
-        PemRsaPrivate,
         XmlPublic,
         XmlPrivate
     }

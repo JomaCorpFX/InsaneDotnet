@@ -49,13 +49,6 @@ namespace InsaneIO.Insane.Extensions
                         PrivateKey = $"{Constants.RsaPemPrivateKeyHeader}{Environment.NewLine}{Csp.ExportPkcs8PrivateKey().EncodeToBase64(Constants.Base64PemLineBreaksLength)}{Environment.NewLine}{Constants.RsaPemPrivateKeyFooter}"
                     };
                     break;
-                case RsaKeyPairEncoding.PemRsa:
-                    result = new RsaKeyPair
-                    {
-                        PublicKey = $"{Constants.RsaPemRsaPublicKeyHeader}{Environment.NewLine}{Csp.ExportSubjectPublicKeyInfo().EncodeToBase64(Constants.Base64PemLineBreaksLength)}{Environment.NewLine}{Constants.RsaPemRsaPublicKeyFooter}",
-                        PrivateKey = $"{Constants.RsaPemRsaPrivateKeyHeader}{Environment.NewLine}{Csp.ExportPkcs8PrivateKey().EncodeToBase64(Constants.Base64PemLineBreaksLength)}{Environment.NewLine}{Constants.RsaPemRsaPrivateKeyFooter}"
-                    };
-                    break;
                 case RsaKeyPairEncoding.Ber:
                     result = new RsaKeyPair
                     {
@@ -71,12 +64,12 @@ namespace InsaneIO.Insane.Extensions
             return result;
         }
 
-        internal static (RsaKeyEncoding Encoding, RSA Rsa) GetRsaKeyEncodingWithRSA(this string key)
+        internal static (RsaKeyEncoding Encoding, RSA? Rsa) GetRsaKeyEncodingWithKey(this string key)
         {
             var rsa = RSA.Create();
-            if(key==null)
+            if(string.IsNullOrWhiteSpace(key))
             {
-                return (RsaKeyEncoding.Unknown, rsa);
+                return (RsaKeyEncoding.Unknown, null);
             }
             key = key.Trim();
             if (Base64ValueRegex.IsMatch(key))
@@ -95,7 +88,7 @@ namespace InsaneIO.Insane.Extensions
                     }
                     catch
                     {
-                        return (RsaKeyEncoding.Unknown, rsa);
+                        return (RsaKeyEncoding.Unknown, null);
                     }
                 }
             }
@@ -103,18 +96,23 @@ namespace InsaneIO.Insane.Extensions
             try
             {
 
-                if (RsaXmlPrivateKeyRegex.IsMatch(key))
+                if (key.StartsWith(Constants.RsaXmlKeyMainTag))
                 {
-                    rsa.FromXmlString(key);
-                    return (RsaKeyEncoding.XmlPrivate, rsa);
+                    if (RsaXmlPrivateKeyRegex.IsMatch(key))
+                    {
+                        rsa.FromXmlString(key);
+                        return (RsaKeyEncoding.XmlPrivate, rsa);
+                    }
+
+                    if (RsaXmlPublicKeyRegex.IsMatch(key))
+                    {
+                        rsa.FromXmlString(key);
+                        return (RsaKeyEncoding.XmlPublic, rsa);
+                    }
+                    return (RsaKeyEncoding.Unknown, null);
                 }
 
-                if (RsaXmlPublicKeyRegex.IsMatch(key))
-                {
-                    rsa.FromXmlString(key);
-                    return (RsaKeyEncoding.XmlPublic, rsa);
-                }
-
+                if (key.StartsWith(Constants.RsaPemKeyInitialTextHeader))
                 {
                     StringBuilder pemsb = new(key);
                     if (RsaPemPublicKeyRegex.IsMatch(key))
@@ -130,87 +128,67 @@ namespace InsaneIO.Insane.Extensions
                         rsa.ImportPkcs8PrivateKey(pemsb.ToString().Trim().DecodeFromBase64(), out int bytesRead1);
                         return (RsaKeyEncoding.PemPrivate, rsa);
                     }
-
-                    if (RsaPemRsaPublicKeyRegex.IsMatch(key))
-                    {
-                        pemsb.Replace(Constants.RsaPemRsaPublicKeyHeader, string.Empty).Replace(Constants.RsaPemRsaPublicKeyFooter, string.Empty);
-                        rsa.ImportSubjectPublicKeyInfo(pemsb.ToString().Trim().DecodeFromBase64(), out int bytesRead1);
-                        return (RsaKeyEncoding.PemRsaPublic, rsa);
-                    }
-
-                    if (RsaPemRsaPrivateKeyRegex.IsMatch(key))
-                    {
-                        pemsb.Replace(Constants.RsaPemRsaPrivateKeyHeader, string.Empty).Replace(Constants.RsaPemRsaPrivateKeyFooter, string.Empty);
-                        rsa.ImportPkcs8PrivateKey(pemsb.ToString().Trim().DecodeFromBase64(), out int bytesRead1);
-                        return (RsaKeyEncoding.PemRsaPrivate, rsa);
-                    }
+                    return (RsaKeyEncoding.Unknown, null);
                 }
             }
             catch
             {
-                return (RsaKeyEncoding.Unknown, rsa);
+                return (RsaKeyEncoding.Unknown, null);
             }
 
-            return (RsaKeyEncoding.Unknown, rsa);
+            return (RsaKeyEncoding.Unknown, null);
         }
 
         public static RsaKeyEncoding GetRsaKeyEncoding(this string key)
         {
-            return GetRsaKeyEncodingWithRSA(key).Encoding;
+            return GetRsaKeyEncodingWithKey(key).Encoding;
         }
 
 
+        internal static (bool Result, RSA? Rsa) ValidateRsaPublicKeyWithKey(this string publicKey)
+        {
+            var encodingResult = GetRsaKeyEncodingWithKey(publicKey);
+            return (encodingResult.Encoding == RsaKeyEncoding.XmlPublic ||
+                 encodingResult.Encoding == RsaKeyEncoding.PemPublic ||
+                 encodingResult.Encoding == RsaKeyEncoding.BerPublic, encodingResult.Rsa);
+        }
+
+        internal static (bool Result, RSA? Rsa) ValidateRsaPrivateKeyWithKey(this string privateKey)
+        {
+            var encodingResult = GetRsaKeyEncodingWithKey(privateKey);
+            return (encodingResult.Encoding == RsaKeyEncoding.XmlPrivate ||
+                encodingResult.Encoding == RsaKeyEncoding.PemPrivate ||
+                encodingResult.Encoding == RsaKeyEncoding.BerPrivate,encodingResult.Rsa);
+        }
+
         public static bool ValidateRsaPublicKey(this string publicKey)
         {
-            RsaKeyEncoding encoding = GetRsaKeyEncoding(publicKey);
-            if (encoding == RsaKeyEncoding.XmlPublic ||
-                encoding == RsaKeyEncoding.PemPublic ||
-                encoding == RsaKeyEncoding.PemRsaPublic ||
-                encoding == RsaKeyEncoding.BerPublic)
-            {
-                return true;
-            }
-            return false;
+            return ValidateRsaPublicKeyWithKey(publicKey).Result;
         }
 
         public static bool ValidateRsaPrivateKey(this string privateKey)
         {
-            RsaKeyEncoding encoding = GetRsaKeyEncoding(privateKey);
-            if (encoding == RsaKeyEncoding.XmlPrivate ||
-                encoding == RsaKeyEncoding.PemPrivate ||
-                encoding == RsaKeyEncoding.PemRsaPrivate ||
-                encoding == RsaKeyEncoding.BerPrivate)
-            {
-                return true;
-            }
-            return false;
+            return ValidateRsaPrivateKeyWithKey(privateKey).Result;
         }
 
 
 
-        private static RSA ParsePublicKey(string publicKey)
+        internal static RSA ParsePublicKey(this string publicKey)
         {
-            if (string.IsNullOrWhiteSpace(publicKey)) throw new ArgumentException("Invalid null or empty public key.");
-            var result = GetRsaKeyEncodingWithRSA(publicKey);
-            if (result.Encoding == RsaKeyEncoding.XmlPublic ||
-            result.Encoding == RsaKeyEncoding.PemPublic ||
-            result.Encoding == RsaKeyEncoding.PemRsaPublic ||
-            result.Encoding == RsaKeyEncoding.BerPublic)
+            var validation = ValidateRsaPublicKeyWithKey(publicKey);
+            if (validation.Result)
             {
-                return result.Rsa;
+                return validation.Rsa!;
             }
-            throw new ArgumentException("Unable to parse private key.");
+            throw new ArgumentException("Unable to parse public key.");
         }
 
-        private static RSA ParsePrivateKey(string privateKey)
+        internal static RSA ParsePrivateKey(this string privateKey)
         {
-            var result = GetRsaKeyEncodingWithRSA(privateKey);
-            if (result.Encoding == RsaKeyEncoding.XmlPrivate ||
-            result.Encoding == RsaKeyEncoding.PemPrivate ||
-            result.Encoding == RsaKeyEncoding.PemRsaPrivate ||
-            result.Encoding == RsaKeyEncoding.BerPrivate)
+            var validation = ValidateRsaPrivateKeyWithKey(privateKey);
+            if (validation.Result)
             {
-                return result.Rsa;
+                return validation.Rsa!;
             }
             throw new ArgumentException("Unable to parse private key.");
         }
@@ -273,7 +251,7 @@ namespace InsaneIO.Insane.Extensions
             string fxName = "Insane_" + HexEncoder.DefaultInstance.Encode(RandomExtensions.NextBytes(16));
             string jscode = @$"
 Insane.{fxName} = (keySize, encoding) => {{
-    var keypair = Insane.RsaExtensions.CreateRsaKeyPair(keySize, Insane.RsaKeyEncodingEnumExtensions.ParseInt(encoding));
+    var keypair = Insane.RsaExtensions.CreateRsaKeyPair(keySize, Insane.RsaKeyPairEncodingEnumExtensions.ParseInt(encoding));
     var result = keypair.Serialize(true);
     keypair.delete();
     return result;
@@ -295,7 +273,7 @@ Insane.{fxName} = (keySize, encoding) => {{
             return await js.InvokeAsync<bool>("Insane.RsaExtensions.ValidateRsaPrivateKey", privateKey);
         }
 
-        public static async Task<RsaKeyPairEncoding> GetRsaKeyEncoding(this IJSRuntime js, string key)
+        public static async Task<RsaKeyEncoding> GetRsaKeyEncoding(this IJSRuntime js, string key)
         {
             string fxName = "Insane_" + HexEncoder.DefaultInstance.Encode(RandomExtensions.NextBytes(16));
             string jscode = @$"
@@ -305,7 +283,7 @@ Insane.{fxName} = (key) => {{
 }};
 ";
             await js.InvokeAsync<object>("eval", jscode);
-            var result = await js.InvokeAsync<RsaKeyPairEncoding>($"Insane.{fxName}", key);
+            var result = await js.InvokeAsync<RsaKeyEncoding>($"Insane.{fxName}", key);
             await js.InvokeAsync<object>("eval", $"delete Insane.{fxName};");
             return result;
         }
