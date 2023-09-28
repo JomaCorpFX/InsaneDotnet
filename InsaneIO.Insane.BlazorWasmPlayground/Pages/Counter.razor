@@ -44,7 +44,7 @@
         {
             var encrypt = await js.EncryptEncodedRsaAsync("Hello from RSA", keypair3.PublicKey ,Base64Encoder.DefaultInstance, RsaPadding.OaepSha512);
             var decrypt = (await js.DecryptEncodedRsaAsync(encrypt, keypair3.PrivateKey, Base64Encoder.DefaultInstance, RsaPadding.OaepSha512)).ToStringUtf8();
-            var rsaEnc7 = await js.GetRsaKeyEncoding(keypair3.PrivateKey + "1");
+            var rsaEnc7 = await js.GetRsaKeyEncoding(keypair3.PrivateKey );
         }
         catch (Exception ex)
         {
