@@ -67,7 +67,7 @@ namespace InsaneIO.Insane.Extensions
         internal static (RsaKeyEncoding Encoding, RSA? Rsa) GetRsaKeyEncodingWithKey(this string key)
         {
             var rsa = RSA.Create();
-            if(string.IsNullOrWhiteSpace(key))
+            if (string.IsNullOrWhiteSpace(key))
             {
                 return (RsaKeyEncoding.Unknown, null);
             }
@@ -158,7 +158,7 @@ namespace InsaneIO.Insane.Extensions
             var encodingResult = GetRsaKeyEncodingWithKey(privateKey);
             return (encodingResult.Encoding == RsaKeyEncoding.XmlPrivate ||
                 encodingResult.Encoding == RsaKeyEncoding.PemPrivate ||
-                encodingResult.Encoding == RsaKeyEncoding.BerPrivate,encodingResult.Rsa);
+                encodingResult.Encoding == RsaKeyEncoding.BerPrivate, encodingResult.Rsa);
         }
 
         public static bool ValidateRsaPublicKey(this string publicKey)
@@ -248,8 +248,10 @@ namespace InsaneIO.Insane.Extensions
 
         public static async Task<RsaKeyPair> CreateRsaKeyPairAsync(this IJSRuntime js, uint keySize, RsaKeyPairEncoding encoding = RsaKeyPairEncoding.Ber)
         {
-            string fxName = "Insane_" + HexEncoder.DefaultInstance.Encode(RandomExtensions.NextBytes(16));
-            string jscode = @$"
+            return await Task.Run(async () =>
+            {
+                string fxName = "Insane_" + HexEncoder.DefaultInstance.Encode(RandomExtensions.NextBytes(16));
+                string jscode = @$"
 Insane.{fxName} = (keySize, encoding) => {{
     var keypair = Insane.RsaExtensions.CreateRsaKeyPair(keySize, Insane.RsaKeyPairEncodingEnumExtensions.ParseInt(encoding));
     var result = keypair.Serialize(true);
@@ -257,10 +259,12 @@ Insane.{fxName} = (keySize, encoding) => {{
     return result;
 }};
 ";
-            await js.InvokeAsync<object>("eval", jscode);
-            var result = await js.InvokeAsync<string>($"Insane.{fxName}", keySize, encoding.IntValue());
-            await js.InvokeAsync<object>("eval", $"delete Insane.{fxName};");
-            return JsonSerializer.Deserialize<RsaKeyPair>(result)!;
+                await js.InvokeAsync<object>("eval", jscode);
+                var result = await js.InvokeAsync<string>($"Insane.{fxName}", keySize, encoding.IntValue());
+                await js.InvokeAsync<object>("eval", $"delete Insane.{fxName};");
+                return JsonSerializer.Deserialize<RsaKeyPair>(result)!;
+            });
+
         }
 
         public static async Task<bool> ValidateRsaPublicKeyAsync(this IJSRuntime js, string publicKey)
@@ -273,7 +277,7 @@ Insane.{fxName} = (keySize, encoding) => {{
             return await js.InvokeAsync<bool>("Insane.RsaExtensions.ValidateRsaPrivateKey", privateKey);
         }
 
-        public static async Task<RsaKeyEncoding> GetRsaKeyEncoding(this IJSRuntime js, string key)
+        public static async Task<RsaKeyEncoding> GetRsaKeyEncodingAsync(this IJSRuntime js, string key)
         {
             string fxName = "Insane_" + HexEncoder.DefaultInstance.Encode(RandomExtensions.NextBytes(16));
             string jscode = @$"
@@ -291,8 +295,10 @@ Insane.{fxName} = (key) => {{
 
         public static async Task<byte[]> EncryptRsaAsync(this IJSRuntime js, byte[] data, string publicKey, RsaPadding padding = RsaPadding.OaepSha256)
         {
-            string fxName = "Insane_" + HexEncoder.DefaultInstance.Encode(RandomExtensions.NextBytes(16));
-            string jscode = @$"
+            return await Task.Run(async () =>
+            {
+                string fxName = "Insane_" + HexEncoder.DefaultInstance.Encode(RandomExtensions.NextBytes(16));
+                string jscode = @$"
 Insane.{fxName} = (data, publicKey, padding) => {{
     var data = Insane.InteropExtensions.JsUint8ArrayToStdVectorUint8(data);
     var padding = Insane.RsaPaddingEnumExtensions.ParseInt(padding);
@@ -303,10 +309,11 @@ Insane.{fxName} = (data, publicKey, padding) => {{
     return ret;
 }};
 ";
-            await js.InvokeAsync<object>("eval", jscode);
-            var result = await js.InvokeAsync<byte[]>($"Insane.{fxName}", data, publicKey, padding.IntValue());
-            await js.InvokeAsync<object>("eval", $"delete Insane.{fxName};");
-            return result;
+                await js.InvokeAsync<object>("eval", jscode);
+                var result = await js.InvokeAsync<byte[]>($"Insane.{fxName}", data, publicKey, padding.IntValue());
+                await js.InvokeAsync<object>("eval", $"delete Insane.{fxName};");
+                return result;
+            });
         }
 
 
@@ -328,8 +335,10 @@ Insane.{fxName} = (data, publicKey, padding) => {{
 
         public static async Task<byte[]> DecryptRsaAsync(this IJSRuntime js, byte[] data, string privateKey, RsaPadding padding = RsaPadding.OaepSha256)
         {
-            string fxName = "Insane_" + HexEncoder.DefaultInstance.Encode(RandomExtensions.NextBytes(16));
-            string jscode = @$"
+            return await Task.Run(async () =>
+            {
+                string fxName = "Insane_" + HexEncoder.DefaultInstance.Encode(RandomExtensions.NextBytes(16));
+                string jscode = @$"
 Insane.{fxName} = (data, privateKey, padding) => {{
     var data = Insane.InteropExtensions.JsUint8ArrayToStdVectorUint8(data);
     var padding = Insane.RsaPaddingEnumExtensions.ParseInt(padding);
@@ -340,10 +349,11 @@ Insane.{fxName} = (data, privateKey, padding) => {{
     return ret;
 }};
 ";
-            await js.InvokeAsync<object>("eval", jscode);
-            var result = await js.InvokeAsync<byte[]>($"Insane.{fxName}", data, privateKey, padding.IntValue());
-            await js.InvokeAsync<object>("eval", $"delete Insane.{fxName};");
-            return result;
+                await js.InvokeAsync<object>("eval", jscode);
+                var result = await js.InvokeAsync<byte[]>($"Insane.{fxName}", data, privateKey, padding.IntValue());
+                await js.InvokeAsync<object>("eval", $"delete Insane.{fxName};");
+                return result;
+            });
         }
 
         public static async Task<byte[]> DecryptEncodedRsaAsync(this IJSRuntime js, string data, string privateKey, IEncoder encoder, RsaPadding padding = RsaPadding.OaepSha256)
