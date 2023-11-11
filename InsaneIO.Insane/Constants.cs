@@ -46,6 +46,8 @@ namespace InsaneIO.Insane
         public const uint Argon2MemorySizeInKiB = 16384;
         public const uint Argon2DegreeOfParallelism = 4;
 
+        public const string Base64ValueRegexPattern = @"^(?:(?:[A-Za-z0-9+\/]{4})*)(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)?$";
+
         public const string RsaPemKeyInitialTextHeader = "-----BEGIN ";
         public const string RsaPemPrivateKeyHeader = "-----BEGIN PRIVATE KEY-----";
         public const string RsaPemPrivateKeyFooter = "-----END PRIVATE KEY-----";
@@ -69,6 +71,5 @@ namespace InsaneIO.Insane
         public const string RsaXmlPublicKeyRegexPattern = @"^(<RSAKeyValue>\s*(?:\s*<Modulus>[a-zA-Z0-9\+\/]+={0,2}<\/Modulus>()|\s*<Exponent>[a-zA-Z0-9\+\/]+={0,2}<\/Exponent>()){2}\s*<\/\s*RSAKeyValue\s*>\s*\2\3)$";
         public const string RsaXmlPrivateKeyRegexPattern = @"^(\s*<RSAKeyValue>\s*(?:\s*<Modulus>[a-zA-Z0-9\+\/]+={0,2}<\/Modulus>()|\s*<Exponent>[a-zA-Z0-9\+\/]+={0,2}<\/Exponent>()|\s*<P>[a-zA-Z0-9\+\/]+={0,2}<\/P>()|\s*<Q>[a-zA-Z0-9\+\/]+={0,2}<\/Q>()|\s*<DP>[a-zA-Z0-9\+\/]+={0,2}<\/DP>()|\s*<DQ>[a-zA-Z0-9\+\/]+={0,2}<\/DQ>()|\s*<InverseQ>[a-zA-Z0-9\+\/]+={0,2}<\/InverseQ>()|\s*<D>[a-zA-Z0-9\+\/]+={0,2}<\/D>()){8}\s*<\/RSAKeyValue>\2\3\4\5\6\7\8\9)$";
 
-        public const string Base64ValueRegexPattern = @"^(?:(?:[A-Za-z0-9+\/]{4})*)(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)?$";
     }
 }
