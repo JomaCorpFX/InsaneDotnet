@@ -4,7 +4,7 @@ using System.Runtime.Versioning;
 
 namespace InsaneIO.Insane.Extensions
 {
-    [RequiresPreviewFeatures]
+    
     public static class TotpExtensions
     {
         private const uint InitialCounterTime = 0;

@@ -9,7 +9,7 @@ using System.Text.Json.Nodes;
 
 namespace InsaneIO.Insane.Cryptography
 {
-    [RequiresPreviewFeatures]
+    
     public class HexEncoder : IEncoder, IDefaultInstance<HexEncoder>
     {
         public static Type SelfType => typeof(HexEncoder);

@@ -10,7 +10,7 @@ using System.Runtime.Versioning;
 
 namespace InsaneIO.Insane.Tests
 {
-    [RequiresPreviewFeatures]
+    
     [TestClass]
     public class RsaExtensionsUnitTests
     {

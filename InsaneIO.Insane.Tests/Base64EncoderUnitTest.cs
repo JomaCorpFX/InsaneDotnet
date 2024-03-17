@@ -16,7 +16,6 @@ using FluentAssertions.Equivalency;
 
 namespace InsaneIO.Insane.Tests
 {
-    [RequiresPreviewFeatures]
     [TestClass]
     public class Base64EncoderUnitTest
     {

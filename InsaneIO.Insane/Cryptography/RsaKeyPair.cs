@@ -5,13 +5,19 @@ using System.Text.Json.Nodes;
 
 namespace InsaneIO.Insane.Cryptography
 {
-    [RequiresPreviewFeatures]
+    
     public class RsaKeyPair:IJsonSerializable
     {
+        public RsaKeyPair(string publickey, string privatekey)
+        {
+            PublicKey = publickey;
+            PrivateKey = privatekey;
+        }
+
         public static Type SelfType => typeof(RsaKeyPair);
-        public string AssemblyName { get => IJsonSerializable.GetName(SelfType); }
-        public string PublicKey { get; init; } = null!;
-        public string PrivateKey { get; init; } = null!;
+        public string AssemblyName { get => IBaseSerializable.GetName(SelfType); }
+        public  string PublicKey { get; init; } = null!;
+        public  string PrivateKey { get; init; } = null!;
 
         public static RsaKeyPair? Deserialize(string json)
         {

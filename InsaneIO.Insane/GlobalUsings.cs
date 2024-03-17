@@ -1,5 +1,4 @@
 ﻿global using InsaneIO.Insane.Cryptography;
-global using InsaneIO.Insane.EntityFrameworkCore;
 global using InsaneIO.Insane.Extensions;
 global using InsaneIO.Insane.Security;
 global using Microsoft.EntityFrameworkCore;

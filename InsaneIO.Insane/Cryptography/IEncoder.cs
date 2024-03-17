@@ -4,7 +4,7 @@ using System.Text.Json.Nodes;
 
 namespace InsaneIO.Insane.Cryptography
 {
-    [RequiresPreviewFeatures]
+    
     public interface IEncoder : IEncoderJsonSerializable
     {
         public string Encode(byte[] data);

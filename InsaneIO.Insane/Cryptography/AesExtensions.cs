@@ -6,7 +6,7 @@ using HashAlgorithm = InsaneIO.Insane.Cryptography.HashAlgorithm;
 
 namespace InsaneIO.Insane.Extensions
 {
-    [RequiresPreviewFeatures]
+    
     public static class AesExtensions
     {
         public const int MaxIvLength = 16;
@@ -39,6 +39,16 @@ namespace InsaneIO.Insane.Extensions
             aes.Key = GenerateNormalizedKey(key);
             using ICryptoTransform encryptor = aes.CreateEncryptor();
             return encryptor.TransformFinalBlock(data, 0, data.Length).Concat(aes.IV).ToArray();
+        }
+
+        public static byte[] EncryptAesCbc(this byte[] data, string key, AesCbcPadding padding = AesCbcPadding.Pkcs7)
+        {
+            return EncryptAesCbc(data, key.ToByteArrayUtf8(), padding);
+        }
+
+        public static byte[] EncryptAesCbc(this string data, byte[] key, AesCbcPadding padding = AesCbcPadding.Pkcs7)
+        {
+            return EncryptAesCbc(data.ToByteArrayUtf8(), key, padding);
         }
 
         public static byte[] EncryptAesCbc(this string data, string key, AesCbcPadding padding = AesCbcPadding.Pkcs7)
@@ -76,6 +86,16 @@ namespace InsaneIO.Insane.Extensions
         }
 
         public static string EncryptEncodedAesCbc(this string data, string key, IEncoder encoder, AesCbcPadding padding = AesCbcPadding.Pkcs7)
+        {
+            return encoder.Encode(EncryptAesCbc(data, key, padding));
+        }
+
+        public static string EncryptEncodedAesCbc(this string data, byte[] key, IEncoder encoder, AesCbcPadding padding = AesCbcPadding.Pkcs7)
+        {
+            return encoder.Encode(EncryptAesCbc(data, key, padding));
+        }
+
+        public static string EncryptEncodedAesCbc(this byte[] data, string key, IEncoder encoder, AesCbcPadding padding = AesCbcPadding.Pkcs7)
         {
             return encoder.Encode(EncryptAesCbc(data, key, padding));
         }

@@ -4,7 +4,7 @@ using System.Runtime.Versioning;
 
 namespace InsaneIO.Insane.Device
 {
-    [RequiresPreviewFeatures]
+    
     public static class DeviceInfo
     {
         private const string WINDOWS = "Windows";

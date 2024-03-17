@@ -8,8 +8,8 @@ using InsaneIO.Insane.Serialization;
 
 namespace InsaneIO.Insane.Cryptography
 {
-    [RequiresPreviewFeatures]
-    public interface IHasherJsonSerialize : IJsonSerializable
+    
+    public interface IHasherJsonSerializable : IJsonSerializable
     {
         public static abstract IHasher Deserialize(string json);
     }

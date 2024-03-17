@@ -12,7 +12,7 @@ using System.Security.Cryptography;
 
 namespace InsaneIO.Insane.Tests
 {
-    [RequiresPreviewFeatures]
+    
     [TestClass]
     public class AesEncryptorUnitTests
     {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace InsaneIO.Insane.Misc
 {
-    [RequiresPreviewFeatures]
+    
     public interface IDefaultInstance<T>
     {
         static abstract T DefaultInstance { get; }

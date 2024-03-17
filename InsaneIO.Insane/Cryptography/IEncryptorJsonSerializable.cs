@@ -1,4 +1,5 @@
-﻿using System;
+﻿using InsaneIO.Insane.Serialization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Versioning;
@@ -8,10 +9,9 @@ using System.Threading.Tasks;
 
 namespace InsaneIO.Insane.Cryptography
 {
-    [RequiresPreviewFeatures]
-    public interface IEncryptorJsonSerializable: ISecureJsonSerializable
+    
+    public interface IEncryptorJsonSerializable: IJsonSerializable
     {
-        public static abstract IEncryptor Deserialize(string json, byte[] serializeKey);
-        public static abstract IEncryptor Deserialize(string json, string serializeKey);
+        public static abstract IEncryptor Deserialize(string json);
     }
 }

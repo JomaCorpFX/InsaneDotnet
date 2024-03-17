@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace InsaneIO.Insane.Serialization
 {
-    [RequiresPreviewFeatures]
+    
     public interface IJsonSerializable:IBaseSerializable
     {
         

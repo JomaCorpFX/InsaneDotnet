@@ -15,7 +15,7 @@ namespace InsaneIO.Insane.Security
     /// <summary>
     /// Testing codes in the link - https://totp.danhersam.com/
     /// </summary>
-    [RequiresPreviewFeatures]
+    
     public class TotpManager : IJsonSerializable
     {
         public static Type SelfType => typeof(TotpManager);

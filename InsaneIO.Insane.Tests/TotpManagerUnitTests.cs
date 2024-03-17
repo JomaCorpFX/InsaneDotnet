@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace InsaneIO.Insane.Tests
 {
     [TestClass]
-    [RequiresPreviewFeatures]
+    
     public class TotpManagerUnitTests
     {
 

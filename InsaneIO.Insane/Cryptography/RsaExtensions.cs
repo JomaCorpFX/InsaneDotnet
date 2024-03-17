@@ -1,22 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.JSInterop;
-using Microsoft.VisualBasic;
-using System.Drawing;
-using System.Reflection.PortableExecutable;
-using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
+﻿using Microsoft.JSInterop;
 using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
 namespace InsaneIO.Insane.Extensions
 {
-    [RequiresPreviewFeatures]
+
     public static class RsaExtensions
     {
         private static readonly Regex Base64ValueRegex = new Regex(Constants.Base64ValueRegexPattern, RegexOptions.None, TimeSpan.FromSeconds(2));
@@ -36,25 +25,14 @@ namespace InsaneIO.Insane.Extensions
             switch (encoding)
             {
                 case RsaKeyPairEncoding.Xml:
-                    result = new RsaKeyPair
-                    {
-                        PublicKey = XDocument.Parse(Csp.ToXmlString(false)).ToString(),
-                        PrivateKey = XDocument.Parse(Csp.ToXmlString(true)).ToString()
-                    };
+                    result = new RsaKeyPair(XDocument.Parse(Csp.ToXmlString(false)).ToString(), XDocument.Parse(Csp.ToXmlString(true)).ToString());
                     break;
                 case RsaKeyPairEncoding.Pem:
-                    result = new RsaKeyPair
-                    {
-                        PublicKey = $"{Constants.RsaPemPublicKeyHeader}{Environment.NewLine}{Csp.ExportSubjectPublicKeyInfo().EncodeToBase64(Constants.Base64PemLineBreaksLength)}{Environment.NewLine}{Constants.RsaPemPublicKeyFooter}",
-                        PrivateKey = $"{Constants.RsaPemPrivateKeyHeader}{Environment.NewLine}{Csp.ExportPkcs8PrivateKey().EncodeToBase64(Constants.Base64PemLineBreaksLength)}{Environment.NewLine}{Constants.RsaPemPrivateKeyFooter}"
-                    };
+                    result = new RsaKeyPair($"{Constants.RsaPemPublicKeyHeader}{Environment.NewLine}{Csp.ExportSubjectPublicKeyInfo().EncodeToBase64(Constants.Base64PemLineBreaksLength)}{Environment.NewLine}{Constants.RsaPemPublicKeyFooter}",
+                        $"{Constants.RsaPemPrivateKeyHeader}{Environment.NewLine}{Csp.ExportPkcs8PrivateKey().EncodeToBase64(Constants.Base64PemLineBreaksLength)}{Environment.NewLine}{Constants.RsaPemPrivateKeyFooter}");
                     break;
                 case RsaKeyPairEncoding.Ber:
-                    result = new RsaKeyPair
-                    {
-                        PublicKey = Csp.ExportSubjectPublicKeyInfo().EncodeToBase64(),
-                        PrivateKey = Csp.ExportPkcs8PrivateKey().EncodeToBase64()
-                    };
+                    result = new RsaKeyPair(Csp.ExportSubjectPublicKeyInfo().EncodeToBase64(), Csp.ExportPkcs8PrivateKey().EncodeToBase64());
                     break;
 
                 default:

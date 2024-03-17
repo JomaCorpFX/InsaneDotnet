@@ -2,7 +2,7 @@
 
 namespace InsaneIO.Insane.Extensions
 {
-    [RequiresPreviewFeatures]
+    
     public static class Base64EncodingExtensions
     {
         public const uint NoLineBreaks = 0;

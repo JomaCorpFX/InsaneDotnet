@@ -11,8 +11,8 @@ using InsaneIO.Insane.Serialization;
 
 namespace InsaneIO.Insane.Cryptography
 {
-    [RequiresPreviewFeatures]
-    public class ShaHasher : IHasher, IHasherJsonSerialize
+    
+    public class ShaHasher : IHasher
     {
         public static Type SelfType => typeof(ShaHasher);
         public string AssemblyName { get => IBaseSerializable.GetName(SelfType); }
@@ -35,16 +35,6 @@ namespace InsaneIO.Insane.Cryptography
             };
         }
 
-        public byte[] Compute(byte[] data)
-        {
-            return HashExtensions.ComputeHash(data, HashAlgorithm);
-        }
-
-        public string ComputeEncoded(string data)
-        {
-            return Encoder.Encode(Compute(data.ToByteArrayUtf8()));
-        }
-
         public string Serialize(bool indented = false)
         {
             return ToJsonObject().ToJsonString(IJsonSerializable.GetIndentOptions(indented));
@@ -60,14 +50,44 @@ namespace InsaneIO.Insane.Cryptography
             };
         }
 
+        public byte[] Compute(byte[] data)
+        {
+            return data.ComputeHash(HashAlgorithm);
+        }
+
+        public byte[] Compute(string data)
+        {
+            return data.ComputeHash(HashAlgorithm);
+        }
+
+        public string ComputeEncoded(byte[] data)
+        {
+            return data.ComputeEncodedHash(Encoder, HashAlgorithm);
+        }
+
+        public string ComputeEncoded(string data)
+        {
+            return data.ComputeEncodedHash(Encoder, HashAlgorithm);
+        }
+
         public bool Verify(byte[] data, byte[] expected)
         {
-            return Enumerable.SequenceEqual(Compute(data), expected);
+            return Compute(data).SequenceEqual(expected);
+        }
+
+        public bool Verify(string data, byte[] expected)
+        {
+            return Compute(data).SequenceEqual(expected);
+        }
+
+        public bool VerifyEncoded(byte[] data, string expected)
+        {
+            return ComputeEncoded(data).SequenceEqual(expected);
         }
 
         public bool VerifyEncoded(string data, string expected)
         {
-            return ComputeEncoded(data).Equals(expected);
+            return ComputeEncoded(data).SequenceEqual(expected);
         }
     }
 }

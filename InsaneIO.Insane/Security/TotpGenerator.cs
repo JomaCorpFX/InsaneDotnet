@@ -2,7 +2,7 @@
 
 namespace InsaneIO.Insane.Security
 {
-    [RequiresPreviewFeatures]
+    
     public class TotpGenerator
     {
         public string Issuer { get; set; } = string.Empty;

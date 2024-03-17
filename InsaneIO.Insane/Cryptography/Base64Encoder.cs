@@ -5,7 +5,7 @@ using System.Text.Json.Nodes;
 
 namespace InsaneIO.Insane.Cryptography
 {
-    [RequiresPreviewFeatures]
+    
     public class Base64Encoder : IEncoder, IDefaultInstance<Base64Encoder>
     {
         public const uint NoLineBreaks = 0;

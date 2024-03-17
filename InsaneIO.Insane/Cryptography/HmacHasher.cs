@@ -1,4 +1,5 @@
 ﻿using InsaneIO.Insane.Cryptography;
+using InsaneIO.Insane.Extensions;
 using InsaneIO.Insane.Serialization;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace InsaneIO.Insane.Cryptography
 {
-    [RequiresPreviewFeatures]
+
     public class HmacHasher : IHasher
     {
         public static Type SelfType => typeof(HmacHasher);
@@ -22,7 +23,7 @@ namespace InsaneIO.Insane.Cryptography
         public HashAlgorithm HashAlgorithm { get; init; } = HashAlgorithm.Sha512;
         public IEncoder Encoder { get; init; } = Base64Encoder.DefaultInstance;
 
-        public string KeyString { get => Encoder.Encode(Key); init => Key =  value.ToByteArrayUtf8(); }
+        public string KeyString { get => Encoder.Encode(Key); init => Key = value.ToByteArrayUtf8(); }
 
         public byte[] KeyBytes { get => Key; init => Key = value; }
 
@@ -41,20 +42,9 @@ namespace InsaneIO.Insane.Cryptography
             {
                 HashAlgorithm = Enum.Parse<HashAlgorithm>(jsonNode[nameof(HashAlgorithm)]!.GetValue<int>().ToString()),
                 Encoder = encoder,
-                Key = encoder.Decode( jsonNode[nameof(Key)]!.GetValue<string>())
+                Key = encoder.Decode(jsonNode[nameof(Key)]!.GetValue<string>())
             };
         }
-
-        public byte[] Compute(byte[] data)
-        {
-            return data.ComputeHmac(KeyBytes, HashAlgorithm);
-        }
-
-        public string ComputeEncoded(string data)
-        {
-            return Encoder.Encode(Compute(data.ToByteArrayUtf8()));
-        }
-
 
         public string Serialize(bool indented = false)
         {
@@ -72,14 +62,44 @@ namespace InsaneIO.Insane.Cryptography
             };
         }
 
+        public byte[] Compute(byte[] data)
+        {
+            return data.ComputeHmac(Key, HashAlgorithm);
+        }
+
+        public byte[] Compute(string data)
+        {
+            return data.ComputeHmac(Key, HashAlgorithm);
+        }
+
+        public string ComputeEncoded(byte[] data)
+        {
+            return data.ComputeEncodedHmac(Key, Encoder, HashAlgorithm);
+        }
+
+        public string ComputeEncoded(string data)
+        {
+            return data.ComputeEncodedHmac(Key, Encoder, HashAlgorithm);
+        }
+
         public bool Verify(byte[] data, byte[] expected)
         {
-            return Enumerable.SequenceEqual(Compute(data), expected);
+            return Compute(data).SequenceEqual(expected);
+        }
+
+        public bool Verify(string data, byte[] expected)
+        {
+            return Compute(data).SequenceEqual(expected);
+        }
+
+        public bool VerifyEncoded(byte[] data, string expected)
+        {
+            return ComputeEncoded(data).SequenceEqual(expected);
         }
 
         public bool VerifyEncoded(string data, string expected)
         {
-            return ComputeEncoded(data).Equals(expected);
+            return ComputeEncoded(data).SequenceEqual(expected);
         }
     }
 }

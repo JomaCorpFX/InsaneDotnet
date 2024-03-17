@@ -9,7 +9,7 @@ using InsaneIO.Insane.Serialization;
 
 namespace InsaneIO.Insane.Cryptography
 {
-    [RequiresPreviewFeatures]
+    
     public interface ISecureJsonSerializable: IBaseSerializable
     {
 

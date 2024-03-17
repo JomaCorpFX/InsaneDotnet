@@ -13,7 +13,7 @@ using System.Web;
 
 namespace InsaneIO.Insane.Tests
 {
-    [RequiresPreviewFeatures]
+    
     [TestClass]
     public class HexEncoderUnitTests
     {

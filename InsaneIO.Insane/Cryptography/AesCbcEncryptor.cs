@@ -1,4 +1,5 @@
-﻿using InsaneIO.Insane.Serialization;
+﻿using InsaneIO.Insane.Extensions;
+using InsaneIO.Insane.Serialization;
 using System.Runtime.Versioning;
 using System.Security.Cryptography;
 using System.Text.Json;
@@ -8,7 +9,7 @@ namespace InsaneIO.Insane.Cryptography
 {
 
 
-    [RequiresPreviewFeatures]
+    
     public class AesCbcEncryptor : IEncryptor
     {
         public static Type SelfType => typeof(AesCbcEncryptor);
@@ -23,10 +24,56 @@ namespace InsaneIO.Insane.Cryptography
 
         public AesCbcPadding Padding { get; init; } = AesCbcPadding.Pkcs7;
 
-        public ISecretProtector Protector { get; init; } = new AesCbcProtector();
-
         public AesCbcEncryptor()
         {
+        } 
+
+        public static IEncryptor Deserialize(string json)
+        {
+            JsonNode jsonNode = JsonNode.Parse(json)!;
+            Type encoderType = Type.GetType(jsonNode[nameof(Encoder)]![nameof(IEncoder.AssemblyName)]!.GetValue<string>())!;
+            IEncoder encoder = (IEncoder)JsonSerializer.Deserialize(jsonNode[nameof(Encoder)], encoderType)!;
+            return new AesCbcEncryptor {
+                Key = encoder.Decode(jsonNode[nameof(Key)]!.GetValue<string>()),
+                Encoder = encoder,
+                Padding = Enum.Parse<AesCbcPadding>(jsonNode[nameof(Padding)]!.GetValue<int>().ToString())
+            };
+        }
+
+        public string Serialize(bool indented = false)
+        {
+            return ToJsonObject().ToJsonString(IJsonSerializable.GetIndentOptions(indented));
+        }
+
+        public JsonObject ToJsonObject()
+        {
+            return new JsonObject
+            {
+                [nameof(AssemblyName)] = AssemblyName,
+                [nameof(Key)] = Encoder.Encode(Key),
+                [nameof(Padding)] = Padding.NumberValue<int>(),
+                [nameof(Encoder)] = Encoder.ToJsonObject(),
+            };
+        }
+
+        public byte[] Encrypt(byte[] data)
+        {
+            return data.EncryptAesCbc(Key, Padding);
+        }
+
+        public byte[] Encrypt(string data)
+        {
+            return data.EncryptAesCbc(Key, Padding);
+        }
+
+        public string EncryptEncoded(byte[] data)
+        {
+            return data.EncryptEncodedAesCbc(Key, Encoder, Padding);
+        }
+
+        public string EncryptEncoded(string data)
+        {
+            return data.EncryptEncodedAesCbc(Key, Encoder, Padding);
         }
 
         public byte[] Decrypt(byte[] data)
@@ -34,64 +81,9 @@ namespace InsaneIO.Insane.Cryptography
             return data.DecryptAesCbc(Key, Padding);
         }
 
-        public string DecryptEncoded(string data)
+        public byte[] DecryptEncoded(string data)
         {
-            return Decrypt(Encoder.Decode(data)).ToStringUtf8();
-        }
-        public byte[] Encrypt(byte[] data)
-        {
-            return data.EncryptAesCbc(Key, Padding);
-        }
-
-        public string EncryptEncoded(string data)
-        {
-            return Encoder.Encode(Encrypt(data.ToByteArrayUtf8()));
-        }
-
-        public static IEncryptor Deserialize(string json, byte[] serializeKey)
-        {
-            JsonNode jsonNode = JsonNode.Parse(json)!;
-            Type encoderType = Type.GetType(jsonNode[nameof(Encoder)]![nameof(IEncoder.AssemblyName)]!.GetValue<string>())!;
-            IEncoder encoder = (IEncoder)JsonSerializer.Deserialize(jsonNode[nameof(Encoder)], encoderType)!;
-            Type protectorType = Type.GetType(jsonNode["Protector"]!.GetValue<string>())!;
-            ISecretProtector protector = (ISecretProtector)Activator.CreateInstance(protectorType)!;
-            return new AesCbcEncryptor {
-                Key = protector.Unprotect(encoder.Decode(jsonNode[nameof(Key)]!.GetValue<string>()!), serializeKey),
-                Encoder = encoder,
-                Padding = Enum.Parse<AesCbcPadding>(jsonNode[nameof(Padding)]!.GetValue<int>().ToString())
-            };
-        }
-
-        public static IEncryptor Deserialize(string json, string serializeKey)
-        {
-            return Deserialize(json, serializeKey.ToByteArrayUtf8());
-        }
-
-        public string Serialize(byte[] serializeKey, bool indented = false)
-        {
-            return ToJsonObject(serializeKey).ToJsonString(IJsonSerializable.GetIndentOptions(indented));
-        }
-
-        public string Serialize(string serializeKey, bool indented = false)
-        {
-            return ToJsonObject(serializeKey).ToJsonString(IJsonSerializable.GetIndentOptions(indented));
-        }
-
-        public JsonObject ToJsonObject(byte[] serializeKey)
-        {
-            return new JsonObject
-            {
-                [nameof(AssemblyName)] = AssemblyName,
-                [nameof(Protector)] = Protector.AssemblyName,
-                [nameof(Key)] = Encoder.Encode(Protector.Protect(Key, serializeKey)),
-                [nameof(Padding)] = Padding.NumberValue<int>(),
-                [nameof(Encoder)] = Encoder.ToJsonObject(),
-            };
-        }
-
-        public JsonObject ToJsonObject(string serializeKey)
-        {
-            return ToJsonObject(serializeKey.ToByteArrayUtf8());
+            return data.DecryptEncodedAesCbc(Key, Encoder, Padding);
         }
     }
 }

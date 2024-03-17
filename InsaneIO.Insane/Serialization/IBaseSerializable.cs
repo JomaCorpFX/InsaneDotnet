@@ -2,7 +2,7 @@
 
 namespace InsaneIO.Insane.Serialization
 {
-    [RequiresPreviewFeatures]
+    
     public interface IBaseSerializable
     {
         public static abstract Type SelfType { get; }

@@ -12,13 +12,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InsaneIO.Insane.Tests", "In
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InsaneIO.Insane.Console", "InsaneIO.Insane.Console\InsaneIO.Insane.Console.csproj", "{7C106EEB-1B56-4E2B-BF92-35BA4D230E03}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InsaneIO.Insane.AspNetCore", "InsaneIO.Insane.AspNetCore\InsaneIO.Insane.AspNetCore.csproj", "{D14714BD-7A37-4D8A-8A24-2B03F52E7F73}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InsaneIO.Insane.WebApi", "InsaneIO.Insane.WebApi\InsaneIO.Insane.WebApi.csproj", "{F3F4B163-6A43-44A8-9BD3-666B846F0EC9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InsaneIO.Insane", "InsaneIO.Insane\InsaneIO.Insane.csproj", "{BDBD6C75-0BF2-4B33-A848-F81A9190E770}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InsaneIO.Insane.BlazorWasmPlayground", "InsaneIO.Insane.BlazorWasmPlayground\InsaneIO.Insane.BlazorWasmPlayground.csproj", "{5185EB1E-043E-4BD9-8AEF-4AF3E0BA078B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InsaneIO.Insane.BlazorWasmPlayground", "InsaneIO.Insane.BlazorWasmPlayground\InsaneIO.Insane.BlazorWasmPlayground.csproj", "{5185EB1E-043E-4BD9-8AEF-4AF3E0BA078B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,10 +32,6 @@ Global
 		{7C106EEB-1B56-4E2B-BF92-35BA4D230E03}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C106EEB-1B56-4E2B-BF92-35BA4D230E03}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C106EEB-1B56-4E2B-BF92-35BA4D230E03}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D14714BD-7A37-4D8A-8A24-2B03F52E7F73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D14714BD-7A37-4D8A-8A24-2B03F52E7F73}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D14714BD-7A37-4D8A-8A24-2B03F52E7F73}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D14714BD-7A37-4D8A-8A24-2B03F52E7F73}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F3F4B163-6A43-44A8-9BD3-666B846F0EC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F3F4B163-6A43-44A8-9BD3-666B846F0EC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3F4B163-6A43-44A8-9BD3-666B846F0EC9}.Release|Any CPU.ActiveCfg = Release|Any CPU

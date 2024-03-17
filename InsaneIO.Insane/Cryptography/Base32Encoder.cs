@@ -6,7 +6,7 @@ using System.Text.Json.Nodes;
 namespace InsaneIO.Insane.Cryptography
 {
 
-    [RequiresPreviewFeatures]
+    
     public class Base32Encoder : IEncoder, IDefaultInstance<Base32Encoder>
     {
         public static Type SelfType => typeof(Base32Encoder);

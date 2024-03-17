@@ -1,17 +1,9 @@
-﻿using InsaneIO.Insane.Misc;
-using InsaneIO.Insane.Serialization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Versioning;
-using System.Text;
-using System.Text.Json;
+﻿using InsaneIO.Insane.Serialization;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 
 namespace InsaneIO.Insane.Cryptography
 {
-    [RequiresPreviewFeatures]
+
     public class Argon2Hasher : IHasher
     {
         public static Type SelfType => typeof(Argon2Hasher);
@@ -51,16 +43,6 @@ namespace InsaneIO.Insane.Cryptography
             };
         }
 
-        public byte[] Compute(byte[] data)
-        {
-            return data.ComputeArgon2(Salt, Iterations, MemorySizeKiB, DegreeOfParallelism, Argon2Variant, DerivedKeyLength);
-        }
-
-        public string ComputeEncoded(string data)
-        {
-            return Encoder.Encode(Compute(data.ToByteArrayUtf8()));
-        }
-
         public string Serialize(bool indented = false)
         {
             return ToJsonObject().ToJsonString(IJsonSerializable.GetIndentOptions(indented));
@@ -81,14 +63,44 @@ namespace InsaneIO.Insane.Cryptography
             };
         }
 
+        public byte[] Compute(byte[] data)
+        {
+            return data.ComputeArgon2(Salt, Iterations, MemorySizeKiB, DegreeOfParallelism, Argon2Variant, DerivedKeyLength);
+        }
+
+        public byte[] Compute(string data)
+        {
+            return data.ComputeArgon2(Salt, Iterations, MemorySizeKiB, DegreeOfParallelism, Argon2Variant, DerivedKeyLength);
+        }
+
+        public string ComputeEncoded(byte[] data)
+        {
+            return data.ComputeEncodedArgon2(Salt, Encoder, Iterations, MemorySizeKiB, DegreeOfParallelism, Argon2Variant, DerivedKeyLength);
+        }
+
+        public string ComputeEncoded(string data)
+        {
+            return data.ComputeEncodedArgon2(Salt, Encoder, Iterations, MemorySizeKiB, DegreeOfParallelism, Argon2Variant, DerivedKeyLength);
+        }
+
         public bool Verify(byte[] data, byte[] expected)
         {
-            return Enumerable.SequenceEqual(Compute(data), expected);
+            return Compute(data).SequenceEqual(expected);
+        }
+
+        public bool Verify(string data, byte[] expected)
+        {
+            return Compute(data).SequenceEqual(expected);
+        }
+
+        public bool VerifyEncoded(byte[] data, string expected)
+        {
+            return ComputeEncoded(data).SequenceEqual(expected);
         }
 
         public bool VerifyEncoded(string data, string expected)
         {
-            return ComputeEncoded(data).Equals(expected);
+            return ComputeEncoded(data).SequenceEqual(expected);
         }
     }
 }

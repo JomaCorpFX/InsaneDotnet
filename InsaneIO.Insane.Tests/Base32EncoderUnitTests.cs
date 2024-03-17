@@ -14,7 +14,7 @@ namespace InsaneIO.Insane.Tests
 {
 
     [TestClass]
-    [RequiresPreviewFeatures]
+    
     public class Base32EncoderUnitTests
     {
         public readonly static byte[] TestBytes = new byte[] { 104, 101, 108, 108, 111, 119, 111, 114, 108, 100 };
