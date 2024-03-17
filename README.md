@@ -1,23 +1,22 @@
 # InsaneDotnet
-Insane library Compatible with .NET 6 and upwards.
+Insane library Compatible with .NET 8 and upwards.
 
 ## Add to your project
 
 **Package Reference**   
 ```
-<PackageReference Include="InsaneIO.Insane" Version="6.0.0-preview" />
+<PackageReference Include="InsaneIO.Insane" Version="8.0.0" />
 ```
 
 **Dotnet CLI**   
 ```
-dotnet add package InsaneIO.Insane --version 6.0.0-preview
+dotnet add package InsaneIO.Insane --version 8.0.0
 ```
 
 **Package Manager**   
 ```
-Install-Package InsaneIO.Insane -Version 6.0.0-preview
+Install-Package InsaneIO.Insane -Version 8.0.0
 ```
 <hr />
 
-### Additional licenses
-* Icons made by [Freepik](https://www.freepik.com) from [www.Flaticon.com](https://www.flaticon.com)
+
