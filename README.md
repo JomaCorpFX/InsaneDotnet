@@ -5,17 +5,17 @@ Insane library Compatible with .NET 8 and upwards.
 
 **Package Reference**   
 ```
-<PackageReference Include="InsaneIO.Insane" Version="8.0.0" />
+<PackageReference Include="InsaneIO.Insane" Version="8.0.1" />
 ```
 
 **Dotnet CLI**   
 ```
-dotnet add package InsaneIO.Insane --version 8.0.0
+dotnet add package InsaneIO.Insane --version 8.0.1
 ```
 
 **Package Manager**   
 ```
-Install-Package InsaneIO.Insane -Version 8.0.0
+Install-Package InsaneIO.Insane -Version 8.0.1
 ```
 <hr />
 
