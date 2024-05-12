@@ -30,7 +30,7 @@ namespace InsaneIO.Insane.Cryptography
             
             return new RsaEncryptor
             {
-                KeyPair = new RsaKeyPair(publickey, privatekey),
+                KeyPair = new RsaKeyPair{ PublicKey = publickey, PrivateKey = privatekey },
                 Encoder = encoder,
                 Padding = Enum.Parse<RsaPadding>(jsonNode[nameof(Padding)]!.GetValue<int>().ToString())
             };
@@ -55,32 +55,32 @@ namespace InsaneIO.Insane.Cryptography
 
         public byte[] Encrypt(byte[] data)
         {
-            return data.EncryptRsa(KeyPair.PublicKey, Padding);
+            return data.EncryptRsa(KeyPair.PublicKey!, Padding);
         }
 
         public byte[] Encrypt(string data)
         {
-            return data.EncryptRsa(KeyPair.PublicKey, Padding);
+            return data.EncryptRsa(KeyPair.PublicKey!, Padding);
         }
 
         public string EncryptEncoded(byte[] data)
         {
-            return data.EncryptEncodedRsa(KeyPair.PublicKey, Encoder, Padding);
+            return data.EncryptEncodedRsa(KeyPair.PublicKey!, Encoder, Padding);
         }
 
         public string EncryptEncoded(string data)
         {
-            return data.EncryptEncodedRsa(KeyPair.PublicKey, Encoder, Padding);
+            return data.EncryptEncodedRsa(KeyPair.PublicKey!, Encoder, Padding);
         }
 
         public byte[] Decrypt(byte[] data)
         {
-            return data.DecryptRsa(KeyPair.PrivateKey, Padding);
+            return data.DecryptRsa(KeyPair.PrivateKey!, Padding);
         }
 
         public byte[] DecryptEncoded(string data)
         {
-            return data.DecryptEncodedRsa(KeyPair.PrivateKey,Encoder, Padding);
+            return data.DecryptEncodedRsa(KeyPair.PrivateKey!,Encoder, Padding);
         }
     }
 }
