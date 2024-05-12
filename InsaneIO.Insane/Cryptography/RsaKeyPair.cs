@@ -8,16 +8,10 @@ namespace InsaneIO.Insane.Cryptography
     
     public class RsaKeyPair:IJsonSerializable
     {
-        public RsaKeyPair(string publickey, string privatekey)
-        {
-            PublicKey = publickey;
-            PrivateKey = privatekey;
-        }
-
         public static Type SelfType => typeof(RsaKeyPair);
         public string AssemblyName { get => IBaseSerializable.GetName(SelfType); }
-        public  string PublicKey { get; init; } = null!;
-        public  string PrivateKey { get; init; } = null!;
+        public  string? PublicKey { get; init; } 
+        public  string? PrivateKey { get; init; } 
 
         public static RsaKeyPair? Deserialize(string json)
         {
